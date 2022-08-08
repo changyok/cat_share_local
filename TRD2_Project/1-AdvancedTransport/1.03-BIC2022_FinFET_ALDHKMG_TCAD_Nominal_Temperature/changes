@@ -1,0 +1,4 @@
+cp base_garand_inputfile.garinp base_garand_inputfile.garinp_old
+cp generatePLT_vis.tcl generatePLT_vis.tcl_old
+cp 20210524_base_garand_inputfile.garinp base_garand_inputfile.garinp
+cp 20210524_generatePLT_vis.tcl generatePLT_vis.tcl

@@ -1,0 +1,30 @@
+[Circuit]
+netlist     = ${SIMNET}
+number      = ${NUMBER}
+seed        = 12345678
+startnum    = 1
+
+[Simulation]
+spice       = hspice
+
+[Variability]
+statistical = False
+process     = ${PROCESS}
+process_resp_only     =  ${RESP_ONLY}
+
+[Output]
+dir         = @pwd@/@nodedir@/n@node@_${CORNER}
+prefix      = ro_test
+savenets    = True
+processor   = @pwd@/@nodedir@/pp@node@_eng.py
+
+[Models]
+library     = @pwd@/@nodedir|BuildLibrary@/n@node|BuildLibrary@_library.rsl
+rsm_method  = quad_rsm
+extrapolate = True
+
+[Database]
+enabled     = True
+project     = @node@
+dataset     = @node@_RO_${CORNER}
+config      = @pwd@/enigma/mongodb.conf

@@ -1,0 +1,1101 @@
+#[01Sch] Schaffler, Properties of Advanced Semiconductor Materials GaN, AlN, InN, BN, SiC, Sige,
+#John Wiley & Sons, Inc., New York, pp. 149-188, 2001
+#[64Gla] Glasbrenner and Slack, Phys. Rev., 164, 4A, pp 1058-1069, 1964
+#[58BRA] Braunstein, Moore, and Herman in C. Penn, T. Frommherz, and G. Bauer, Properties
+#of Silicon Germanium and SiGe: Carbon EMIS Datareviews Series, no. 24, chapter 4.1
+#[54STo] Stohr and Klemm, Anorg. Allgem. Chem., 241, pp. 305, 1954
+#[00Pa] V. Palankovsky, Thesis, TU Vienna, 2000
+#[81Jac] C. Jacoboni et al, Phys. Rev., B24, 2, pp. 1014, 1981
+#[10Ene] Eneman, IEEE TED, vol. 57, no. 10, 2010
+
+Epsilon
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       1.0
+
+                epsilon(0)      =       11.70           #see Silicon, linear interpolation between Silicon and Germanium, #[01Sch]
+                epsilon(1)      =       16.20           #see Germanium, #[01Sch]
+        }
+
+Epsilon_aniso
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       1.0
+
+                epsilon(0)      =       11.70           #no anisotropy considered
+                epsilon(1)      =       16.20           #no anisotropy considered
+        }
+
+LatticeHeatCapacity
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       1.0
+
+                cv(0)           =       1.63
+                cv(1)           =       1.67
+                cv_b(0)         =       0.0000e+00
+                cv_b(1)         =       0.0000e+00
+                cv_c(0)         =       0.0000e+00
+                cv_c(1)         =       0.0000e+00
+                cv_d(0)         =       0.0000e+00
+                cv_d(1)         =       0.0000e+00
+}
+
+Kappa
+        {
+                Formula         =       0
+
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                1/kappa(0)      =       0.625           #see Silicon [64Gla], at T=300K, mole fraction dependence from [54STO] and [01Sch]
+                1/kappa(1)      =       1.22
+                1/kappa(2)      =       15.87
+                1/kappa(3)      =       14.04
+                1/kappa(4)      =       12.56
+                1/kappa(5)      =       11.36
+                1/kappa(6)      =       10.37
+                1/kappa(7)      =       9.54
+                1/kappa(8)      =       8.83
+                1/kappa(9)      =       5.0
+                1/kappa(10)     =       1.82            #see Germanium [64Gla]
+
+                1/kappa_b(0)    =       0.0
+                1/kappa_b(1)    =       0.0
+                1/kappa_b(2)    =       0.0
+                1/kappa_b(3)    =       0.0
+                1/kappa_b(4)    =       0.0
+                1/kappa_b(5)    =       0.0
+                1/kappa_b(6)    =       0.0
+                1/kappa_b(7)    =       0.0
+                1/kappa_b(8)    =       0.0
+                1/kappa_b(9)    =       0.0
+                1/kappa_b(10)   =       0.0
+
+                1/kappa_c(0)    =       0.0
+                1/kappa_c(1)    =       0.0
+                1/kappa_c(2)    =       0.0
+                1/kappa_c(3)    =       0.0
+                1/kappa_c(4)    =       0.0
+                1/kappa_c(5)    =       0.0
+                1/kappa_c(6)    =       0.0
+                1/kappa_c(7)    =       0.0
+                1/kappa_c(8)    =       0.0
+                1/kappa_c(9)    =       0.0
+                1/kappa_c(10)   =       0.0
+        }
+
+Bandgap
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                Bgn2Chi         =       0.5
+                dEg0(OldSlotboom)=      0.0
+                Tpar            =       3.0e+02
+
+                Eg0(0)          =       1.124           #[58BRA] - mole fraction dependence
+                Eg0(1)          =       1.07
+                Eg0(2)          =       1.03
+                Eg0(3)          =       0.99
+                Eg0(4)          =       0.95
+                Eg0(5)          =       0.935
+                Eg0(6)          =       0.915
+                Eg0(7)          =       0.9
+                Eg0(8)          =       0.89
+                Eg0(9)          =       0.82
+                Eg0(10)         =       0.664
+
+                alpha(0)        =       0.0
+                alpha(1)        =       0.0
+                alpha(2)        =       0.0
+                alpha(3)        =       0.0
+                alpha(4)        =       0.0
+                alpha(5)        =       0.0
+                alpha(6)        =       0.0
+                alpha(7)        =       0.0
+                alpha(8)        =       0.0
+                alpha(9)        =       0.0
+                alpha(10)       =       0.0
+
+                beta(0)         =       0.0
+                beta(1)         =       0.0
+                beta(2)         =       0.0
+                beta(3)         =       0.0
+                beta(4)         =       0.0
+                beta(5)         =       0.0
+                beta(6)         =       0.0
+                beta(7)         =       0.0
+                beta(8)         =       0.0
+                beta(9)         =       0.0
+                beta(10)        =       0.0
+
+                Chi0(0)         =       4.05            #[58BRA] - mole fraction dependence
+                Chi0(1)         =       4.029
+                Chi0(2)         =       4.021
+                Chi0(3)         =       3.998
+                Chi0(4)         =       3.989
+                Chi0(5)         =       3.984
+                Chi0(6)         =       3.938
+                Chi0(7)         =       3.887
+                Chi0(8)         =       3.832
+                Chi0(9)         =       3.836
+                Chi0(10)        =       3.92
+        }
+
+OldSlotboom
+        {
+
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                Ebgn(0)         =       9.00e-03
+                Ebgn(1)         =       8.50e-03
+                Ebgn(2)         =       8.00e-03
+                Ebgn(3)         =       7.50e-03
+                Ebgn(4)         =       7.00e-03
+                Ebgn(5)         =       6.50e-03
+                Ebgn(6)         =       6.00e-03
+                Ebgn(7)         =       5.50e-03
+                Ebgn(8)         =       5.00e-03
+                Ebgn(9)         =       4.50e-03
+                Ebgn(10)        =       4.00e-03
+
+                Nref(0)         =       1.0e+17
+                Nref(1)         =       1.0e+17
+                Nref(2)         =       1.0e+17
+                Nref(3)         =       1.0e+17
+                Nref(4)         =       1.0e+17
+                Nref(5)         =       1.0e+17
+                Nref(6)         =       1.0e+17
+                Nref(7)         =       1.0e+17
+                Nref(8)         =       1.0e+17
+                Nref(9)         =       1.0e+17
+                Nref(10)        =       1.0e+17
+        }
+
+eDOSMass
+        {
+                Xmax(0)         =       0.
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                Formula         =       2
+
+                Nc300(0)        =       2.89e+19                #default 2.89e19, #from MC 2.911E19, 300K, ioffe database: 2.75E19-3.22E19
+                Nc300(1)        =       2.89e+19
+                Nc300(2)        =       2.89e+19
+                Nc300(3)        =       2.89e+19
+                Nc300(4)        =       2.89e+19
+                Nc300(5)        =       2.89e+19
+                Nc300(6)        =       2.89e+19
+                Nc300(7)        =       2.89e+19
+                Nc300(8)        =       2.89e+19
+                Nc300(9)        =       1.0288e+19
+                Nc300(10)       =       1.0288e+19              #ioffe database: 1.0E19, 300K
+        }
+
+hDOSMass
+        {
+                Xmax(0)         =       0.
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                Formula         =       2
+
+                Nv300(0)        =       3.14e+19                #default 3.14e19, #from MC 2.06E19, 300K, ioffe database: 1.82E19
+                Nv300(1)        =       2.81e+19                #linear interpolation of effective mass (x=0: mh/m0=1.152, x=1: mh/m0=0.336)
+                Nv300(2)        =       2.50e+19
+                Nv300(3)        =       2.19e+19
+                Nv300(4)        =       1.91e+19
+                Nv300(5)        =       1.63e+19
+                Nv300(6)        =       1.37e+19
+                Nv300(7)        =       1.12e+19
+                Nv300(8)        =       0.90e+19
+                Nv300(9)        =       0.68e+19
+                Nv300(10)       =       0.50e+19                #ioffe database: 4.95E18, 300K
+
+                #Nv300(0)       =       1.819e+19               #default 3.14e19, #from MC 2.06E19, 300K, ioffe database: 1.82E19
+                #Nv300(1)        =      1.663e+19               #linear interpolation of effective mass
+                #Nv300(2)        =      1.511e+19
+                #Nv300(3)        =      1.365e+19
+                #Nv300(4)        =      1.224e+19
+                #Nv300(5)        =      1.088e+19
+                #Nv300(6)        =      0.957e+19
+                #Nv300(7)        =      0.832e+19
+                #Nv300(8)        =      0.713e+19
+                #Nv300(9)        =      0.601e+19
+                #Nv300(10)       =      0.500e+19               #ioffe database: 4.95E18, 300K
+
+        }
+
+QuantumPotentialParameters "100"
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       1.0
+
+                gamma(0)        =       4.5,    7.3             #Silicon value for electrons, from MC 8.3 for Silicon
+                gamma(1)        =       4.5,    6.4             #Nv interpolation with Nv(Silicon)=3.14e19 used
+                gamma(2)        =       4.5,    5.8
+                gamma(3)        =       4.5,    5.4
+                gamma(4)        =       4.5,    5.0
+                gamma(5)        =       4.5,    4.7
+                gamma(6)        =       4.5,    4.7
+
+                #Xmax(0)        =       0.0
+                #Xmax(1)        =       0.1
+                #Xmax(2)        =       0.2
+                #Xmax(3)        =       0.3
+                #Xmax(4)        =       0.4
+                #Xmax(5)        =       0.5
+                #Xmax(6)        =       0.6
+                #Xmax(7)        =       0.7
+                #Xmax(8)        =       0.8
+                #Xmax(9)        =       0.9
+                #Xmax(10)       =       1.0
+
+                #gamma(0)       =       4.5,    4.5             #Silicon value for electrons, from MC 8.3 for Silicon
+                #gamma(1)       =       4.5,    4.5             #Nv interpolation with Nv(Silicon)=1.89e19 used
+                #gamma(2)       =       4.5,    4.5
+                #gamma(3)       =       4.5,    4.5
+                #gamma(4)       =       4.5,    4.4
+                #gamma(5)       =       4.5,    4.2
+                #gamma(6)       =       4.5,    4.0
+                #gamma(7)       =       4.5,    3.7
+                #gamma(8)       =       4.5,    3.2
+                #gamma(9)       =       4.5,    2.5
+                #gamma(10)      =       4.5,    1.8
+
+                theta           =       0.5,    0.5
+                xi              =       1,      1
+                eta             =       1,      1
+        }
+
+QuantumPotentialParameters "110"
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       1.0
+
+                gamma(0)        =       6.35,   3.3             #Silicon value for electrons
+                gamma(1)        =       6.35,   3.0             #Nv interpolation with Nv(Silicon)=3.14e19 used
+                gamma(2)        =       6.35,   2.7
+                gamma(3)        =       6.35,   2.5
+                gamma(4)        =       6.35    2.3
+                gamma(5)        =       6.35,   2.2
+                gamma(6)        =       6.35,   2.2
+
+                #Xmax(0)        =       0.0
+                #Xmax(1)        =       0.1
+                #Xmax(2)        =       0.2
+                #Xmax(3)        =       0.3
+                #Xmax(4)        =       0.4
+                #Xmax(5)        =       0.5
+                #Xmax(6)        =       0.6
+                #Xmax(7)        =       0.7
+                #Xmax(8)        =       0.8
+                #Xmax(9)        =       0.9
+                #Xmax(10)       =       1.0
+
+                #gamma(0)       =       4.5,    1.6             #Silicon value for electrons, from MC 8.3 for Silicon
+                #gamma(1)       =       4.5,    1.6             #Nv interpolation with Nv(Silicon)=1.89e19 used
+                #gamma(2)       =       4.5,    1.6
+                #gamma(3)       =       4.5,    1.6
+                #gamma(4)       =       4.5,    1.6
+                #gamma(5)       =       4.5,    1.6
+                #gamma(6)       =       4.5,    1.6
+                #gamma(7)       =       4.5,    1.6
+                #gamma(8)       =       4.5,    1.4
+                #gamma(9)       =       4.5,    1.2
+                #gamma(10)      =       4.5,    0.9
+
+                theta           =       0.5,    0.5
+                xi              =       1,      1
+                eta             =       1,      1
+        }
+
+QuantumPotentialParameters "111"
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       1.0
+
+                gamma(0)        =       6.65,   4.3             #Silicon value for electrons, from MC 3.3 for Silicon
+                gamma(1)        =       6.65,   3.9
+                gamma(2)        =       6.65,   3.5
+                gamma(3)        =       6.65,   3.3
+                gamma(4)        =       6.65,   3.0
+                gamma(5)        =       6.65,   2.9
+                gamma(6)        =       6.65,   2.9
+
+                theta           =       0.5,    0.5
+                xi              =       1,      1
+                eta             =       1,      1
+        }
+
+###for <110> and <100> channel
+IALMob "100":
+        {
+                #calibrated to sband at inversion condition (inversion sheet density=1.0E13 1/cm^2)
+                #alloy scattering potential=0.3 - smaller than the value used in MC
+
+                EnormMinimum    =       0
+
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                mumax(0)         =      1417.0, 486.0
+                mumax(1)         =      976.9,  364.0
+                mumax(2)         =      568.7,  300.0
+                mumax(3)         =      290.9,  300.0
+                mumax(4)         =      250.0,  320.0
+                mumax(5)         =      276.7,  364.0
+                mumax(6)         =      373.1,  550.0
+                mumax(7)         =      378.3,  700.0
+                mumax(8)         =      392.8,  900.0
+                mumax(9)         =      1037.8, 1300.0
+                mumax(10)        =      3856.7, 1789.5
+
+                alpha(0)         =      0.68,   0.719
+                alpha(1)         =      0.667,  0.702
+                alpha(2)         =      0.654,  0.685
+                alpha(3)         =      0.641,  0.668
+                alpha(4)         =      0.628,  0.651
+                alpha(5)         =      0.614,  0.634
+                alpha(6)         =      0.601,  0.618
+                alpha(7)         =      0.587,  0.601
+                alpha(8)         =      0.574,  0.584
+                alpha(9)         =      0.56,   0.567
+                alpha(10)        =      0.55,   0.55
+
+                mumin(0)         =      56.0,   46.0
+                mumin(1)         =      56.0,   46.0
+                mumin(2)         =      56.0,   46.0
+                mumin(3)         =      56.0,   46.0
+                mumin(4)         =      56.0,   46.0
+                mumin(5)         =      56.0,   46.0
+                mumin(6)         =      56.0,   46.0
+                mumin(7)         =      56.0,   46.0
+                mumin(8)         =      56.0,   46.0
+                mumin(9)         =      56.0,   46.0
+                mumin(10)        =      56.0,   46.0
+
+                theta            =      2.285,  2.247
+                n_ref            =      9.68e16,2.23e17
+                me_over_m0       =      1.0
+                mh_over_m0       =      1.258
+
+                B(0)             =      9.00e+05,       8.10e+05                #mole fraction dependence from Sband
+                B(1)             =      9.00e+05,       8.16e+05                #mole fraction dependence from Sband
+                B(2)             =      9.00e+05,       1.19e+06                #mole fraction dependence from Sband
+                B(3)             =      2.52e+06,       1.57e+06                #mole fraction dependence from Sband
+                B(4)             =      5.03e+06,       1.73e+06                #mole fraction dependence from Sband
+                B(5)             =      2.52e+06,       1.88e+06                #mole fraction dependence from Sband
+                B(6)             =      1.07e+06,       1.73e+06                #mole fraction dependence from Sband
+                B(7)             =      1.07e+06,       1.73e+06                #mole fraction dependence from Sband
+                B(8)             =      1.07e+06,       1.73e+06                #mole fraction dependence from Sband
+                B(9)             =      8.18e+05,       1.73e+06                #mole fraction dependence from Sband
+                B(10)            =      6.92e+05,       1.73e+06                #mole fraction dependence from Sband
+
+                C(0)             =      4.84e+04,       8.36e+03                #mole fraction dependence from Sband
+                C(1)             =      4.84e+04,       8.42e+03                #mole fraction dependence from Sband
+                C(2)             =      4.84e+04,       1.23e+04                #mole fraction dependence from Sband
+                C(3)             =      1.35e+05,       1.62e+04                #mole fraction dependence from Sband
+                C(4)             =      2.71e+05,       1.78e+04                #mole fraction dependence from Sband
+                C(5)             =      1.35e+05,       1.94e+04                #mole fraction dependence from Sband
+                C(6)             =      5.75e+04,       1.78e+04                #mole fraction dependence from Sband
+                C(7)             =      5.75e+04,       1.78e+04                #mole fraction dependence from Sband
+                C(8)             =      5.75e+04,       1.78e+04                #mole fraction dependence from Sband
+                C(9)             =      4.40e+04,       1.78e+04                #mole fraction dependence from Sband
+                C(10)            =      3.72e+04,       1.78e+04                #mole fraction dependence from Sband
+
+                delta(0)        =       7.15e+14,       2.58e+14                #mole fraction dependence from Sband
+                delta(1)        =       7.15e+14,       2.60e+14                #mole fraction dependence from Sband
+                delta(2)        =       7.15e+14,       3.80e+14                #mole fraction dependence from Sband
+                delta(3)        =       2.00e+15,       5.00e+14                #mole fraction dependence from Sband
+                delta(4)        =       4.00e+15,       5.50e+14                #mole fraction dependence from Sband
+                delta(5)        =       2.00e+15,       6.00e+14                #mole fraction dependence from Sband
+                delta(6)        =       8.50e+14,       5.50e+14                #mole fraction dependence from Sband
+                delta(7)        =       8.50e+14,       5.50e+14                #mole fraction dependence from Sband
+                delta(8)        =       8.50e+14,       5.50e+14                #mole fraction dependence from Sband
+                delta(9)        =       6.50e+14,       5.50e+14                #mole fraction dependence from Sband
+                delta(10)       =       5.50e+14,       5.50e+14                #mole fraction dependence from Sband
+
+                lambda(0)       =       0.0,            0.0
+                lambda(1)       =       0.0,            0.0
+                lambda(2)       =       0.0,            0.0
+                lambda(3)       =       0.0,            0.0
+                lambda(4)       =       0.0,            0.0
+                lambda(5)       =       0.0,            0.0
+                lambda(6)       =       0.0,            0.0
+                lambda(7)       =       0.0,            0.0
+                lambda(8)       =       0.0,            0.0
+                lambda(9)       =       0.0,            0.0
+                lambda(10)      =       0.0,            0.0
+
+                lambda_sr(0)    =       0.0,            0.0
+                lambda_sr(1)    =       0.0,            0.0
+                lambda_sr(2)    =       0.0,            0.0
+                lambda_sr(3)    =       0.0,            0.0
+                lambda_sr(4)    =       0.0,            0.0
+                lambda_sr(5)    =       0.0,            0.0
+                lambda_sr(6)    =       0.0,            0.0
+                lambda_sr(7)    =       0.0,            0.0
+                lambda_sr(8)    =       0.0,            0.0
+                lambda_sr(9)    =       0.0,            0.0
+                lambda_sr(10)   =       0.0,            0.0
+
+                A               =       2.0,            2.0
+                alpha_sr        =       5.0e-22,        0.0
+                nu              =       0.0,            0.0
+                D1_inv          =       300.0,          150.0
+                D2_inv          =       300.0,          150.0
+                nu0_inv         =       1.5,            1.5
+                nu1_inv         =       2.0,            2.0
+                nu2_inv         =       0.5,            0.5
+                alpha1_inv      =       0.0,            0.0
+                alpha2_inv      =       0.0,            0.0
+                l_crit          =       1.0e-6,         1.0e-6
+                l_crit_c        =       1.0e-6,         1.0e-6
+                eta             =       1.0e50,         1.0e50
+                N1              =       1.0,            1.0
+                N2              =       1.0,            1.0
+        }
+
+####for <100> channel
+IALMob "110":
+        {
+                #calibrated to sband at inversion condition (inversion sheet density=1.0E13 1/cm^2)
+                #alloy scattering potential=0.3 - smaller than the value used in MC
+
+                EnormMinimum    =       0
+
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                mumax(0)         =      1417.0, 486.0
+                mumax(1)         =      976.9,  364.0
+                mumax(2)         =      568.7,  300.0
+                mumax(3)         =      290.9,  300.0
+                mumax(4)         =      250.0,  320.0
+                mumax(5)         =      276.7,  364.0
+                mumax(6)         =      373.1,  550.0
+                mumax(7)         =      378.3,  700.0
+                mumax(8)         =      392.8,  900.0
+                mumax(9)         =      1037.8, 1300.0
+                mumax(10)        =      3856.7, 1789.5
+
+                alpha(0)         =      0.68,   0.719
+                alpha(1)         =      0.667,  0.702
+                alpha(2)         =      0.654,  0.685
+                alpha(3)         =      0.641,  0.668
+                alpha(4)         =      0.628,  0.651
+                alpha(5)         =      0.614,  0.634
+                alpha(6)         =      0.601,  0.618
+                alpha(7)         =      0.587,  0.601
+                alpha(8)         =      0.574,  0.584
+                alpha(9)         =      0.56,   0.567
+                alpha(10)        =      0.55,   0.55
+
+                mumin(0)         =      56.0,   46.0
+                mumin(1)         =      56.0,   46.0
+                mumin(2)         =      56.0,   46.0
+                mumin(3)         =      56.0,   46.0
+                mumin(4)         =      56.0,   46.0
+                mumin(5)         =      56.0,   46.0
+                mumin(6)         =      56.0,   46.0
+                mumin(7)         =      56.0,   46.0
+                mumin(8)         =      56.0,   46.0
+                mumin(9)         =      56.0,   46.0
+                mumin(10)         =     56.0,   46.0
+
+                theta                   =       2.285,  2.247
+                n_ref                   =       9.68e16,2.23e17
+                me_over_m0              =       1.0
+                mh_over_m0              =       1.258
+
+                B(0)             =      9.00e+05,       9.00e+05                #mole fraction dependence from Sband
+                B(1)             =      9.00e+05,       9.00e+05                #mole fraction dependence from Sband
+                B(2)             =      1.26e+06,       1.26e+06                #mole fraction dependence from Sband
+                B(3)             =      1.26e+06,       1.40e+06                #mole fraction dependence from Sband
+                B(4)             =      2.01e+06,       1.54e+06                #mole fraction dependence from Sband
+                B(5)             =      1.26e+06,       1.68e+06                #mole fraction dependence from Sband
+                B(6)             =      1.26e+06,       1.47e+06                #mole fraction dependence from Sband
+                B(7)             =      1.26e+06,       1.33e+06                #mole fraction dependence from Sband
+                B(8)             =      1.26e+06,       1.12e+06                #mole fraction dependence from Sband
+                B(9)             =      9.00e+05,       1.12e+06                #mole fraction dependence from Sband
+                B(10)            =      9.00e+05,       1.12e+06                #mole fraction dependence from Sband
+
+                C(0)             =      1.70e+04,       1.70e+04                #mole fraction dependence from Sband
+                C(1)             =      1.70e+04,       1.70e+04                #mole fraction dependence from Sband
+                C(2)             =      2.37e+04,       2.38e+04                #mole fraction dependence from Sband
+                C(3)             =      2.37e+04,       2.64e+04                #mole fraction dependence from Sband
+                C(4)             =      3.80e+04,       2.90e+04                #mole fraction dependence from Sband
+                C(5)             =      2.37e+04,       3.17e+04                #mole fraction dependence from Sband
+                C(6)             =      2.37e+04,       2.77e+04                #mole fraction dependence from Sband
+                C(7)             =      2.37e+04,       2.51e+04                #mole fraction dependence from Sband
+                C(8)             =      2.37e+04,       2.11e+04                #mole fraction dependence from Sband
+                C(9)             =      1.70e+04,       2.11e+04                #mole fraction dependence from Sband
+                C(10)            =      1.70e+04,       2.11e+04                #mole fraction dependence from Sband
+
+                delta(0)        =       1.79e+14,       3.22e+14                #mole fraction dependence from Sband
+                delta(1)        =       1.79e+14,       3.22e+14                #mole fraction dependence from Sband
+                delta(2)        =       2.50e+14,       4.50e+14                #mole fraction dependence from Sband
+                delta(3)        =       2.50e+14,       5.00e+14                #mole fraction dependence from Sband
+                delta(4)        =       4.00e+14,       5.50e+14                #mole fraction dependence from Sband
+                delta(5)        =       2.50e+14,       6.00e+14                #mole fraction dependence from Sband
+                delta(6)        =       2.50e+14,       5.25e+14                #mole fraction dependence from Sband
+                delta(7)        =       2.50e+14,       4.75e+14                #mole fraction dependence from Sband
+                delta(8)        =       2.50e+14,       4.00e+14                #mole fraction dependence from Sband
+                delta(9)        =       1.79e+14,       4.00e+14                #mole fraction dependence from Sband
+                delta(10)       =       1.79e+14,       4.00e+14                #mole fraction dependence from Sband
+
+                lambda(0)          =    0.0,            0.0
+                lambda(1)          =    0.0,            0.0
+                lambda(2)          =    0.0,            0.0
+                lambda(3)          =    0.0,            0.0
+                lambda(4)          =    0.0,            0.0
+                lambda(5)          =    0.0,            0.0
+                lambda(6)          =    0.0,            0.0
+                lambda(7)          =    0.0,            0.0
+                lambda(8)          =    0.0,            0.0
+                lambda(9)          =    0.0,            0.0
+                lambda(10)         =    0.0,            0.0
+
+                lambda_sr(0)    =       0.0,            0.0
+                lambda_sr(1)    =       0.0,            0.0
+                lambda_sr(2)    =       0.0,            0.0
+                lambda_sr(3)    =       0.0,            0.0
+                lambda_sr(4)    =       0.0,            0.0
+                lambda_sr(5)    =       0.0,            0.0
+                lambda_sr(6)    =       0.0,            0.0
+                lambda_sr(7)    =       0.0,            0.0
+                lambda_sr(8)    =       0.0,            0.0
+                lambda_sr(9)    =       0.0,            0.0
+                lambda_sr(10)   =       0.0,            0.0
+
+                A               =       2.0,            2.0
+                alpha_sr        =       5.0e-22,        0.0
+                nu              =       0.0,            0.0
+                D1_inv          =       300.0,          150.0
+                D2_inv          =       300.0,          150.0
+                nu0_inv         =       1.5,            1.5
+                nu1_inv         =       2.0,            2.0
+                nu2_inv         =       0.5,            0.5
+                alpha1_inv      =       0.0,            0.0
+                alpha2_inv      =       0.0,            0.0
+
+                l_crit          =       1.0e-6,         1.0e-6
+                l_crit_c        =       1.0e-6,         1.0e-6
+        }
+
+##for <110> channel - extracted from sband for <112> channel
+##copied only no additional calibration done
+IALMob "111":
+        { 
+                #calibrated to sband at inversion condition (inversion sheet density=1.0E13 1/cm^2)
+                #alloy scattering potential=0.3 - smaller than the value used in MC
+
+                EnormMinimum    =       0
+ 
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                mumax(0)         =      1417.0, 486.0 
+                mumax(1)         =      976.9,  364.0   
+                mumax(2)         =      568.7,  300.0 
+                mumax(3)         =      290.9,  300.0 
+                mumax(4)         =      250.0,  320.0 
+                mumax(5)         =      276.7,  364.0 
+                mumax(6)         =      373.1,  550.0 
+                mumax(7)         =      378.3,  700.0  
+                mumax(8)         =      392.8,  900.0 
+                mumax(9)         =      1037.8, 1300.0 
+                mumax(10)        =      3856.7, 1789.5
+
+                alpha(0)         =      0.68,   0.719
+                alpha(1)         =      0.667,  0.702
+                alpha(2)         =      0.654,  0.685
+                alpha(3)         =      0.641,  0.668
+                alpha(4)         =      0.628,  0.651
+                alpha(5)         =      0.614,  0.634
+                alpha(6)         =      0.601,  0.618 
+                alpha(7)         =      0.587,  0.601
+                alpha(8)         =      0.574,  0.584
+                alpha(9)         =      0.56,   0.567 
+                alpha(10)        =      0.55,   0.55
+
+                mumin(0)         =      56.0,   46.0
+                mumin(1)         =      56.0,   46.0 
+                mumin(2)         =      56.0,   46.0 
+                mumin(3)         =      56.0,   46.0               
+                mumin(4)         =      56.0,   46.0 
+                mumin(5)         =      56.0,   46.0 
+                mumin(6)         =      56.0,   46.0 
+                mumin(7)         =      56.0,   46.0 
+                mumin(8)         =      56.0,   46.0 
+                mumin(9)         =      56.0,   46.0 
+                mumin(10)        =      56.0,   46.0
+
+                theta            =      2.285,  2.247
+                n_ref            =      9.68e16,2.23e17
+                me_over_m0       =      1.0
+                mh_over_m0       =      1.258 
+
+                #electrons are not calibrated but only roughly adjusted
+                B(0)             =      1.40e+06,       1.02e+06                #hole mole fraction dependence from Sband
+                B(1)             =      1.40e+06,       1.02e+06                #hole mole fraction dependence from Sband
+                B(2)             =      1.40e+06,       1.31e+06                #hole mole fraction dependence from Sband
+                B(3)             =      1.40e+06,       1.73e+06                #hole mole fraction dependence from Sband
+                B(4)             =      1.40e+06,       1.90e+06                #hole mole fraction dependence from Sband
+                B(5)             =      1.40e+06,       2.07e+06                #hole mole fraction dependence from Sband
+                B(6)             =      1.40e+06,       1.90e+06                #hole mole fraction dependence from Sband
+                B(7)             =      1.40e+06,       1.90e+06                #hole mole fraction dependence from Sband
+                B(8)             =      1.40e+06,       1.90e+06                #hole mole fraction dependence from Sband
+                B(9)             =      1.40e+06,       2.20e+06                #hole mole fraction dependence from Sband
+                B(10)            =      1.40e+06,       2.20e+06                #hole mole fraction dependence from Sband
+    
+                C(0)             =      3.50e+04,       1.05e+04                #hole mole fraction dependence from Sband
+                C(1)             =      3.50e+04,       1.05e+04                #hole mole fraction dependence from Sband
+                C(2)             =      3.50e+04,       1.35e+04                #hole mole fraction dependence from Sband
+                C(3)             =      3.50e+04,       1.78e+04                #hole mole fraction dependence from Sband
+                C(4)             =      3.50e+04,       1.96e+04                #hole mole fraction dependence from Sband
+                C(5)             =      3.50e+04,       2.14e+04                #hole mole fraction dependence from Sband
+                C(6)             =      3.50e+04,       1.96e+04                #hole mole fraction dependence from Sband
+                C(7)             =      3.50e+04,       1.96e+04                #hole mole fraction dependence from Sband
+                C(8)             =      3.50e+04,       1.96e+04                #hole mole fraction dependence from Sband
+                C(9)             =      3.50e+04,       2.27e+04                #hole mole fraction dependence from Sband
+                C(10)            =      3.50e+04,       2.27e+04                #hole mole fraction dependence from Sband
+     
+                delta(0)        =       1.75e+14,       3.25e+14                #hole mole fraction dependence from Sband
+                delta(1)        =       1.75e+14,       3.25e+14                #hole mole fraction dependence from Sband
+                delta(2)        =       1.75e+14,       4.18e+14                #hole mole fraction dependence from Sband
+                delta(3)        =       1.75e+14,       5.50e+14                #hole mole fraction dependence from Sband
+                delta(4)        =       1.75e+14,       6.05e+14                #hole mole fraction dependence from Sband
+                delta(5)        =       1.75e+14,       6.60e+14                #hole mole fraction dependence from Sband
+                delta(6)        =       1.75e+14,       6.05e+14                #hole mole fraction dependence from Sband
+                delta(7)        =       1.75e+14,       6.05e+14                #hole mole fraction dependence from Sband
+                delta(8)        =       1.75e+14,       6.05e+14                #hole mole fraction dependence from Sband
+                delta(9)        =       1.75e+14,       7.00e+14                #hole mole fraction dependence from Sband
+                delta(10)       =       1.75e+14,       7.00e+14                #hole mole fraction dependence from Sband
+
+                lambda(0)       =       0.0,            0.0
+                lambda(1)       =       0.0,            0.0
+                lambda(2)       =       0.0,            0.0
+                lambda(3)       =       0.0,            0.0
+                lambda(4)       =       0.0,            0.0
+                lambda(5)       =       0.0,            0.0
+                lambda(6)       =       0.0,            0.0
+                lambda(7)       =       0.0,            0.0
+                lambda(8)       =       0.0,            0.0
+                lambda(9)       =       0.0,            0.0
+                lambda(10)      =       0.0,            0.0
+
+                lambda_sr(0)    =       0.0,            0.0
+                lambda_sr(1)    =       0.0,            0.0
+                lambda_sr(2)    =       0.0,            0.0
+                lambda_sr(3)    =       0.0,            0.0
+                lambda_sr(4)    =       0.0,            0.0
+                lambda_sr(5)    =       0.0,            0.0
+                lambda_sr(6)    =       0.0,            0.0
+                lambda_sr(7)    =       0.0,            0.0
+                lambda_sr(8)    =       0.0,            0.0
+                lambda_sr(9)    =       0.0,            0.0
+                lambda_sr(10)   =       0.0,            0.0
+
+                A               =       2.0,            2.0
+                alpha_sr        =       5.0e-22,        0.0
+                nu              =       0.0,            0.0
+                D1_inv          =       300.0,          150.0
+                D2_inv          =       300.0,          150.0    
+                nu0_inv         =       1.5,            1.5                    
+                nu1_inv         =       2.0,            2.0
+                nu2_inv         =       0.5,            0.5
+                alpha1_inv      =       0.0,            0.0
+                alpha2_inv      =       0.0,            0.0                     
+                l_crit          =       1.0e-6,         1.0e-6  
+                l_crit_c        =       1.0e-6,         1.0e-6
+                eta             =       1.0e50,         1.0e50
+                N1              =       1.0,            1.0
+                N2              =       1.0,            1.0              
+        }
+
+
+ThinLayerMobility "100":
+        {
+                beta            =       4.0,            4.0             
+                zeta            =       2.88,           1.05                                    
+                p1              =       0.55,           0.0             
+                p2              =       400.0,          0.66            
+                p3              =       1.44            1.0                                             
+                mz1             =       0.916,          0.29            
+                mz2             =       0.19,           0.25
+                wt01            =       3.0e-06,        0.0              
+                wt02            =       3.5e-07,        0.0                                     
+                muac01          =       315.0,          30.2             
+                muac02          =       6.4,            69.0                                     
+                mutf0           =       0.15,           0.28            
+                musp0           =       1.145e-8,       1.6e-10                         
+                tsp0            =       1.0e-04,        1.0e-04                         
+                ftf0            =       6.25e+03,       1.0e+100                                
+                tmin            =       2.00e-03,       2.00e-03                                
+                eta1            =       6.0,            6.0             
+                eta2            =       1.0,            1.0                             
+                mutfh0          =       1.0e+06,        1.0e6                                     
+                ftfh0           =       1.0e+100,       1.0e+100
+        }       
+
+ThinLayerMobility "110":
+       {
+                beta            =       4.0,            4.0
+                zeta            =       0.15,           8.2
+                p1              =       0.4,            0.1
+                p2              =       50.0,           2.0e6
+                p3              =       7.0,            4.0
+                mz1             =       0.315,          1.8
+                mz2             =       0.19,           0.23
+                wt01            =       3.5e-07,        3.0e-7
+                wt02            =       3.0e-06,        1.0e-5
+                muac01          =       85.0,           1300.0
+                muac02          =       300.0,          100.0
+                mutf0           =       6.9e-5,         0.0051
+                musp0           =       2.8e-3,         5.0e-5
+                tsp0            =       2.7e-04,        1.5e-04
+                ftf0            =       6.25e+03,       6.25e+03
+                tmin            =       2.00e-03,       2.00e-03
+                eta1            =       9.5,            7.5
+                eta2            =       1.5,            1.5
+                mutfh0          =       1.0e+06,        5.1
+                ftfh0           =       1.0e+100,       6.25e+04
+        }
+
+#copied from (110)
+ThinLayerMobility "111":
+       {
+                beta            =       4.0,            4.0
+                zeta            =       0.15,           8.2
+                p1              =       0.4,            0.1
+                p2              =       50.0,           2.0e6
+                p3              =       7.0,            4.0
+                mz1             =       0.315,          1.8
+                mz2             =       0.19,           0.23
+                wt01            =       3.5e-07,        3.0e-7
+                wt02            =       3.0e-06,        1.0e-5
+                muac01          =       85.0,           1300.0
+                muac02          =       300.0,          100.0
+                mutf0           =       6.9e-5,         0.0051
+                musp0           =       2.8e-3,         5.0e-5
+                tsp0            =       2.7e-04,        1.5e-04
+                ftf0            =       6.25e+03,       6.25e+03
+                tmin            =       2.00e-03,       2.00e-03
+                eta1            =       9.5,            7.5
+                eta2            =       1.5,            1.5
+                mutfh0          =       1.0e+06,        5.1
+                ftfh0           =       1.0e+100,       6.25e+04
+        }
+
+HighFieldDependence:
+       {
+                Vsat_Formula    =       1,      1
+
+                Xmax(0)         =       0.
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                beta0(0)        =       1.109,  1.213
+                beta0(1)        =       1.21,   1.213
+                beta0(2)        =       1.32,   1.213
+                beta0(3)        =       1.43,   1.213
+                beta0(4)        =       1.54,   1.213
+                beta0(5)        =       1.65,   1.213
+                beta0(6)        =       1.76,   1.213
+                beta0(7)        =       1.87,   1.213
+                beta0(8)        =       1.98,   1.213
+                beta0(9)        =       1.99,   1.213
+                beta0(10)       =       2.0,    1.213
+
+                #non-ballistic velocity saturation: equilibrium saturation velocity
+                vsat0(0)        =       1.07e+7,0.84e+7         #default
+                vsat0(1)        =       0.82e+7,0.81e+7         #linear interpolation for holes
+                vsat0(2)        =       0.62e+7,0.79e+7         #second order interpolation for electrons with bowing coefficient from [00Pal]
+                vsat0(3)        =       0.46e+7,0.76e+7         #instead of second order interpolation a hard jump to the Ge values at 85% might be better
+                vsat0(4)        =       0.36e+7,0.74e+7
+                vsat0(5)        =       0.29e+7,0.71e+7
+                vsat0(6)        =       0.27e+7,0.69e+7
+                vsat0(7)        =       0.30e+7,0.66e+7
+                vsat0(8)        =       0.37e+7,0.64e+7
+                vsat0(9)        =       0.49e+7,0.61e+7
+                vsat0(10)       =       0.65e07,0.60e+7         #electrons: [81Jac] in ioffe database
+                                                                #holes: [10Ene]
+
+                #ballistic velocity saturation: fittend to MC simulation of short channel FinFETs (holes)
+                #electrons are kept at their equilibrium values
+                #vsat0(0)       =       1.07e+7,1.01e+7
+                #vsat0(1)       =       0.82e+7,1.10e+7
+                #vsat0(2)       =       0.62e+7,1.19e+7
+                #vsat0(3)       =       0.46e+7,1.26e+7
+                #vsat0(4)       =       0.36e+7,1.34e+7
+                #vsat0(5)       =       0.29e+7,1.40e+7
+                #vsat0(6)       =       0.27e+7,1.46e+7
+                #vsat0(7)       =       0.30e+7,1.50e+7
+                #vsat0(8)       =       0.37e+7,1.55e+7
+                #vsat0(9)       =       0.49e+7,1.57e+7
+                #vsat0(10)      =       0.65e07,1.64e+7
+        }
+
+Lombardi_highk:
+        {
+                #all parameters are copied from Silicon
+                alpha_lom_e             =       0.0
+                alpha_lom_h             =       0.0
+                alpha_rcs_e             =       0.0
+                alpha_rcs_h             =       0.0
+                alpha_rps_e             =       4.0
+                alpha_rps_h             =       4.0
+                d_crit_rcs_e            =       1.0e-7
+                d_crit_rcs_h            =       1.0e-7
+                l_crit_rcs_e            =       7.7e-8
+                l_crit_rcs_h            =       7.7e-8
+                d_crit_rps_e            =       1.0e-7
+                d_crit_rps_h            =       1.0e-7
+                l_crit_rps_e            =       7.7e-8
+                l_crit_rps_h            =       7.7e-8
+        }
+
+NegInterfaceChargeMobility:
+        {
+                #all parameters are copied from Silicon
+                E0                      =       1.0e-6, 1.0e-6
+                mu1                     =       250.0,  250.0
+                c_exp                   =       0.5,    0.5
+                l_crit                  =       7.7e-8, 7.7e-8
+        }
+
+PosInterfaceChargeMobility:
+        {
+                #all parameters are copied from Silicon
+                E0                      =       1.0e-6, 1.0e-6
+                mu1                     =       250.0,  250.0
+                c_exp                   =       0.5,    0.5
+                l_crit                  =       7.7e-8, 7.7e-8
+        }
+
+LatticeParameters
+	{
+		X                       =       (1 0 0)
+		Y                       =       (0 1 0)	
+		#Y                       =       (0 1 1)	
+		    
+        	Xmax(0) 		= 	0.0 
+        	Xmax(1) 		= 	0.1            
+        	Xmax(2) 		= 	0.2               
+        	Xmax(3) 		= 	0.3                  
+        	Xmax(4) 		= 	0.4                     
+        	Xmax(5) 		= 	0.5    
+        	Xmax(6) 		= 	1.0    
+                                       
+        	S[1][1](0)  		= 	0.77  
+        	S[1][1](1)  		= 	0.789  
+        	S[1][1](2)  		= 	0.808          
+        	S[1][1](3)  		= 	0.827          
+        	S[1][1](4)  		= 	0.846                
+        	S[1][1](5)  		= 	0.865  
+        	S[1][1](6)  		= 	0.96  
+        
+        	S[1][2](0)  		= 	-0.21  
+        	S[1][2](1)  		= 	-0.215          
+        	S[1][2](2)  		= 	-0.22          
+        	S[1][2](3)  		= 	-0.225          
+        	S[1][2](4)  		= 	-0.23   
+        	S[1][2](5)  		= 	-0.235   
+        	S[1][2](6)  		= 	-0.26         
+                                
+        	S[4][4](0)  		= 	1.25  
+        	S[4][4](1)  		= 	1.275          
+        	S[4][4](2)  		= 	1.3          
+        	S[4][4](3)  		= 	1.325          
+        	S[4][4](4)  		= 	1.35  
+        	S[4][4](5)  		= 	1.375  
+        	S[4][4](6)  		= 	1.5          
+                     
+        	xis(0)  		= 	7.044   
+        	xis(1)  		= 	7.161         
+        	xis(2)  		= 	7.270 
+        	xis(3)  		= 	7.373  
+        	xis(4)  		= 	7.467  
+        	xis(5)  		= 	7.553  
+        	xis(6)  		= 	7.553  
+        
+        	dbs(0)  		= 	0.532  
+        	dbs(1)  		= 	0.571    
+        	dbs(2)  		= 	0.608  
+        	dbs(3)  		= 	0.645  
+        	dbs(4)  		= 	0.680 
+        	dbs(5)  		= 	0.714  
+        	dbs(6)  		= 	0.714 
+                
+        	xiu(0)  		= 	9.295  	 
+        	xiu(1)  		= 	9.449 	
+        	xiu(2)  		= 	9.588 	
+        	xiu(3)  		= 	9.712 	
+        	xiu(4)  		= 	9.822 	
+        	xiu(5)  		= 	9.918	 
+        	xiu(6)  		= 	9.918 	
+                
+        	xid(0)  		= 	1.082  	
+        	xid(1)  		= 	0.867 	
+        	xid(2)  		= 	0.658 	
+        	xid(3)  		= 	0.454 	
+        	xid(4)  		= 	0.254 	
+        	xid(5)  		= 	0.059 		
+        	xid(6)  		=	0.059 
+
+        	adp(0)  		= 	2.46  
+        	adp(1)  		= 	2.338  
+        	adp(2)  		= 	2.216  
+        	adp(3)  		= 	2.094  
+        	adp(4)  		= 	1.972  
+        	adp(5)  		= 	1.85  
+        	adp(6)  		= 	1.24
+
+        	bdp(0)  		= 	-2.35  
+        	bdp(1)  		= 	-2.37  
+        	bdp(2)  		= 	-2.39  
+        	bdp(3)  		= 	-2.41  
+        	bdp(4)  		= 	-2.43  
+        	bdp(5)  		= 	-2.45  
+        	bdp(6)  		= 	-2.55 
+
+        	ddp(0)  		= 	-5.32   
+        	ddp(1)  		= 	-5.338  
+        	ddp(2)  		= 	-5.356  
+        	ddp(3)  		= 	-5.374  
+       		ddp(4)  		= 	-5.392  
+        	ddp(5)  		= 	-5.41         
+        	ddp(6)  		= 	-5.50  
+                
+        	dso(0)  		= 	0.0434  
+        	dso(1)  		= 	0.06877         
+        	dso(2)  		= 	0.09414  
+        	dso(3)  		= 	0.11951  
+        	dso(4)  		= 	0.14488  
+        	dso(5)	 		= 	0.17025                                
+        	dso(6)  		= 	0.2971
+        
+        	gamma_1(0)		= 	4.31
+        	gamma_1(1)		= 	4.412529
+        	gamma_1(2)		= 	4.579156
+        	gamma_1(3)		= 	4.793158
+        	gamma_1(4)		= 	5.056071
+        	gamma_1(5)		= 	5.376024
+        	gamma_1(6)		= 	5.376024
+        
+        	gamma_2(0)		= 	0.345
+        	gamma_2(1)		= 	0.387581
+        	gamma_2(2)		= 	0.457916
+        	gamma_2(3)		= 	0.548142
+        	gamma_2(4)		= 	0.661203
+        	gamma_2(5)		= 	0.801059
+        	gamma_2(6)		= 	0.801059
+
+        	gamma_3(0)		= 	1.426667
+        	gamma_3(1)		= 	1.472108
+        	gamma_3(2)		= 	1.546367
+        	gamma_3(3)		= 	1.642450
+        	gamma_3(4)		= 	1.761532
+        	gamma_3(5)		= 	1.907973
+        	gamma_3(6)		= 	1.907973
+	}
+                
+

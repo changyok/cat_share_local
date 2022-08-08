@@ -1,0 +1,3 @@
+set WB_tool(raphaelfx,input,commands,user) 1
+set WB_tool(raphaelfx,parallel,activate) 1
+set WB_tool(raphaelfx,parallel,processes) "@processes@"

@@ -1,0 +1,417 @@
+
+****************************************************************************
+***                       Sentaurus Workbench gsub                       ***
+***                        Version Q-2019.12-SP1                         ***
+***                       (1.1489, x86_64, Linux)                        ***
+***                                                                      ***
+***                Copyright (c) 1994-2019 Synopsys, Inc.                ***
+***                                                                      ***
+***  This software and the associated documentation are confidential     ***
+***  and proprietary to Synopsys, Inc.  Your use or disclosure of this   ***
+***  software is subject to the terms and conditions of a written        ***
+***  license agreement between you, or your company, and Synopsys, Inc.  ***
+****************************************************************************
+
+gsub is running on host 'haggis35.internal.synopsys.com' by user 'pasenov'
+Binary '/global/cust_apps_seg05/tcad//tcad/Q-2019.12-SP1/linux64/bin/gsub'
+Command line options '-verbose -swb_pid 167799 -q local:default -e {124 + 125 + 139 + 140 + 132 + 133 + 148 + 149 + 156 + 157 + 164 + 165 + 171 + 172} /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4'
+Current directory '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_rs2'
+Project organization 'Hierarchical'
+Some relevant environment variables:
+	STROOT=/global/cust_apps_seg05/tcad/
+	STRELEASE=Q-2019.12-SP1
+	STROOT_LIB=/global/cust_apps_seg05/tcad//tcad/Q-2019.12-SP1/lib
+	STDB=/remote/gb12tcad3/plamen/SWB/
+	DATEX=/global/cust_apps_seg05/tcad//tcad/Q-2019.12-SP1/lib/datexcodes.txt
+	DISPLAY=localhost:11.0
+
+Starting swblm daemon...OK
+Loading global tool database '/global/cust_apps_seg05/tcad/tcad/Q-2019.12-SP1/lib/glib2/tooldb.tcl'
+Loading user's tool database '/remote/gb12tcad3/plamen/SWB/tooldb_pasenov'
+Project '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4'
+Application mode: hierarchical
+18:36:45 Apr 23 2020 <2020_BulkFinFET_mystic4> submitted to the batch system
+Loading global queue configuration file '/remote/gb12tcad1/swb_decks/gqueues.dat'...ok
+Loading user queue configuration file '/remote/gb12tcad3/plamen/SWB/gqueues_pasenov.dat'...ok
+Loading project tree '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gtree.dat'
+>>>>> Preprocessing the project to run in normal mode
+Loading jobs and dependence graph '"/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gexec.cmd"'
+INITIALIZING PREPROCESSOR:
+Loading project tree '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gtree.dat'
+Loading project variables '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gvars.dat'
+--Get files to preprocess...
+--Create file handlers...
+--Read the toolflow...
+--Analyze tool-file dependencies...
+--Read all nodes to preprocess...
+--Group nodes into experiments...
+--Get all variables...
+--Get all parameters...
+PREPROCESSOR SUCCESSFULLY INITIALIZED.
+PREPROCESSING STEP 1:
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/HarvestData_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/SetupSplits_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/SetupVariables_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s1_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s2_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s3_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Plot_Resp_Extraction_vis.tcl
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Plot_Resp_TempDep_vis.tcl
+PREPROCESSING STEP 2:
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 124
++++Node successfully preprocessed+++
+The node '124' has dependencies to the node(s) '123'
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 125
++++Node successfully preprocessed+++
+The node '125' has dependencies to the node(s) '124'
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 132
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 132
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 132
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 132
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 132
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 132
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 132
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 133
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 139
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 139
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 139
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 139
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 139
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 139
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 139
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 140
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 148
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 148
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 148
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 148
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 148
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 148
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 148
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 149
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 156
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 156
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 156
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 156
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 156
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 156
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 156
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 157
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 164
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 164
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 164
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 164
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 164
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 164
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 164
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 165
++++Node successfully preprocessed+++
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 171
++++Node successfully preprocessed+++
+The node '171' has dependencies to the node(s) '170'
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 172
++++Node successfully preprocessed+++
+The node '172' has dependencies to the node(s) '171'
+Writing 'gexec.cmd'
+saving variables
+Loading jobs and dependence graph '"/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gexec.cmd"'
+>>>>>>>>>> job '124' status changed from 'done' to 'queued'
+Warning: node '139' not queued: node is virtual
+Warning: node '132' not queued: node is virtual
+Warning: node '148' not queued: node is virtual
+Warning: node '156' not queued: node is virtual
+Warning: node '164' not queued: node is virtual
+>>>>>>>>>> job '171' status changed from 'done' to 'queued'
+>>>>>>>>>> job '125' status changed from 'done' to 'queued'
+Warning: node '140' not queued: node is virtual
+Warning: node '133' not queued: node is virtual
+Warning: node '149' not queued: node is virtual
+Warning: node '157' not queued: node is virtual
+Warning: node '165' not queued: node is virtual
+>>>>>>>>>> job '172' status changed from 'done' to 'queued'
+-----------------------------------------------------------------
+queue "local:default" - 124 171 125 172
+-----------------------------------------------------------------
+>>>>>>>>>> Initializing back-end schedulers...
+>>>>>>>> Loaded Schedulers are ... local
+local% initialize 'local' scheduler data
+>>>>> List of Active Schedulers : local
+<<<<<<<<<<
++++ Starting project database...
+
+>>>>>>>>>> job '124' status changed from 'queued' to 'ready'
+>>>>>>>>>> os_rm /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/results/nodes/124/n124_mys.job
+local% submit job 124 for local execution
+>>>>>>>>>> job '124' status changed from 'ready' to 'pending'
+>>>>>>>>>> job '171' status changed from 'queued' to 'ready'
+>>>>>>>>>> os_rm /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/results/nodes/171/n171_mys.job
+local% submit job 171 for local execution
+>>>>>>>>>> job '171' status changed from 'ready' to 'pending'
+local% exec /global/cust_apps_seg05/tcad/bin/gjob -verbose -nice 19 --threads 1 --max_threads 1  -job 124 -swb_pid 167799 -gsub_pid 167311 -gsub_host haggis35.internal.synopsys.com -gsub_port 40969  --queue local:default --scheduler local --submitcmd "19" "/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4"
+local% exec /global/cust_apps_seg05/tcad/bin/gjob -verbose -nice 19 --threads 1 --max_threads 1  -job 171 -swb_pid 167799 -gsub_pid 167311 -gsub_host haggis35.internal.synopsys.com -gsub_port 40969  --queue local:default --scheduler local --submitcmd "19" "/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4"
+>>>>>>>>>> job '124' status changed from 'pending' to 'running'
+18:36:50 Apr 23 2020     job 124 <enigma_mystic> started on host 'haggis35.internal.synopsys.com': "gpythonsh --threads 1 --max_threads 1  --tcadtospice --nodb --project /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4 --node 124 n124_eng.py  --queue local:default --scheduler local --submitcmd "19""
+>>>>>>>>>> job '171' status changed from 'pending' to 'running'
+18:36:50 Apr 23 2020     job 171 <enigma_mystic> started on host 'haggis35.internal.synopsys.com': "gpythonsh --threads 1 --max_threads 1  --tcadtospice --nodb --project /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4 --node 171 n171_eng.py  --queue local:default --scheduler local --submitcmd "19""
+>>>>>>>>>> job '124' status changed from 'running' to 'done'
+18:40:01 Apr 23 2020 +++ job 124 <enigma_mystic> done: exit(0)
+>>>>>>>>>> job '125' status changed from 'queued' to 'ready'
+>>>>>>>>>> os_rm /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/results/nodes/125/n125_vis.job
+local% submit job 125 for local execution
+>>>>>>>>>> job '125' status changed from 'ready' to 'pending'
+local% exec /global/cust_apps_seg05/tcad/bin/gjob -verbose -nice 19   -job 125 -swb_pid 167799 -gsub_pid 167311 -gsub_host haggis35.internal.synopsys.com -gsub_port 40969  "/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4"
+>>>>>>>>>> job '125' status changed from 'pending' to 'running'
+18:40:02 Apr 23 2020     job 125 <svisual> started on host 'haggis35.internal.synopsys.com': "svisual n125_vis.tcl"
+>>>>>>>>>> job '125' status changed from 'running' to 'done'
+18:40:17 Apr 23 2020 +++ job 125 <svisual> done: exit(0)
+Loading project tree '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gtree.dat'
+Loading jobs and dependence graph '"/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gexec.cmd"'
+INITIALIZING PREPROCESSOR:
+Loading project tree '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gtree.dat'
+Loading project variables '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gvars.dat'
+--Get files to preprocess...
+--Create file handlers...
+--Read the toolflow...
+--Analyze tool-file dependencies...
+--Read all nodes to preprocess...
+--Group nodes into experiments...
+--Get all variables...
+--Get all parameters...
+PREPROCESSOR SUCCESSFULLY INITIALIZED.
+PREPROCESSING STEP 1:
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/HarvestData_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/SetupSplits_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/SetupVariables_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s1_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s2_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s3_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Plot_Resp_Extraction_vis.tcl
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Plot_Resp_TempDep_vis.tcl
+PREPROCESSING STEP 2:
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 124
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 124
++++Node successfully preprocessed+++
+The node '124' has dependencies to the node(s) '123'
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 125
++++Node successfully preprocessed+++
+The node '125' has dependencies to the node(s) '124'
+Writing 'gexec.cmd'
+saving variables
+Loading jobs and dependence graph '"/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gexec.cmd"'
+>>>>>>>>>> job '124' status changed from 'done' to 'queued'
+>>>>>>>>>> job '125' status changed from 'done' to 'queued'
+>>>>>>>>>> job '124' status changed from 'queued' to 'ready'
+>>>>>>>>>> os_rm /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/results/nodes/124/n124_mys.job
+local% submit job 124 for local execution
+>>>>>>>>>> job '124' status changed from 'ready' to 'pending'
+local% exec /global/cust_apps_seg05/tcad/bin/gjob -verbose -nice 19 --threads 1 --max_threads 1  -job 124 -swb_pid 167799 -gsub_pid 167311 -gsub_host haggis35.internal.synopsys.com -gsub_port 40969  --queue local:default --scheduler local --submitcmd "19" "/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4"
+>>>>>>>>>> job '124' status changed from 'pending' to 'running'
+18:41:44 Apr 23 2020     job 124 <enigma_mystic> started on host 'haggis35.internal.synopsys.com': "gpythonsh --threads 1 --max_threads 1  --tcadtospice --nodb --project /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4 --node 124 n124_eng.py  --queue local:default --scheduler local --submitcmd "19""
+>>>>>>>>>> job '171' status changed from 'running' to 'done'
+18:41:56 Apr 23 2020 +++ job 171 <enigma_mystic> done: exit(0)
+>>>>>>>>>> job '172' status changed from 'queued' to 'ready'
+>>>>>>>>>> os_rm /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/results/nodes/172/n172_vis.job
+local% submit job 172 for local execution
+>>>>>>>>>> job '172' status changed from 'ready' to 'pending'
+local% exec /global/cust_apps_seg05/tcad/bin/gjob -verbose -nice 19   -job 172 -swb_pid 167799 -gsub_pid 167311 -gsub_host haggis35.internal.synopsys.com -gsub_port 40969  "/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4"
+>>>>>>>>>> job '172' status changed from 'pending' to 'running'
+18:41:57 Apr 23 2020     job 172 <svisual> started on host 'haggis35.internal.synopsys.com': "svisual n172_vis.tcl"
+>>>>>>>>>> job '172' status changed from 'running' to 'done'
+18:42:07 Apr 23 2020 +++ job 172 <svisual> done: exit(0)
+Loading project tree '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gtree.dat'
+Loading jobs and dependence graph '"/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gexec.cmd"'
+INITIALIZING PREPROCESSOR:
+Loading project tree '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gtree.dat'
+Loading project variables '/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gvars.dat'
+--Get files to preprocess...
+--Create file handlers...
+--Read the toolflow...
+--Analyze tool-file dependencies...
+--Read all nodes to preprocess...
+--Group nodes into experiments...
+--Get all variables...
+--Get all parameters...
+PREPROCESSOR SUCCESSFULLY INITIALIZED.
+PREPROCESSING STEP 1:
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/HarvestData_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/SetupSplits_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/SetupVariables_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_eng.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s1_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s2_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Response_Surface_s3_mys.py
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Plot_Resp_Extraction_vis.tcl
+Reading file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Plot_Resp_TempDep_vis.tcl
+PREPROCESSING STEP 2:
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_eng.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s1_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s2_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s3_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s4_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/Mystic_Uniform_Enigma_s5_mys.py for node 171
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/enigma_mystic.mod for node 171
++++Node successfully preprocessed+++
+The node '171' has dependencies to the node(s) '170'
+---------------------------------------
+Preprocessing file /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/plot_Unif_Extract_vis.tcl for node 172
++++Node successfully preprocessed+++
+The node '172' has dependencies to the node(s) '171'
+Writing 'gexec.cmd'
+saving variables
+Loading jobs and dependence graph '"/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/gexec.cmd"'
+>>>>>>>>>> job '171' status changed from 'done' to 'queued'
+>>>>>>>>>> job '172' status changed from 'done' to 'queued'
+>>>>>>>>>> job '171' status changed from 'queued' to 'ready'
+>>>>>>>>>> os_rm /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/results/nodes/171/n171_mys.job
+local% submit job 171 for local execution
+>>>>>>>>>> job '171' status changed from 'ready' to 'pending'
+local% exec /global/cust_apps_seg05/tcad/bin/gjob -verbose -nice 19 --threads 1 --max_threads 1  -job 171 -swb_pid 167799 -gsub_pid 167311 -gsub_host haggis35.internal.synopsys.com -gsub_port 40969  --queue local:default --scheduler local --submitcmd "19" "/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4"
+>>>>>>>>>> job '171' status changed from 'pending' to 'running'
+18:42:20 Apr 23 2020     job 171 <enigma_mystic> started on host 'haggis35.internal.synopsys.com': "gpythonsh --threads 1 --max_threads 1  --tcadtospice --nodb --project /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4 --node 171 n171_eng.py  --queue local:default --scheduler local --submitcmd "19""
+>>>>>>>>>> job '124' status changed from 'running' to 'done'
+18:44:52 Apr 23 2020 +++ job 124 <enigma_mystic> done: exit(0)
+>>>>>>>>>> job '125' status changed from 'queued' to 'ready'
+>>>>>>>>>> os_rm /remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4/results/nodes/125/n125_vis.job
+local% submit job 125 for local execution
+>>>>>>>>>> job '125' status changed from 'ready' to 'pending'
+local% exec /global/cust_apps_seg05/tcad/bin/gjob -verbose -nice 19   -job 125 -swb_pid 167799 -gsub_pid 167311 -gsub_host haggis35.internal.synopsys.com -gsub_port 40969  "/remote/gb12tcad3/plamen/SWB/Repos/intel-sow-2020/eMC_data/2020_BulkFinFET_mystic4"
+>>>>>>>>>> job '125' status changed from 'pending' to 'running'
+18:44:53 Apr 23 2020     job 125 <svisual> started on host 'haggis35.internal.synopsys.com': "svisual n125_vis.tcl"
+>>>>>>>>>> job '125' status changed from 'running' to 'done'
+18:45:02 Apr 23 2020 +++ job 125 <svisual> done: exit(0)
+local% kill jobs (SIGTERM): 41427
++++ Stopping project database...
+
+>>>>> Node forced execution for node '172'. The prerequisite node '171' has the status 'pending'
+>>>>> The node '172' is not ready to be submitted
+
+
+SCHEDULING REPORT
++++ done     : 124 125
+not started  : 172
+
+18:46:01 Apr 23 2020 <2020_BulkFinFET_mystic4> done (556 sec)
+>>>>>> Writing to status file 556
+gsub exits with status 0

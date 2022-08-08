@@ -1,0 +1,2 @@
+set WB_tool(python,exec_dependency) strict
+set WB_tool(python,parallel,activate) 1

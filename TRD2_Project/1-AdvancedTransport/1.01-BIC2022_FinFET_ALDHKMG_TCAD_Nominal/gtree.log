@@ -1,0 +1,18 @@
+[21/12/2020 08:55:31] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal already exists.
+[21/12/2020 08:55:31] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 08:55:31
+[21/12/2020 08:55:31] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/../CHILD_DIR/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_81_2020-12-21_08.55.31/gtree.dat"
+[21/12/2020 11:54:44] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal already exists.
+[21/12/2020 11:54:44] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 11:54:44
+[21/12/2020 11:54:44] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/../CHILD_DIR/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_80_2020-12-21_11.54.44/gtree.dat"
+[22/12/2020 13:32:06] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal already exists.
+[22/12/2020 13:32:06] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 13:32:06
+[22/12/2020 13:32:06] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/../CHILD_DIR/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_80_2020-12-22_13.32.06/gtree.dat"
+[22/12/2020 13:37:45] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal already exists.
+[22/12/2020 13:37:45] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 13:37:45
+[22/12/2020 13:37:45] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/../CHILD_DIR/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_80_2020-12-22_13.37.45/gtree.dat"
+[22/12/2020 17:35:13] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal already exists.
+[22/12/2020 17:35:13] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 17:35:13
+[22/12/2020 17:35:13] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/../CHILD_DIR/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_81_2020-12-22_17.35.13/gtree.dat"
+[22/12/2020 17:38:58] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal already exists.
+[22/12/2020 17:38:58] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 17:38:58
+[22/12/2020 17:38:58] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/../CHILD_DIR/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_80_2020-12-22_17.38.58/gtree.dat"

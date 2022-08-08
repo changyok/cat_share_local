@@ -1,0 +1,123 @@
+#setdep @node|BuildLibrary@ @node|GetPEXPath@
+from enigma.commands import startdb,stopdb
+from netparse_helpers import RS2NetAdjust
+from rstool_helpers import parallelise_randomspice
+from mako.template import Template
+pd.set_option("mode.chained_assignment",None)
+
+#########################################################################
+# setup the extracted netlists						#
+#########################################################################
+
+cell_subckt="@pwd@/BITCELLS/mpv_@gds@.sp"
+
+# setting up the basics for the randomspice app
+randomspice.wait		= False
+randomspice._app.executable     = "export RS_PATCH_DIR=@pwd@/RS_PATCHES/;$STROOT/bin/RandomSpice2"
+randomspice.clear_data		= True
+
+# for net manupulation
+base_inputfile_name		= "@pwd@/@nodedir@/pp@node@_eng.rs2"
+base_netlist_name		= "@pwd@/@nodedir@/pp@node@_eng.sp"
+
+
+# Load in extracted corners
+RS2_Corner_Project = "@pwd@/../5.01-BIC2022_FinFET_ALDHKMG_RS2_SRAM_Corners_TX"
+startdb(RS2_Corner_Project)
+dburl = open(f"{RS2_Corner_Project}/enigma/mongodb.conf").read()
+dbi.connect(dburl) 
+corners_project=dbi.get_project(swb__tool_label="ExtractCorners", swb__sim_temp=@sim_temp@, swb__gv="True", swb__lv="False")
+corner_df = pd.DataFrame.from_dict(dbi.get_data(project=corners_project.name, 
+                                                dataset=f"{corners_project.name}-Corners").data, orient='index')
+
+#set RS2_Corner_Project tba
+print(f"DOE: RS2_Corner_Project {RS2_Corner_Project}")
+
+
+dburl = open(f"@pwd@/enigma/mongodb.conf").read()
+dbi.connect(dburl) 
+
+print(corner_df)
+corner_df.index.name=["type","corner"]
+corners = corner_df.to_dict("index")
+circuits={"tt":{},"ss":{},"ff":{},"fs":{},"sf":{}}
+
+for corner_data in corners.items():
+    dtype=corner_data[0][0]
+    corner=corner_data[0][1]
+    geom=corner_data[1]
+    circuits[corner][dtype]=geom
+
+# load in VT mode info
+vt_modes = dbi.get_project("@node|SetupSplits@").metadata["vt_modes"]["@vt_mode@"]
+
+#########################################################################
+# Pick up the RandomSpice device names					#
+#########################################################################
+
+# access some variables saved to the DB
+buildLibrary_db_node = dbi.get_project("@node|BuildLibrary@")
+midpoints            = buildLibrary_db_node.metadata["midpoint_metadata"]
+remap_names          = buildLibrary_db_node.metadata["remap_names"]
+
+ndevname = remap_names['nMOS']+":nMOS"
+pdevname = remap_names['pMOS']+":pMOS"
+
+axes_list = list(corner_df.columns)
+
+# get the MPV deltas list
+PEX_db_node = dbi.get_project("@node|GetPEXPath@")
+
+mpv_deltas = PEX_db_node.metadata["mpv_deltas"]
+mpv_params = ""
+for pol,deltas in mpv_deltas.items():
+    mpv_params += "\n".join([f".param {k}={v}" for k,v in deltas.items()])+"\n"
+
+# device info
+dev_param_dict={}
+ndevname				=remap_names['nMOS']+":nMOS"
+pdevname				=remap_names['pMOS']+":pMOS"
+dev_param_dict["P_DEV_NAME"]		=pdevname
+dev_param_dict["N_DEV_NAME"]		=ndevname
+dev_param_dict["MPV_params"]		=mpv_params
+
+for corner,geoms in circuits.items():
+
+    # handle the RC extract
+    selected_cell=RS2NetAdjust(cell_subckt)
+    selected_cell.model_call_mapping={"nmos1":ndevname, "pmos1":pdevname}
+    selected_cell.convert_Minst_to_Xmacro()
+    for k,v in geoms['n'].items():
+        selected_cell.add_instance_param(ndevname, k,float(f"{v:.12f}"))
+        selected_cell.add_instance_param(ndevname, "vtmode_adjust",float(f"{vt_modes['nmos']:.15f}"))
+    for k,v in geoms['p'].items():
+        selected_cell.add_instance_param(pdevname, k,float(f"{v:.12f}"))
+        selected_cell.add_instance_param(pdevname,"vtmode_adjust",float(f"{vt_modes['pmos']:.15f}"))     
+
+    selected_cell.convert_models()
+    dev_param_dict["INC_FILE"]	=selected_cell.net_str()
+    
+    # setup new intput file names
+    new_netlist_name=base_netlist_name+str(corner)
+    new_inputfile_name=base_inputfile_name+str(corner)
+    dev_param_dict["CORNER"]=corner
+    dev_param_dict["SIM_NETLIST"]=new_netlist_name
+    
+    # use mako to render these files
+    new_netlist=Template(open(base_netlist_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+    new_inputfile=Template(open(base_inputfile_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+    
+    # write these files back to disk
+    with open(new_netlist_name,'w') as outfile: 
+        outfile.write(new_netlist)
+    with open(new_inputfile_name,'w') as outfile: 
+        outfile.write(new_inputfile)
+    
+    
+    # parallelise runs for speedup
+    randomspice.inputfile = new_inputfile_name
+    dbi, randomspice, numProc = parallelise_randomspice(randomspice, dbi, num=1, per_job=1, dataset_name=f"@node@_write_{corner}")
+
+randomspice.Wait()
+
+

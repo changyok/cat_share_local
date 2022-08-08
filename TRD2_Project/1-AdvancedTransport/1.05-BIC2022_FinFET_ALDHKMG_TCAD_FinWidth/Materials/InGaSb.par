@@ -1,0 +1,130 @@
+Bandgap {
+  # From Adachi 2009
+  # x is Ga-content
+	* Eg = Eg0 + alpha Tpar^2 / (beta + Tpar) - alpha T^2 / (beta + T)
+	* Parameter 'Tpar' specifies the value of lattice 
+	* temperature, at which parameters below are defined
+	* Chi0 is electron affinity.
+         Tpar = 300.0  # [K]
+
+	 Xmax (0) = 0.0
+	 Xmax (1) = 0.1
+	 Xmax (2) = 0.2 
+	 Xmax (3) = 0.3
+	 Xmax (4) = 0.4
+	 Xmax (5) = 0.5
+	 Xmax (6) = 0.6
+	 Xmax (7) = 0.7
+	 Xmax (8) = 0.8
+	 Xmax (9) = 0.9
+	 Xmax (10) = 1.0
+
+         Eg0(0) = 0.17
+         Eg0(1) = 0.1877
+         Eg0(2) = 0.2136
+         Eg0(3) = 0.24785
+         Eg0(4) = 0.2904
+         Eg0(5) = 0.34125
+         Eg0(6) = 0.4004
+         Eg0(7) = 0.46785
+         Eg0(8) = 0.5436
+         Eg0(9) = 0.62765
+         Eg0(10) = 0.72
+
+         Chi0(0) = 4.59
+         Chi0(1) = 4.537
+         Chi0(2) = 4.484
+         Chi0(3) = 4.431
+         Chi0(4) = 4.378
+         Chi0(5) = 4.325
+         Chi0(6) = 4.272
+         Chi0(7) = 4.219
+         Chi0(8) = 4.166
+         Chi0(9) = 4.113
+         Chi0(10) = 4.06
+
+}
+
+
+Epsilon { 
+  *  Ratio of the permittivities of material and vacuum
+  * epsilon() = epsilon
+
+ 
+   # Reference: Adachi, Properties of Group-IV, III-V and II-VI 
+   # Semiconductors,John Wiley & Sons, Ltd, 2000.
+   	epsilon(0)	= 16.8	# [1] 
+   	epsilon(1)	= 15.7	# [1] 
+}
+
+
+
+
+
+
+eDOSMass {
+  Formula = 2
+  * me/m0 = (Nc300/2.540e19)^2/3
+  * Nc(T) = Nc300 * (T/300)^3/2
+
+  
+   # Reference: Adachi, Properties of Semiconductor Alloys: 
+   # Group-IV, III-V and II-VI Semiconductors, John Wiley & 
+   # Sons, Ltd, 2009.
+	 Xmax (0) = 0.0
+	 Xmax (1) = 0.1
+	 Xmax (2) = 0.2 
+	 Xmax (3) = 0.3
+	 Xmax (4) = 0.4
+	 Xmax (5) = 0.5
+	 Xmax (6) = 0.6
+	 Xmax (7) = 0.7
+	 Xmax (8) = 0.8
+	 Xmax (9) = 0.9
+	 Xmax (10) = 1.0
+
+	 Nc300(0) = 4.6663e+16		#[cm-3]
+	 Nc300(1) = 6.3913e+16		#[cm-3]	
+	 Nc300(2) = 1.1269e+17		#[cm-3]	
+	 Nc300(3) = 2.0702e+17		#[cm-3]	
+	 Nc300(4) = 3.6401e+17		#[cm-3]	
+	 Nc300(5) = 6.0189e+17		#[cm-3]		
+	 Nc300(6) = 9.3933e+17		#[cm-3]		
+	 Nc300(7) = 1.3952e+18		#[cm-3]	
+	 Nc300(8) = 1.9884e+18		#[cm-3]			
+	 Nc300(9) = 2.7380e+18		#[cm-3]	
+	 Nc300(10) = 3.6630e+18	        #[cm-3] 
+}
+
+
+
+hDOSMass {
+  Formula = 2
+  * mh/m0 = (Nv300/2.540e19)^2/3
+  * Nv(T) = Nv300 * (T/300)^3/2
+
+  # Adachi 2009
+	 Xmax (0) = 0.0
+	 Xmax (1) = 0.1
+	 Xmax (2) = 0.2 
+	 Xmax (3) = 0.3
+	 Xmax (4) = 0.4
+	 Xmax (5) = 0.5
+	 Xmax (6) = 0.6
+	 Xmax (7) = 0.7
+	 Xmax (8) = 0.8
+	 Xmax (9) = 0.9
+	 Xmax (10) = 1.0
+
+	 Nv300(0) = 6.4257e+18		#[cm-3] 
+	 Nv300(1) = 6.4257e+18		#[cm-3]	
+	 Nv300(2) = 6.4257e+18		#[cm-3]	
+	 Nv300(3) = 6.4257e+18		#[cm-3]	
+	 Nv300(4) = 6.4257e+18		#[cm-3]	
+	 Nv300(5) = 6.4257e+18		#[cm-3]		
+	 Nv300(6) = 6.4257e+18		#[cm-3]		
+	 Nv300(7) = 6.4257e+18		#[cm-3]	
+	 Nv300(8) = 6.4257e+18		#[cm-3]			
+	 Nv300(9) = 6.4257e+18		#[cm-3]	
+	 Nv300(10) = 6.4257e+18   	#[cm-3] 
+} 

@@ -1,0 +1,28 @@
+layer configure cellBBox -outline #800000 -lineStyle solid -lineWidth 1 -show 1
+layer configure 1:0 -name BOUNDARY -fill #9900ff00 -pattern solid -outline #9900ff00 -lineStyle solid -lineWidth 1 -order 0 -show 1 -reverse_tone 0
+layer configure 1:1 -name BITCELL -fill #9900ff00 -pattern solid -outline #9900ff00 -lineStyle solid -lineWidth 1 -order 1 -show 1 -reverse_tone 0
+layer configure 1:2 -name BOUNDARY -fill #9900ff00 -pattern solid -outline #9900ff00 -lineStyle solid -lineWidth 1 -order 26 -show 1 -reverse_tone 0
+layer configure 5:1 -name NWELL -fill #9900ffff -pattern solid -outline #9900ffff -lineStyle solid -lineWidth 1 -order 2 -show 1 -reverse_tone 0
+layer configure 7:7 -name DIFF -fill #99339966 -pattern solid -outline #99339966 -lineStyle solid -lineWidth 1 -order 3 -show 1 -reverse_tone 0
+layer configure 7:8 -name FIN -fill #9900ffff -pattern solid -outline #9900ffff -lineStyle solid -lineWidth 1 -order 4 -show 1 -reverse_tone 0
+layer configure 7:10 -name FIN_MANDREL -fill #99339966 -pattern solid -outline #99339966 -lineStyle solid -lineWidth 1 -order 5 -show 1 -reverse_tone 0
+layer configure 7:50 -name DDB -fill #99339966 -pattern solid -outline #99339966 -lineStyle solid -lineWidth 1 -order 6 -show 1 -reverse_tone 0
+layer configure 9:7 -name POLY -fill #99cccc00 -pattern solid -outline #99cccc00 -lineStyle solid -lineWidth 1 -order 7 -show 1 -reverse_tone 0
+layer configure 9:10 -name POLY_MANDREL -fill #99cccc00 -pattern solid -outline #99cccc00 -lineStyle solid -lineWidth 1 -order 8 -show 1 -reverse_tone 0
+layer configure 9:50 -name POLY_CUT -fill #99cccc00 -pattern solid -outline #99cccc00 -lineStyle solid -lineWidth 1 -order 9 -show 1 -reverse_tone 0
+layer configure 9:100 -name CPOLY -fill #99cccc00 -pattern solid -outline #99cccc00 -lineStyle solid -lineWidth 1 -order 10 -show 1 -reverse_tone 0
+layer configure 9:135 -name VPOLY -fill #99cccc00 -pattern solid -outline #99cccc00 -lineStyle solid -lineWidth 1 -order 11 -show 1 -reverse_tone 0
+layer configure 10:0 -name VDIFF -fill #99cc00ff -pattern solid -outline #99cc00ff -lineStyle solid -lineWidth 1 -order 12 -show 1 -reverse_tone 0
+layer configure 10:1 -name CDIFF -fill #99cc00ff -pattern solid -outline #99cc00ff -lineStyle solid -lineWidth 1 -order 13 -show 1 -reverse_tone 0
+layer configure 10:2 -name CDIFF2 -fill #99cc00ff -pattern solid -outline #99cc00ff -lineStyle solid -lineWidth 1 -order 25 -show 1 -reverse_tone 0
+layer configure 19:0 -name CC -fill #99336699 -pattern solid -outline #99336699 -lineStyle solid -lineWidth 1 -order 14 -show 1 -reverse_tone 0
+layer configure 20:0 -name VIA0 -fill #99ff9933 -pattern solid -outline #99ff9933 -lineStyle solid -lineWidth 1 -order 15 -show 1 -reverse_tone 0
+layer configure 22:22 -name EPITAXY -fill #9900ccff -pattern solid -outline #9900ccff -lineStyle solid -lineWidth 1 -order 16 -show 1 -reverse_tone 0
+layer configure 30:0 -name M0 -fill #8aff0000 -pattern diamond -outline #99ff0000 -lineStyle solid -lineWidth 1 -order 17 -show 1 -reverse_tone 0
+layer configure 30:1 -name PR -fill #99ff0000 -pattern solid -outline #99ff0000 -lineStyle solid -lineWidth 1 -order 18 -show 1 -reverse_tone 0
+layer configure 30:2 -name PR_PINS -fill #9966ff00 -pattern solid -outline #9966ff00 -lineStyle solid -lineWidth 1 -order 23 -show 1 -reverse_tone 0
+layer configure 30:12 -name M0_PINS -fill #9966ff00 -pattern solid -outline #9966ff00 -lineStyle solid -lineWidth 1 -order 19 -show 1 -reverse_tone 0
+layer configure 50:0 -name M1 -fill #99ff9900 -pattern solid -outline #99ff9900 -lineStyle solid -lineWidth 1 -order 20 -show 1 -reverse_tone 0
+layer configure 50:12 -name M1_PINS -fill #99ffff66 -pattern solid -outline #99ffff66 -lineStyle solid -lineWidth 1 -order 21 -show 1 -reverse_tone 0
+layer configure 99:0 -name SRAM -fill #99ff66ff -pattern solid -outline #99ff66ff -lineStyle solid -lineWidth 1 -order 22 -show 1 -reverse_tone 0
+layer active 30:1

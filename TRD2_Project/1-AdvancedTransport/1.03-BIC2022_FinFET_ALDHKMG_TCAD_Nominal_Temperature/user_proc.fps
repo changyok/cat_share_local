@@ -1,0 +1,644 @@
+#---------------------------------------------------------------------#
+#   USER-DEFINED PROCEDURES
+
+
+fproc CornerRounding {args} {
+#rem # Round the sharp corner
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. X0        - X0 corner x point
+#rem #  3. Y0        - Y0 corner y point
+#rem #  4. Z0        - Z0 along channel
+#rem #  5. Z1        - Z1 along channel
+#rem #  6. Rc        - Corner rounding radius
+#rem #  7. Ac        - Corner angle
+#rem #  8. Loc       - Location left_top/right_top/left_bottom/right_bottom
+
+  if {[llength $args] < 8 || [llength $args] > 8} {
+     error "CornerRounding: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set x0        [lindex $args 1]
+  set y0        [lindex $args 2]
+  set z0        [lindex $args 3]
+  set z1        [lindex $args 4]
+  set rc        [lindex $args 5]
+  set ac        [lindex $args 6]
+  set loc       [lindex $args 7]
+
+  set arguementCheck 0
+  if {$arguementCheck == 1} {
+     puts -nonewline "Name= ";puts $name
+     puts -nonewline "X0= ";puts $x0
+     puts -nonewline "Y0= ";puts $x1
+     puts -nonewline "Z0= ";puts $z0
+     puts -nonewline "Z1= ";puts $z1
+     puts -nonewline "Rc= ";puts $rc
+     puts -nonewline "Ac= ";puts $ac
+     puts -nonewline "Location= ";puts $loc
+  }
+
+######################################################################################
+#####----- Fin Corner Round Etch                                            -----#####
+#####----- Polyhedron is used to accurately control the fin Corner Rounding -----#####
+#####----- Dummy polyhedron is overlapped with Si fin and removed.          -----#####
+#####----- Rounded fin is left.                                             -----#####
+set PI  3.14159265
+set dl  0.0001
+
+##-- Rounding is approximated by 4 edges. --##
+##-- Points for etch polyhedron           --##
+set alpha  [expr (90.0-0.5*$ac)]
+if { $loc == "left_top" || $loc == "right_top" } {
+  set rX     [expr ($x0+$rc)]
+} else {
+  set rX     [expr ($x0-$rc)]
+}
+if { $loc == "right_top" || $loc == "right_bottom" } {
+  set rY     [expr ($y0-$rc*tan($PI/180.0*$alpha))]
+} else {
+  set rY     [expr ($y0+$rc*tan($PI/180.0*$alpha))]
+}
+set nP     5
+set dA     [expr ($ac/($nP-1))]
+
+if { $loc == "right_top" } {
+  set xsign -1; set ysign  1;
+} elseif { $loc == "left_top" } {
+  set xsign -1; set ysign -1;
+} elseif { $loc == "right_bottom" } {
+  set xsign  1; set ysign  1;
+} elseif { $loc == "left_bottom" } {
+  set xsign  1; set ysign -1;
+}
+for {set i 0} {$i < $nP} {incr i 1} {
+
+  set theta   [expr ($i*$dA)]
+  set xv      [expr ($rX + $xsign*$rc*cos($PI/180.0*$theta))]
+  set yv      [expr ($rY + $ysign*$rc*sin($PI/180.0*$theta))]
+  eval point name=pf${i}  coord= \{$xv $yv $z0\}
+  eval point name=pb${i}  coord= \{$xv $yv $z1\}
+
+}
+set xv1     $xv
+set yv1     [expr ($yv + $ysign*$dl)]
+
+set cX1     [expr ($x0 + $xsign*$dl)]
+set cY1     [expr ($rY + $ysign*($rc+$dl)*tan($PI/180.0*$alpha))]
+
+set i $nP
+eval point name=pf${i} coord= \{ $xv1 $yv1 $z0 \}
+eval point name=pb${i} coord= \{ $xv1 $yv1 $z1 \}
+set i [expr ($nP+1)]
+if { $yv1 > $cY1 } {
+  set yv2 $yv1
+} else {
+  set yv2 $cY1
+}
+eval point name=pf${i} coord= \{ $cX1 $yv2 $z0 \}
+eval point name=pb${i} coord= \{ $cX1 $yv2 $z1 \}
+set i [expr ($nP+2)]
+eval point name=pf${i} coord= \{ $cX1 $rY $z0 \}
+eval point name=pb${i} coord= \{ $cX1 $rY $z1 \}
+point list
+
+##-- Polygons for etch polyhedron          --##
+set tnP  [expr ($nP+2)]
+for {set i 0} {$i < $tnP} {incr i 1} {
+  set j [expr ($i+1)]
+  eval polygon name=pL${i} points = \{ pf${i} pf${j} pb${j} pb${i} \}
+}
+set i $tnP
+eval polygon name=pL${i} points = \{ pf${i} pf0 pb0 pb${i} \}
+
+set i [expr ($tnP+1)]
+eval polygon name=pL${i} points = \{ pf0 pf1 pf2 pf3 pf4 pf5 pf6 pf7 \}
+set i [expr ($tnP+2)]
+eval polygon name=pL${i} points = \{ pb0 pb1 pb2 pb3 pb4 pb5 pb6 pb7 \}
+
+
+polyhedron name= $name polygons = { pL0 pL1 pL2 pL3 pL4 pL5 pL6 pL7 pL8 pL9 } info=2
+
+}
+
+
+fproc GetCirclePoints {args} {
+
+#rem # GetCirclePoints - procedure to create points for circle shape.
+#rem # using
+#rem # It take the following arguments:
+#rem #   1. X0        - Center point
+#rem #   2. Y0        - Center point
+#rem #   3. D         - Diameter
+
+  if {[llength $args] < 3 || [llength $args] > 3} {
+     error "GetCirclePoints: wrong number of arguments"
+     exit -1
+  }
+  set x0        [lindex $args 0]
+  set y0        [lindex $args 1]
+  set D         [lindex $args 2]
+
+  set PI        3.14159265
+  set dA        30.0
+  set nP        12
+
+  set POINTS    {}
+
+  set r         [expr (0.5*$D)]
+  for {set i 0} {$i < $nP} {incr i 1} {
+    set theta   [expr ($i*$dA)]
+    set xv      [expr ($x0 + $r*sin($PI/180.0*$theta))]
+    set yv      [expr ($y0 + $r*cos($PI/180.0*$theta))]
+    set pName   "p$i"
+    eval point name=$pName coord= \{$yv $xv\}
+    lappend POINTS $pName
+  }
+
+  return $POINTS
+}
+
+
+fproc HexaHedron {args} {
+#rem # HexaHedron - procedure to create hexahedron
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. TopPs     - Points of top tetragon
+#rem #  3. BotPs     - Points of bottom tetragon
+
+  if {[llength $args] < 3 || [llength $args] > 3} {
+     error "HexaHedron: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set topps     [lindex $args 1]
+  set botps     [lindex $args 2]
+
+  set tp0       [lindex $topps 0] 
+  set tp1       [lindex $topps 1] 
+  set tp2       [lindex $topps 2] 
+  set tp3       [lindex $topps 3] 
+  set bp0       [lindex $botps 0] 
+  set bp1       [lindex $botps 1] 
+  set bp2       [lindex $botps 2] 
+  set bp3       [lindex $botps 3] 
+
+  set arguementCheck 0
+  if {$arguementCheck == 1} {
+     puts -nonewline "Name= ";puts $name
+     puts -nonewline "Top Point0= ";puts $tp0
+     puts -nonewline "Top Point1= ";puts $tp1
+     puts -nonewline "Top Point2= ";puts $tp2
+     puts -nonewline "Top Point3= ";puts $tp3
+     puts -nonewline "Bottom Point0= ";puts $bp0
+     puts -nonewline "Bottom Point1= ";puts $bp1
+     puts -nonewline "Bottom Point2= ";puts $bp2
+     puts -nonewline "Bottom Point3= ";puts $bp3
+  }
+
+  # Top polygon - 0
+eval  point name=p00 coord = \{ $tp0 \}
+eval  point name=p01 coord = \{ $tp1 \}
+eval  point name=p02 coord = \{ $tp2 \}
+eval  point name=p03 coord = \{ $tp3 \}
+  # Bottom polygon - 1
+eval  point name=p10 coord = \{ $bp0 \}
+eval  point name=p11 coord = \{ $bp1 \}
+eval  point name=p12 coord = \{ $bp2 \}
+eval  point name=p13 coord = \{ $bp3 \}
+
+  # Polygons
+  polygon name=pL0    points = { p00 p01 p03 }
+  polygon name=pL1    points = { p01 p02 p03 }
+  polygon name=pL2    points = { p10 p00 p13 }
+  polygon name=pL3    points = { p00 p03 p13 }
+  polygon name=pL4    points = { p10 p11 p00 }
+  polygon name=pL5    points = { p11 p01 p00 }
+  polygon name=pL6    points = { p01 p11 p02 }
+  polygon name=pL7    points = { p11 p12 p02 }
+  polygon name=pL8    points = { p03 p02 p13 }
+  polygon name=pL9    points = { p02 p12 p13 }
+  polygon name=pL10   points = { p10 p11 p13 }
+  polygon name=pL11   points = { p11 p12 p13 }
+
+
+  polyhedron name= $name polygons = { pL0 pL1 pL2 pL3 pL4 pL5 pL6 pL7 pL8 pL9 pL10 pL11 } info=2
+}
+
+
+fproc EpitaxySD {args} {
+#rem # SourceDrainPentagon - procedure to create source/drain shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. X0        - X0 in cross-section
+#rem #  3. Y0        - Y0 in cross-section
+#rem #  4. Z0        - Z0 along channel
+#rem #  5. Z1        - Z1 along channel
+#rem #  6. hW        - Epi width half size in Fin width direction
+#rem #  7. hH        - Epi height half size in Fin height direction at spacer interface
+#rem #  8. Fangle    - (111) facet angle
+#rem #  9. Fangle1   - facet angle
+
+  if {[llength $args] < 9 || [llength $args] > 9} {
+     error "EpitaxySD: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set x0        [lindex $args 1]
+  set y0        [lindex $args 2]
+  set z0        [lindex $args 3]
+  set z1        [lindex $args 4]
+  set w         [lindex $args 5]
+  set h         [lindex $args 6]
+  set theta     [lindex $args 7]
+  set theta1    [lindex $args 8]
+
+  set arguementCheck 0
+  if {$arguementCheck == 1} {
+     puts -nonewline "Name= ";puts $name
+     puts -nonewline "X0= ";puts $x0
+     puts -nonewline "Y0= ";puts $y0
+     puts -nonewline "Z0= ";puts $z0
+     puts -nonewline "Z1= ";puts $z1
+     puts -nonewline "W= ";puts $w
+     puts -nonewline "H= ";puts $h
+     puts -nonewline "Theta= ";puts $theta
+     puts -nonewline "Theta1= ";puts $theta1
+  }
+
+  set tanA      [expr tan($theta*3.14159265/180.0)]
+  set tanA1     [expr tan($theta1*3.14159265/180.0)]
+
+  set px0  [expr ($x0 - $w * $tanA)]
+  set px1  [expr ($x0 - $h)]
+  set px2  $x0
+  set px3  [expr ($x0 + $h)]
+  set px4  [expr ($x0 + $w * $tanA)]
+
+  if { $px1 < $px0 } {
+     error "Check the S/D epi geometry parameters"
+     puts " px1 < px0 :: $px1 < $px0 "
+     exit -1
+  }
+
+  set py0  [expr ($y0 - $w)]
+  set py1  [expr ($py0 + $h / $tanA)]
+  set py2  $y0
+  set py4  [expr ($y0 + $w)]
+  set py3  [expr ($py4 - $h / $tanA)]
+
+  if { $py2 < $py1 } {
+     error "Check the S/D epi geometry parameters"
+     puts " py2 < py1 :: $py2 < $py1 "
+     exit -1
+  }
+
+  set pz0  $z0
+  set pz1  [expr ($z0 + abs($px0 - $px1) / $tanA1)]
+  set pz2  [expr ($z1 - abs($px0 - $px1) / $tanA1)]
+  set pz3  $z1
+
+  if { $pz2 < $pz1 } {
+     #error "Check the S/D epi geometry parameters \n   pz2 < pz1 :: $pz2 < $pz1 "
+     #exit -1
+ 
+  set pz1  [expr (0.5*($z0 + $z1))]
+  # Points
+  point name=p00 coord = { $px2 $py0 $pz0 }
+  point name=p01 coord = { $px1 $py1 $pz0 }
+  point name=p02 coord = { $px1 $py3 $pz0 }
+  point name=p03 coord = { $px2 $py4 $pz0 }
+  point name=p04 coord = { $px3 $py3 $pz0 }
+  point name=p05 coord = { $px3 $py1 $pz0 }
+
+  point name=p10 coord = { $px0 $py2 $pz1 }
+  point name=p11 coord = { $px4 $py2 $pz1 }
+
+  point name=p20 coord = { $px0 $py2 $pz2 }
+  point name=p21 coord = { $px4 $py2 $pz2 }
+
+  point name=p30 coord = { $px2 $py0 $pz3 }
+  point name=p31 coord = { $px1 $py1 $pz3 }
+  point name=p32 coord = { $px1 $py3 $pz3 }
+  point name=p33 coord = { $px2 $py4 $pz3 }
+  point name=p34 coord = { $px3 $py3 $pz3 }
+  point name=p35 coord = { $px3 $py1 $pz3 }
+
+  # Polygons
+  polygon name=pL01    points = { p00 p01 p02 }
+  polygon name=pL02    points = { p00 p02 p03 }
+  polygon name=pL03    points = { p00 p03 p04 }
+  polygon name=pL04    points = { p00 p04 p05 }
+
+  polygon name=pL31    points = { p30 p31 p32 }
+  polygon name=pL32    points = { p30 p32 p33 }
+  polygon name=pL33    points = { p30 p33 p34 }
+  polygon name=pL34    points = { p30 p34 p35 }
+
+  polygon name=pL11    points = { p01 p02 p10 }
+  polygon name=pL12    points = { p04 p05 p11 }
+
+  polygon name=pL21    points = { p31 p32 p20 }
+  polygon name=pL22    points = { p34 p35 p21 }
+
+  polygon name=pL41    points = { p00 p01 p31 }
+  polygon name=pL42    points = { p00 p31 p30 }
+  polygon name=pL43    points = { p01 p10 p20 }
+  polygon name=pL44    points = { p01 p20 p31 }
+
+  polygon name=pL51    points = { p00 p05 p35 }
+  polygon name=pL52    points = { p00 p35 p30 }
+  polygon name=pL53    points = { p05 p11 p21 }
+  polygon name=pL54    points = { p05 p21 p35 }
+
+  polygon name=pL61    points = { p02 p03 p32 }
+  polygon name=pL62    points = { p03 p32 p33 }
+  polygon name=pL63    points = { p02 p10 p20 }
+  polygon name=pL64    points = { p02 p20 p32 }
+
+  polygon name=pL71    points = { p03 p04 p33 }
+  polygon name=pL72    points = { p04 p34 p33 }
+  polygon name=pL73    points = { p04 p11 p21 }
+  polygon name=pL74    points = { p04 p21 p34 }
+
+  polyhedron name= $name polygons = { pL01 pL02 pL03 pL04 pL31 pL32 pL33 pL34 pL41 pL42 pL43 pL44 pL51 pL52 pL53 pL54 pL61 pL62 pL63 pL64 pL71 pL72 pL73 pL74 pL11 pL12 pL21 pL22 } info=2
+
+  } else {
+
+  # Points
+  point name=p00 coord = { $px2 $py0 $pz0 }
+  point name=p01 coord = { $px1 $py1 $pz0 }
+  point name=p02 coord = { $px1 $py3 $pz0 }
+  point name=p03 coord = { $px2 $py4 $pz0 }
+  point name=p04 coord = { $px3 $py3 $pz0 }
+  point name=p05 coord = { $px3 $py1 $pz0 }
+
+  point name=p10 coord = { $px0 $py2 $pz1 }
+  point name=p11 coord = { $px4 $py2 $pz1 }
+
+  point name=p20 coord = { $px0 $py2 $pz2 }
+  point name=p21 coord = { $px4 $py2 $pz2 }
+
+  point name=p30 coord = { $px2 $py0 $pz3 }
+  point name=p31 coord = { $px1 $py1 $pz3 }
+  point name=p32 coord = { $px1 $py3 $pz3 }
+  point name=p33 coord = { $px2 $py4 $pz3 }
+  point name=p34 coord = { $px3 $py3 $pz3 }
+  point name=p35 coord = { $px3 $py1 $pz3 }
+
+  # Polygons
+  polygon name=pL01    points = { p00 p01 p02 }
+  polygon name=pL02    points = { p00 p02 p03 }
+  polygon name=pL03    points = { p00 p03 p04 }
+  polygon name=pL04    points = { p00 p04 p05 }
+
+  polygon name=pL31    points = { p30 p31 p32 }
+  polygon name=pL32    points = { p30 p32 p33 }
+  polygon name=pL33    points = { p30 p33 p34 }
+  polygon name=pL34    points = { p30 p34 p35 }
+
+  polygon name=pL11    points = { p01 p02 p10 }
+  polygon name=pL12    points = { p04 p05 p11 }
+
+  polygon name=pL21    points = { p31 p32 p20 }
+  polygon name=pL22    points = { p34 p35 p21 }
+
+  polygon name=pL41    points = { p00 p01 p31 }
+  polygon name=pL42    points = { p00 p31 p30 }
+  polygon name=pL43    points = { p01 p10 p20 }
+  polygon name=pL44    points = { p01 p20 p31 }
+
+  polygon name=pL51    points = { p00 p05 p35 }
+  polygon name=pL52    points = { p00 p35 p30 }
+  polygon name=pL53    points = { p05 p11 p21 }
+  polygon name=pL54    points = { p05 p21 p35 }
+
+  polygon name=pL61    points = { p02 p03 p32 }
+  polygon name=pL62    points = { p03 p32 p33 }
+  polygon name=pL63    points = { p02 p10 p20 }
+  polygon name=pL64    points = { p02 p20 p32 }
+
+  polygon name=pL71    points = { p03 p04 p33 }
+  polygon name=pL72    points = { p04 p34 p33 }
+  polygon name=pL73    points = { p04 p11 p21 }
+  polygon name=pL74    points = { p04 p21 p34 }
+
+  polyhedron name= $name polygons = { pL01 pL02 pL03 pL04 pL31 pL32 pL33 pL34 pL41 pL42 pL43 pL44 pL51 pL52 pL53 pL54 pL61 pL62 pL63 pL64 pL71 pL72 pL73 pL74 pL11 pL12 pL21 pL22 } info=2
+
+  }
+}
+
+
+fproc EpitaxySD0 {args} {
+#rem # SourceDrainPentagon - procedure to create source/drain shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. X0        - X0 along channel
+#rem #  3. X1        - X1 along channel
+#rem #  4. Y0        - Y0 along fin width
+#rem #  5. Y1        - Y1 along fin width
+#rem #  6. H         - Fin height
+#rem #  7. bHepi     - SourceDrain Epi Shape
+#rem #  8. mHepi     - SourceDrain Epi Shape
+#rem #  9. tHepi     - SourceDrain Epi Shape
+#rem # 10. bLepi     - SourceDrain Epi Shape
+#rem # 11. mLepi     - SourceDrain Epi Shape
+#rem # 12. tLepi     - SourceDrain Epi Shape
+#rem # 13. Fangle    - (111) facet angle
+
+  if {[llength $args] < 13 || [llength $args] > 13} {
+     error "EpitaxySD: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set x0        [lindex $args 1]
+  set x1        [lindex $args 2]
+  set y0        [lindex $args 3]
+  set y1        [lindex $args 4]
+  set h         [lindex $args 5]
+  set bhepi     [lindex $args 6]
+  set mhepi     [lindex $args 7]
+  set thepi     [lindex $args 8]
+  set blepi     [lindex $args 9]
+  set mlepi     [lindex $args 10]
+  set tlepi     [lindex $args 11]
+  set theta     [lindex $args 12]
+
+  set arguementCheck 0
+  if {$arguementCheck == 1} {
+     puts -nonewline "Name= ";puts $name
+     puts -nonewline "X0= ";puts $x0
+     puts -nonewline "X1= ";puts $x1
+     puts -nonewline "Y0= ";puts $y0
+     puts -nonewline "Y1= ";puts $y1
+     puts -nonewline "H= ";puts $h
+     puts -nonewline "bHepi= ";puts $bhepi
+     puts -nonewline "mHepi= ";puts $mhepi
+     puts -nonewline "tHepi= ";puts $thepi
+     puts -nonewline "bLepi= ";puts $blepi
+     puts -nonewline "mLepi= ";puts $mlepi
+     puts -nonewline "tLepi= ";puts $tlepi
+     puts -nonewline "Theta= ";puts $theta
+  }
+
+  set lsd       [expr ($x1-$x0)]
+  set w         [expr ($y1-$y0)]
+  set tanA      [expr tan($theta*3.14159265/180.0)]
+
+  set tanAt     [expr (($h-$bhepi+$thepi)/($mlepi+0.5*($w-$tlepi)))]
+  set dcut      [expr (($thepi-$mhepi)/$tanAt)]
+
+  set xe0  [expr (-1.0*$thepi)]
+  set xe1  [expr (-1.0*$mhepi)]
+  set xe2  [expr ($h-$bhepi)]
+  set xe3  $h
+
+  set ym   [expr (0.5*($y0+$y1))]
+  set ye0  [expr ($y0-$blepi)]
+  set ye1  [expr ($y0-$mlepi)]
+  set ye2  [expr ($ym-0.5*$tlepi-$dcut)]
+  set ye3  [expr ($ym-0.5*$tlepi)]
+  set ye4  [expr ($ym+0.5*$tlepi)]
+  set ye5  [expr ($ym+0.5*$tlepi+$dcut)]
+  set ye6  [expr ($y1+$mlepi)]
+  set ye7  [expr ($y1+$blepi)]
+
+  set ze0  [expr ($x0+$dcut)]
+  set ze1  [expr ($x1-$dcut)]
+
+  # End polygon - 0
+  point name=p00 coord = { $xe3 $ye0 $x0 }
+  point name=p01 coord = { $xe2 $ye1 $x0 }
+  point name=p02 coord = { $xe1 $ye2 $x0 }
+  point name=p03 coord = { $xe0 $ye3 $ze0 }
+  point name=p04 coord = { $xe0 $ye4 $ze0 }
+  point name=p05 coord = { $xe1 $ye5 $x0 }
+  point name=p06 coord = { $xe2 $ye6 $x0 }
+  point name=p07 coord = { $xe3 $ye7 $x0 }
+  # End polygon - 1
+  point name=p10 coord = { $xe3 $ye0 $x1 }
+  point name=p11 coord = { $xe2 $ye1 $x1 }
+  point name=p12 coord = { $xe1 $ye2 $x1 }
+  point name=p13 coord = { $xe0 $ye3 $ze1 }
+  point name=p14 coord = { $xe0 $ye4 $ze1 }
+  point name=p15 coord = { $xe1 $ye5 $x1 }
+  point name=p16 coord = { $xe2 $ye6 $x1 }
+  point name=p17 coord = { $xe3 $ye7 $x1 }
+
+  # Polygons
+  polygon name=pL0    points = { p00 p01 p02 p05 p06 p07 }
+  polygon name=pL1    points = { p10 p11 p12 p15 p16 p17 }
+  polygon name=pL2    points = { p02 p03 p04 p05 }
+  polygon name=pL3    points = { p12 p13 p14 p15 }
+  polygon name=pL4    points = { p00 p01 p11 p10 }
+  polygon name=pL5    points = { p01 p02 p12 p11 }
+  polygon name=pL6    points = { p02 p03 p13 p12 }
+  polygon name=pL7    points = { p03 p04 p14 p13 }
+  polygon name=pL8    points = { p04 p05 p15 p14 }
+  polygon name=pL9    points = { p05 p06 p16 p15 }
+  polygon name=pL10   points = { p06 p07 p17 p16 }
+  polygon name=pL11   points = { p07 p00 p10 p17 }
+
+  polyhedron name= $name polygons = { pL0 pL1 pL2 pL3 pL4 pL5 pL6 pL7 pL8 pL9 pL10 pL11 } info=2
+}
+
+
+fproc EpitaxySDnew {args} {
+#rem # SourceDrainPentagon - procedure to create source/drain shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. X0        - X0 along channel
+#rem #  3. X1        - X1 along channel
+#rem #  4. Z0        - Z0
+#rem #  5. bLepi     - SourceDrain Epi Shape
+#rem #  6. mLepi     - SourceDrain Epi Shape
+#rem #  7. tLepi     - SourceDrain Epi Shape
+#rem #  8. Fangle    - (111) facet angle
+
+  if {[llength $args] < 8 || [llength $args] > 8} {
+     error "EpitaxySDnew: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set x0        [lindex $args 1]
+  set x1        [lindex $args 2]
+  set z0        [lindex $args 3]
+  set blepi     [lindex $args 4]
+  set mlepi     [lindex $args 5]
+  set tlepi     [lindex $args 6]
+  set theta     [lindex $args 7]
+
+  set arguementCheck 0
+  if {$arguementCheck == 1} {
+     puts -nonewline "Name= ";puts $name
+     puts -nonewline "X0= ";puts $x0
+     puts -nonewline "X1= ";puts $x1
+     puts -nonewline "Z0= ";puts $z0
+     puts -nonewline "bLepi= ";puts $blepi
+     puts -nonewline "mLepi= ";puts $mlepi
+     puts -nonewline "tLepi= ";puts $tlepi
+     puts -nonewline "Theta= ";puts $theta
+  }
+
+  set lsd       [expr ($x1-$x0)]
+  set tanA      [expr tan($theta*3.14159265/180.0)]
+
+  set bhepi     [expr (($mlepi - $blepi)*$tanA)]
+  set thepi     [expr (($mlepi - $tlepi)*$tanA)]
+
+  set ze0  [expr ($z0 - 0.000)]
+  set ze1  [expr ($ze0 - $bhepi)]
+  set ze2  [expr ($ze1 - $thepi)]
+
+  set ye0  [expr (0.0-$blepi)]
+  set ye1  [expr (0.0+$blepi)]
+  set ye2  [expr (0.0+$mlepi)]
+  set ye3  [expr (0.0+$tlepi)]
+  set ye4  [expr (0.0-$tlepi)]
+  set ye5  [expr (0.0-$mlepi)]
+
+  set xe0  [expr ($x0-0.0)]
+  set xe1  [expr ($x1+0.0)]
+
+  # End polygon - 0
+  point name=p00 coord = { $ze0 $ye0 $xe0 }
+  point name=p01 coord = { $ze0 $ye1 $xe0 }
+  point name=p02 coord = { $ze1 $ye2 $xe0 }
+  point name=p03 coord = { $ze2 $ye3 $xe0 }
+  point name=p04 coord = { $ze2 $ye4 $xe0 }
+  point name=p05 coord = { $ze1 $ye5 $xe0 }
+  # End polygon - 1
+  point name=p10 coord = { $ze0 $ye0 $xe1 }
+  point name=p11 coord = { $ze0 $ye1 $xe1 }
+  point name=p12 coord = { $ze1 $ye2 $xe1 }
+  point name=p13 coord = { $ze2 $ye3 $xe1 }
+  point name=p14 coord = { $ze2 $ye4 $xe1 }
+  point name=p15 coord = { $ze1 $ye5 $xe1 }
+
+  # Polygons
+  polygon name=pL0    points = { p00 p01 p02 p03 p04 p05 }
+  polygon name=pL1    points = { p10 p11 p12 p13 p14 p15 }
+  polygon name=pL2    points = { p00 p01 p11 p10 }
+  polygon name=pL3    points = { p01 p02 p12 p11 }
+  polygon name=pL4    points = { p02 p03 p13 p12 }
+  polygon name=pL5    points = { p03 p04 p14 p13 }
+  polygon name=pL6    points = { p04 p05 p15 p14 }
+  polygon name=pL7    points = { p05 p00 p10 p15 }
+
+  polyhedron name= $name polygons = { pL0 pL1 pL2 pL3 pL4 pL5 pL6 pL7 } info=2
+}
+
+
+fproc PolyHedronClear {} {
+
+  point      clear
+  polygon    clear
+  polyhedron clear
+}
+

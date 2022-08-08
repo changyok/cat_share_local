@@ -1,0 +1,71 @@
+<toolname>
+HarvestData
+</toolname>
+
+
+<comment>
+get all TCAD data from linked projects
+</comment>
+
+
+<toolname>
+SetupSplits
+</toolname>
+
+
+<comment>
+Automatically generate harvested Lg/Tfin splits
+</comment>
+
+
+<toolname>
+SetupVariables
+</toolname>
+
+
+<comment>
+Setup all the variables that the SPICE model extraction will need
+</comment>
+
+
+<toolname>
+Mystic_Uniform_Enigma
+</toolname>
+
+
+<comment>
+perform nominal SPICE model extraction
+</comment>
+
+
+<toolname>
+Mystic_Response_Surface
+</toolname>
+
+
+<comment>
+perform SPICE model extraction for all the splits
+</comment>
+
+
+<toolname>
+Plot_Resp_Extraction
+</toolname>
+
+
+<comment>
+Plot Id-Vg, Id-Vd, and C-V curves
+</comment>
+
+
+<toolname>
+Cal_WF_Shift
+</toolname>
+
+
+<comment>
+Calculate the WF shift
+Idsat_ratio = NMOS/PMOS
+</comment>
+
+

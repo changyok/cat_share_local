@@ -1,0 +1,232 @@
+#setdep @node|GetCorners@
+from netparse_helpers import RS2NetAdjust
+from mako.template import Template
+from enigma.commands import startdb,stopdb
+
+#########################################################################
+# setup the extracted netlists						#
+#########################################################################
+
+nominalPEXpath = "@pwd@/../../2-RC_Extraction/2.01-BIC2022_FinFET_PEX_Nominal"
+PEXCornerPath  = "@pwd@/../../2-RC_Extraction/2.02-BIC2022_FinFET_PEX_Corners"
+
+circuit = "@logic@x@strength@@height@"
+subckt_name  = circuit
+
+if @Corners_PEX@ == True:
+    # get paths for corner PEX
+    corner_project = dbi.get_project("@node|GetCorners@")
+    slow_corner_index = int(corner_project.metadata["fast_pex_isplit"])
+    fast_corner_index = int(corner_project.metadata["slow_pex_isplit"])
+
+    startdb(PEXCornerPath)
+    dburl = open(f"{PEXCornerPath}/enigma/mongodb.conf").read()
+    dbi.connect(dburl) 
+
+    slow_PEX_netpath = str(dbi.get_project(swb__cell="@logic@x@strength@@height@", 
+                                           swb__isplit=slow_corner_index, swb__selectivehighK=@selectivehighK@).metadata["netpath"])
+    fast_PEX_netpath = str(dbi.get_project(swb__cell="@logic@x@strength@@height@", 
+                                           swb__isplit=fast_corner_index, swb__selectivehighK=@selectivehighK@).metadata["netpath"])
+
+    #stopdb(PEXCornerPath)
+
+
+# get path for typical PEX
+startdb(nominalPEXpath)
+dburl = open(f"{nominalPEXpath}/enigma/mongodb.conf").read()
+dbi.connect(dburl) 
+typical_PEX_netpath = str(dbi.get_project(swb__cell=circuit, 
+                                          swb__selectivehighK=@selectivehighK@,
+                                          swb__flow="recess_power_rail_gate_cut_late_r7").metadata["netpath"])
+
+# switch db connection
+dburl = open("@pwd@/enigma/mongodb.conf").read()
+dbi.connect(dburl) 
+builder.dbi=dbi
+
+if "@logic@".lower() == "inv":
+    subckt_nodes = "in out_i vdd vss VBP VBN"
+    dummy_nodes = "in vdd vss X0 VBP VBN"
+    enable_nodes = "in out_i EN vss VBP VBN"
+elif "@logic@".lower() == "nand2":
+    subckt_nodes =  "in in out_i vdd vss VBP VBN"
+    dummy_nodes = "in in X0 vdd vss VBP VBN"
+    enable_nodes =  "in in out_i EN vss VBP VBN"
+
+#########################################################################
+# ro settings 								#
+#########################################################################
+fo = @FO@
+rinter = @Rinter@
+cinter = @Cinter@
+nstages = @nstage@
+
+ro_stage=f"""
+.subckt ro_stage in out VDD VSS VBP VBN
+
+x1  {subckt_nodes} {circuit}:RAND
+rout0 out_i  out_i1 {rinter/2}
+rout1 out_i1 out    {rinter/2}
+cout  out_i1 0      {cinter}
+"""
+for x in range(fo-1):
+    ro_stage+=f"\nxfo{x} {dummy_nodes} {circuit}:RAND" 
+
+ro_stage+="\n.ends"
+
+full_ro=f"""
+xro0 LB a0 ENB VSS VBP VBN ro_stage
+.ic v(a0)=0.0
+"""
+
+for x in range(1,nstages):
+    if x == nstages-1:
+       full_ro+=f"\nxro{x} a{x-1} LB VDD VSS VBP VBN ro_stage"
+    else:
+       full_ro+=f"\nxro{x} a{x-1} a{x} VDD VSS VBP VBN ro_stage"
+
+
+#########################################################################
+# Handle process corners						#
+#########################################################################
+
+# load in VT mode info
+vt_modes = dbi.get_project("@node|SetupSplits@").metadata["vt_modes"]["@vt_mode@"]
+vt_parasitic = dbi.get_project("@node|SetupSplits@").metadata["vt_modes"]["svt"]
+
+midpoints = dbi.get_project("@node|BuildLibrary@").metadata["midpoint_metadata"]
+remap_names = dbi.get_project("@node|BuildLibrary@").metadata["remap_names"]
+ndevname = remap_names['nMOS']+":nMOS"
+pdevname = remap_names['pMOS']+":pMOS"
+
+if @Corners_TX@ == True:
+    # Load in extracted coorners
+    corner_df = pd.DataFrame.from_dict(dbi.get_data(project="@node|GetCorners@").data, orient='index')
+    corner_df.index.name=["type","corner"]
+
+    corners = corner_df.to_dict("index")
+    doe_mid = {"l":midpoints["nMOS"]["swb"]["lgate"], "tfin":midpoints["nMOS"]["swb"]["tfin"], "phigvar":0.0}
+
+    corners.update({("n","tt"):doe_mid,("p","tt"):doe_mid})
+else:
+    doe_mid = {"l":midpoints["nMOS"]["swb"]["lgate"], "tfin":midpoints["nMOS"]["swb"]["tfin"], "phigvar":0.0}
+    corners = {("n","tt"):doe_mid,("p","tt"):doe_mid}
+
+subckts = {}
+
+for key,doe_point in corners.items():
+    print(key, doe_point)
+    dtype,corner = key
+
+    if corner not in subckts.keys():
+        # load template netlist
+        if corner.lower() == "ss" and @Corners_PEX@ == True:
+            subckts[corner] = RS2NetAdjust(slow_PEX_netpath)
+        elif corner.lower() == "ff" and @Corners_PEX@ == True:
+            subckts[corner] = RS2NetAdjust(fast_PEX_netpath)
+        else:
+            subckts[corner] = RS2NetAdjust(typical_PEX_netpath)
+
+        # define model call mapping
+        subckts[corner].model_call_mapping={"nmos":ndevname, "pmos":pdevname,"nmos_tt":"nmos_tt", "pmos_tt":"pmos_tt"}
+
+    rc_subckt = subckts[corner]
+
+    # Determine device name
+    dev = ndevname if dtype == "n" else pdevname
+
+    # add instance parameters
+    for k,v in doe_point.items():
+        rc_subckt.add_instance_param(dev,k,float(f"{v:.15f}"))
+
+    # add vt_mode instance parameters
+    if dtype == "n":
+        rc_subckt.add_instance_param(dev,"vtmode_adjust",float(f"{vt_modes['nmos']:.15f}"))
+    else:
+        rc_subckt.add_instance_param(dev,"vtmode_adjust",float(f"{vt_modes['pmos']:.15f}"))
+
+for corner,circuit in subckts.items():
+    circuit.convert_models(add_subckt_rand=False)
+
+
+for key,doe_point in corners.items():
+    print(key, doe_point)
+    dtype,corner = key
+
+    # handle extra parasitic MOSFETS
+    subckts[corner].model_call_mapping={"nmos_tt":ndevname, "pmos_tt":pdevname,"pfet:pMOS":"PTMP", "nfet:nMOS":"NTMP"}
+
+    rc_subckt = subckts[corner]
+
+    # Determine device name
+    dev = ndevname if dtype == "n" else pdevname
+
+    # add instance parameters
+    for k,v in doe_point.items():
+        rc_subckt.add_instance_param(dev,k,float(f"{v:.15f}"))
+
+    # add vt_mode instance parameters
+    if dtype == "n":
+        rc_subckt.add_instance_param(dev,"vtmode_adjust",float(f"{vt_parasitic['nmos']:.15f}"))
+    else:
+        rc_subckt.add_instance_param(dev,"vtmode_adjust",float(f"{vt_parasitic['pmos']:.15f}"))
+
+for corner,circuit in subckts.items():
+    circuit.convert_models(add_subckt_rand=False)
+
+for key,doe_point in corners.items():
+    print(key, doe_point)
+    dtype,corner = key
+
+    # handle extra parasitic MOSFETS
+    subckts[corner].model_call_mapping={"PTMP":"pfet:pMOS", "NTMP":"nfet:nMOS", "nfet:nMOS":"nfet:nMOS", "pfet:pMOS":"pfet:pMOS"}
+
+for corner,circuit in subckts.items():
+    circuit.convert_models(add_subckt_rand=False)
+
+#########################################################################
+# setup RandomSpice sims						#
+#########################################################################
+
+randomspice.wait		= False
+base_inputfile_name	    	= "@pwd@/@nodedir@/pp@node@_eng.rs2"
+base_netlist_name		= "@pwd@/@nodedir@/pp@node@_eng.sp"
+dev_param_dict			= {}
+dev_param_dict["SUBNAME"]	= subckt_name
+dev_param_dict["RO_STAGE"]	= ro_stage
+dev_param_dict["FULL_RO"]	= full_ro
+
+for corner,circuit in subckts.items():
+
+
+    circuit.convert_models(add_subckt_rand=True)
+
+    #circuit.save_net(filename="n@node@_{corner}.inc".format(corner=corner), outpath="./")
+    dev_param_dict["INCLUDE"]=circuit.net_str()
+
+    if corner == "tt":
+        dev_param_dict["PROCESS"]=False
+        dev_param_dict["RESP_ONLY"]=True
+        dev_param_dict["NUMBER"]=1
+    else:
+        dev_param_dict["PROCESS"]=False
+        dev_param_dict["RESP_ONLY"]=True
+        dev_param_dict["NUMBER"]=1
+
+
+    dev_param_dict["CORNER"]=corner
+    new_inputfile_name	= base_inputfile_name+str(corner)
+    new_netlist_name	= base_netlist_name+str(corner)
+    dev_param_dict["SIMNET"]=new_netlist_name
+    new_inputfile	= Template(open(base_inputfile_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+    new_netlist		= Template(open(base_netlist_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+    with open(new_inputfile_name,'w') as outfile:
+        outfile.write(new_inputfile)
+    with open(new_netlist_name,'w') as outfile:
+        outfile.write(new_netlist)
+    randomspice.inputfile=new_inputfile_name
+    randomspice.simulate()
+
+
+randomspice.Wait()
+

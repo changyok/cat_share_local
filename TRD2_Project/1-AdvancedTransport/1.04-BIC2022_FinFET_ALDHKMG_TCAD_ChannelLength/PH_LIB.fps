@@ -1,0 +1,3785 @@
+#---------------------------------------------------------------------#
+#   USER-DEFINED PROCEDURES
+
+
+fproc PolyHedronSTIaccc {args} {
+#rem # PolyHedronSTI - procedure to create STI shape for concave active corner
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. Direction - rb | lb | lf | rf
+#rem #  3. X0        - Active corner x-coordinate
+#rem #  4. Y0        - Active corner y-coordinate
+#rem #  5. Z0        - Active corner z-coordinate
+#rem #  6. Tsti      - STI depth
+#rem #  7. Asti      - STI slope angle
+#rem #  8. Hsti      - STI height
+#rem #  9. Rdown     - Radius of down corner
+#rem # 10. Rbottom   - Radius of bottom corner
+#rem # 11. Rup       - Radius of up corner
+#rem # 12. Rac       - Radius of active corner
+
+  if {[llength $args] < 12 || [llength $args] > 12} {
+     error "PolyHedronSTIaccc: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set dir       [lindex $args 1]
+  set x0        [lindex $args 2]
+  set y0        [lindex $args 3]
+  set z0        [lindex $args 4]
+  set Tsti      [lindex $args 5]
+  set Asti      [lindex $args 6]
+  set Hsti      [lindex $args 7]
+  set Rd        [lindex $args 8]
+  set Rb        [lindex $args 9]
+  set Ru        [lindex $args 10]
+  set Ra        [lindex $args 11]
+
+  set D2R       [expr (atan(1.0)/45.0)] ; #Degree to radiant conv.
+  set rN        10
+
+#---- Down corner rounding ------------------------
+  # Si surface line
+  set A0         1
+  set B0         0
+  set C0         0
+
+  # STI slope surface line
+  set A1         [expr tan((90-$Asti)*$D2R)]
+  set B1        -1
+  set C1         0
+
+  # STI half slope line
+  set A2         [expr tan(($Asti/2.0)*$D2R)]
+  set B2         1
+  set C2         0
+
+  # Down circle center point
+  set xdc       $Rd
+  set ydc       [expr (-1.0*$A2*$xdc)]
+
+  # Si surface line contact  point
+  set xdcp      0.0
+  set ydcp      $ydc
+
+  # STI slope line contact  point
+  set xdcps     [expr ($Rd*tan(($Asti/2.0)*$D2R)*sin($Asti*$D2R))]
+  set ydcps     [expr ($A1*$xdcps)]
+
+  # Bottom corner point          
+  set x1        [expr ($x0+$Tsti)]
+  set y1        [expr ($y0+$A1*$Tsti)]
+#--------------------------------------------------
+  
+#---- Bottom corner rounding ------------------------
+  # Bottom circle center point
+  set xbc       [expr (-1.0*$Rb)]
+  set ybc       [expr (-1.0*$A2*$xbc)]
+
+  # STI surface line contact  point
+  set xbcp      0.0
+  set ybcp      $ybc
+
+  # STI slope line contact  point
+  set xbcps     [expr (-1.0*$Rb*tan(($Asti/2.0)*$D2R)*sin($Asti*$D2R))]
+  set ybcps     [expr ($A1*$xbcps)]
+#--------------------------------------------------
+
+#---- Up corner rounding ------------------------
+  # Up circle center point
+  set xuc       [expr (-1.0*$Ru)]
+  set yuc       $ydc
+
+  # Top  point
+  set xutp      [expr (-1.0*$Hsti)]
+  set yutp      [expr ($yuc+sqrt(pow($Ru,2)-pow(($xutp-$xuc),2)))]
+#--------------------------------------------------
+
+
+#---- Restriction rule  ------------------------
+if { $Ru < $Hsti } {
+  error "Up corner rounding radius ( $Ru ) should be larger than STI height ( $Hsti )..."
+  exit -1
+}
+
+set tdcps [expr ($y0+$ydcps)]
+set tbcps [expr ($y1+$ybcps)]
+if { $tbcps < $tdcps } {
+  error "Down corner rounding slope contact point ( $tdcps ) should not be larger than bottom corner rounding slope contact point ( $tbcps )..."
+  exit -1
+}
+
+set tutp  [expr ($y0+$yutp)]
+set tymax [expr ($y0+$Ra)]
+if { $tymax <= $tutp } {
+  error "Active corner rounding radius ( $Ra ) should be larger than up corner rounding end point ( $tutp )..."
+  exit -1
+}
+
+set tbcp  [expr ($y1+$ybcp)]
+set tymax [expr ($y0+$Ra)]
+if { $tymax <= $tbcp } {
+  error "Active corner rounding radius ( $Ra ) should be larger than bottom corner rounding point ( $tbcp )..."
+  exit -1
+}
+
+
+#--- STI shape point list -----------------------------------------------------
+  set stiRLx  [list]
+  set stiRLy0 [list]
+  set stiRLy  [list]
+
+  #--- Up end ---
+  set tx [expr ($x0-$Hsti)]
+  set ty [expr (0.0-$Ra)]
+  lappend stiRLx  $tx
+  lappend stiRLy0 $ty
+
+  #--- Up corner ---
+  set dy  [expr (($yutp-$yuc)/($rN-1))] 
+  for {set i 0} {$i < [expr ($rN-1)]} {incr i 1} {
+    set ty [expr ($yutp-$i*$dy)]
+    set tx [expr ($xuc+sqrt(pow($Ru,2)-pow(($ty-$yuc),2)))]
+    set tx [expr ($x0+$tx)]
+    set ty [expr (-1.0*$ty)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Down corner ---
+  set dy  [expr (($ydcps-$ydcp)/($rN-1))] 
+  for {set i 0} {$i < $rN} {incr i 1} {
+    set ty [expr ($ydcp+$i*$dy)]
+    set tx [expr ($xdc-sqrt(pow($Rd,2)-pow(($ty-$ydc),2)))]
+    set tx [expr ($x0+$tx)]
+    set ty [expr (-1.0*$ty)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Bottom corner ---
+  set dy  [expr (($ybcp-$ybcps)/($rN-1))] 
+  for {set i 0} {$i < $rN} {incr i 1} {
+    set ty [expr ($ybcps+$i*$dy)]
+    set tx [expr ($xbc+sqrt(pow($Rb,2)-pow(($ty-$ybc),2)))]
+    set tx [expr ($x1+$tx)]
+    set ty [expr ($y1+$ty-$y0)]
+    set ty [expr (-1.0*$ty)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Bottom end ---
+  set tx [expr ($x0+$tx)]
+  set ty [expr (0.0-$Ra)]
+  lappend stiRLx  $tx
+  lappend stiRLy0 $ty
+
+  set pN  [expr (3*$rN+1)]
+
+set debug_point 0
+if { $debug_point } {
+
+  for {set i 0} {$i < $pN} {incr i 1} {
+    puts -nonewline [lindex $stiRLx  $i]
+    puts -nonewline " "
+    puts            [lindex $stiRLy0 $i]
+  }
+
+}
+
+  #--- Move the coordinate center to the center of the active corner circle ---
+  set tyc [expr (0.0-$Ra)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set ty0 [lindex $stiRLy0 $i]
+    set ty  [expr ($ty0-$tyc)]
+    lappend stiRLy  $ty
+  }
+
+  #--- Generate the active corner points ---
+  set acrN  7
+  set dA    15
+  if { ![string compare $dir "rf"] } {
+    set Adir    0
+    set ySign    1
+    set zSign    1
+  } elseif { ![string compare $dir "rb"] } {
+    set Adir   90
+    set ySign    1
+    set zSign   -1
+  } elseif { ![string compare $dir "lb"] } {
+    set Adir  180
+    set ySign   -1
+    set zSign   -1
+  } elseif { ![string compare $dir "lf"] } {
+    set Adir  270
+    set ySign   -1
+    set zSign    1
+  } else {
+    error "-- $dir -- \nWrong Direction: rf rb lb lf"
+    exit -1
+  }
+  set stiAcrLy0  [list] ; set stiAcrLz0  [list]
+  set stiAcrLy1  [list] ; set stiAcrLz1  [list]
+  set stiAcrLy2  [list] ; set stiAcrLz2  [list]
+  set stiAcrLy3  [list] ; set stiAcrLz3  [list]
+  set stiAcrLy4  [list] ; set stiAcrLz4  [list]
+  set stiAcrLy5  [list] ; set stiAcrLz5  [list]
+  set stiAcrLy6  [list] ; set stiAcrLz6  [list]
+
+  set tTheta [expr (($Adir+0.0*$dA)*$D2R)]
+  if { $Adir == 0 } {
+    set tAy 0 ; set tAz 1
+  } elseif { $Adir == 90 } {
+    set tAy 1 ; set tAz 0
+  } elseif { $Adir == 180 } {
+    set tAy 0 ; set tAz -1
+  } elseif { $Adir == 270 } {
+    set tAy -1 ; set tAz 0
+  } else {
+    error "-- $Adir $dir -- \nWrong Direction: rf rb lb lf"
+    exit -1
+  }
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*$tAy+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*$tAz+$zSign*$tyc+$z0)]
+    lappend stiAcrLy0 $ty 
+    lappend stiAcrLz0 $tz 
+  }
+
+  set tTheta [expr (($Adir+1.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy1 $ty 
+    lappend stiAcrLz1 $tz 
+  }
+
+  set tTheta [expr (($Adir+2.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy2 $ty 
+    lappend stiAcrLz2 $tz 
+  }
+
+  set tTheta [expr (($Adir+3.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy3 $ty 
+    lappend stiAcrLz3 $tz 
+  }
+
+  set tTheta [expr (($Adir+4.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy4 $ty 
+    lappend stiAcrLz4 $tz 
+  }
+
+  set tTheta [expr (($Adir+5.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy5 $ty 
+    lappend stiAcrLz5 $tz 
+  }
+
+  set tAdir [expr (($Adir+90)%360)]
+  if { $tAdir == 90 } {
+    set tAy 1 ; set tAz 0
+  } elseif { $tAdir == 180 } {
+    set tAy 0 ; set tAz -1
+  } elseif { $tAdir == 270 } {
+    set tAy -1 ; set tAz 0
+  } elseif { $tAdir == 0 } {
+    set tAy 0 ; set tAz 1
+  } else {
+    error "-- $tAdir $dir -- \nWrong Direction: rf rb lb lf"
+    exit -1
+  }
+  set tTheta [expr (($Adir+6.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*$tAy+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*$tAz+$zSign*$tyc+$z0)]
+    lappend stiAcrLy6 $ty 
+    lappend stiAcrLz6 $tz 
+  }
+
+  # Points
+  # 0 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy0  0] ; set tz [lindex $stiAcrLz0  0]
+  point name=pR0P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy0  1] ; set tz [lindex $stiAcrLz0  1]
+  point name=pR0P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy0  2] ; set tz [lindex $stiAcrLz0  2]
+  point name=pR0P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy0  3] ; set tz [lindex $stiAcrLz0  3]
+  point name=pR0P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy0  4] ; set tz [lindex $stiAcrLz0  4]
+  point name=pR0P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy0  5] ; set tz [lindex $stiAcrLz0  5]
+  point name=pR0P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy0  6] ; set tz [lindex $stiAcrLz0  6]
+  point name=pR0P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy0  7] ; set tz [lindex $stiAcrLz0  7]
+  point name=pR0P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy0  8] ; set tz [lindex $stiAcrLz0  8]
+  point name=pR0P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy0  9] ; set tz [lindex $stiAcrLz0  9]
+  point name=pR0P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy0  10] ; set tz [lindex $stiAcrLz0  10]
+  point name=pR0P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy0  11] ; set tz [lindex $stiAcrLz0  11]
+  point name=pR0P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy0  12] ; set tz [lindex $stiAcrLz0  12]
+  point name=pR0P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy0  13] ; set tz [lindex $stiAcrLz0  13]
+  point name=pR0P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy0  14] ; set tz [lindex $stiAcrLz0  14]
+  point name=pR0P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy0  15] ; set tz [lindex $stiAcrLz0  15]
+  point name=pR0P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy0  16] ; set tz [lindex $stiAcrLz0  16]
+  point name=pR0P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy0  17] ; set tz [lindex $stiAcrLz0  17]
+  point name=pR0P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy0  18] ; set tz [lindex $stiAcrLz0  18]
+  point name=pR0P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy0  19] ; set tz [lindex $stiAcrLz0  19]
+  point name=pR0P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy0  20] ; set tz [lindex $stiAcrLz0  20]
+  point name=pR0P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy0  21] ; set tz [lindex $stiAcrLz0  21]
+  point name=pR0P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy0  22] ; set tz [lindex $stiAcrLz0  22]
+  point name=pR0P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy0  23] ; set tz [lindex $stiAcrLz0  23]
+  point name=pR0P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy0  24] ; set tz [lindex $stiAcrLz0  24]
+  point name=pR0P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy0  25] ; set tz [lindex $stiAcrLz0  25]
+  point name=pR0P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy0  26] ; set tz [lindex $stiAcrLz0  26]
+  point name=pR0P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy0  27] ; set tz [lindex $stiAcrLz0  27]
+  point name=pR0P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy0  28] ; set tz [lindex $stiAcrLz0  28]
+  point name=pR0P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy0  29] ; set tz [lindex $stiAcrLz0  29]
+  point name=pR0P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy0  30] ; set tz [lindex $stiAcrLz0  30]
+  point name=pR0P30  coord= { $tx $ty $tz }
+  # 15 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy1  0] ; set tz [lindex $stiAcrLz1  0]
+  point name=pR1P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy1  1] ; set tz [lindex $stiAcrLz1  1]
+  point name=pR1P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy1  2] ; set tz [lindex $stiAcrLz1  2]
+  point name=pR1P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy1  3] ; set tz [lindex $stiAcrLz1  3]
+  point name=pR1P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy1  4] ; set tz [lindex $stiAcrLz1  4]
+  point name=pR1P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy1  5] ; set tz [lindex $stiAcrLz1  5]
+  point name=pR1P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy1  6] ; set tz [lindex $stiAcrLz1  6]
+  point name=pR1P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy1  7] ; set tz [lindex $stiAcrLz1  7]
+  point name=pR1P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy1  8] ; set tz [lindex $stiAcrLz1  8]
+  point name=pR1P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy1  9] ; set tz [lindex $stiAcrLz1  9]
+  point name=pR1P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy1  10] ; set tz [lindex $stiAcrLz1  10]
+  point name=pR1P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy1  11] ; set tz [lindex $stiAcrLz1  11]
+  point name=pR1P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy1  12] ; set tz [lindex $stiAcrLz1  12]
+  point name=pR1P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy1  13] ; set tz [lindex $stiAcrLz1  13]
+  point name=pR1P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy1  14] ; set tz [lindex $stiAcrLz1  14]
+  point name=pR1P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy1  15] ; set tz [lindex $stiAcrLz1  15]
+  point name=pR1P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy1  16] ; set tz [lindex $stiAcrLz1  16]
+  point name=pR1P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy1  17] ; set tz [lindex $stiAcrLz1  17]
+  point name=pR1P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy1  18] ; set tz [lindex $stiAcrLz1  18]
+  point name=pR1P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy1  19] ; set tz [lindex $stiAcrLz1  19]
+  point name=pR1P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy1  20] ; set tz [lindex $stiAcrLz1  20]
+  point name=pR1P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy1  21] ; set tz [lindex $stiAcrLz1  21]
+  point name=pR1P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy1  22] ; set tz [lindex $stiAcrLz1  22]
+  point name=pR1P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy1  23] ; set tz [lindex $stiAcrLz1  23]
+  point name=pR1P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy1  24] ; set tz [lindex $stiAcrLz1  24]
+  point name=pR1P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy1  25] ; set tz [lindex $stiAcrLz1  25]
+  point name=pR1P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy1  26] ; set tz [lindex $stiAcrLz1  26]
+  point name=pR1P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy1  27] ; set tz [lindex $stiAcrLz1  27]
+  point name=pR1P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy1  28] ; set tz [lindex $stiAcrLz1  28]
+  point name=pR1P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy1  29] ; set tz [lindex $stiAcrLz1  29]
+  point name=pR1P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy1  30] ; set tz [lindex $stiAcrLz1  30]
+  point name=pR1P30  coord= { $tx $ty $tz }
+  # 30 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy2  0] ; set tz [lindex $stiAcrLz2  0]
+  point name=pR2P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy2  1] ; set tz [lindex $stiAcrLz2  1]
+  point name=pR2P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy2  2] ; set tz [lindex $stiAcrLz2  2]
+  point name=pR2P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy2  3] ; set tz [lindex $stiAcrLz2  3]
+  point name=pR2P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy2  4] ; set tz [lindex $stiAcrLz2  4]
+  point name=pR2P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy2  5] ; set tz [lindex $stiAcrLz2  5]
+  point name=pR2P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy2  6] ; set tz [lindex $stiAcrLz2  6]
+  point name=pR2P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy2  7] ; set tz [lindex $stiAcrLz2  7]
+  point name=pR2P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy2  8] ; set tz [lindex $stiAcrLz2  8]
+  point name=pR2P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy2  9] ; set tz [lindex $stiAcrLz2  9]
+  point name=pR2P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy2  10] ; set tz [lindex $stiAcrLz2  10]
+  point name=pR2P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy2  11] ; set tz [lindex $stiAcrLz2  11]
+  point name=pR2P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy2  12] ; set tz [lindex $stiAcrLz2  12]
+  point name=pR2P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy2  13] ; set tz [lindex $stiAcrLz2  13]
+  point name=pR2P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy2  14] ; set tz [lindex $stiAcrLz2  14]
+  point name=pR2P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy2  15] ; set tz [lindex $stiAcrLz2  15]
+  point name=pR2P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy2  16] ; set tz [lindex $stiAcrLz2  16]
+  point name=pR2P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy2  17] ; set tz [lindex $stiAcrLz2  17]
+  point name=pR2P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy2  18] ; set tz [lindex $stiAcrLz2  18]
+  point name=pR2P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy2  19] ; set tz [lindex $stiAcrLz2  19]
+  point name=pR2P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy2  20] ; set tz [lindex $stiAcrLz2  20]
+  point name=pR2P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy2  21] ; set tz [lindex $stiAcrLz2  21]
+  point name=pR2P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy2  22] ; set tz [lindex $stiAcrLz2  22]
+  point name=pR2P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy2  23] ; set tz [lindex $stiAcrLz2  23]
+  point name=pR2P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy2  24] ; set tz [lindex $stiAcrLz2  24]
+  point name=pR2P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy2  25] ; set tz [lindex $stiAcrLz2  25]
+  point name=pR2P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy2  26] ; set tz [lindex $stiAcrLz2  26]
+  point name=pR2P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy2  27] ; set tz [lindex $stiAcrLz2  27]
+  point name=pR2P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy2  28] ; set tz [lindex $stiAcrLz2  28]
+  point name=pR2P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy2  29] ; set tz [lindex $stiAcrLz2  29]
+  point name=pR2P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy2  30] ; set tz [lindex $stiAcrLz2  30]
+  point name=pR2P30  coord= { $tx $ty $tz }
+  # 45 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy3  0] ; set tz [lindex $stiAcrLz3  0]
+  point name=pR3P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy3  1] ; set tz [lindex $stiAcrLz3  1]
+  point name=pR3P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy3  2] ; set tz [lindex $stiAcrLz3  2]
+  point name=pR3P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy3  3] ; set tz [lindex $stiAcrLz3  3]
+  point name=pR3P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy3  4] ; set tz [lindex $stiAcrLz3  4]
+  point name=pR3P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy3  5] ; set tz [lindex $stiAcrLz3  5]
+  point name=pR3P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy3  6] ; set tz [lindex $stiAcrLz3  6]
+  point name=pR3P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy3  7] ; set tz [lindex $stiAcrLz3  7]
+  point name=pR3P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy3  8] ; set tz [lindex $stiAcrLz3  8]
+  point name=pR3P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy3  9] ; set tz [lindex $stiAcrLz3  9]
+  point name=pR3P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy3  10] ; set tz [lindex $stiAcrLz3  10]
+  point name=pR3P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy3  11] ; set tz [lindex $stiAcrLz3  11]
+  point name=pR3P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy3  12] ; set tz [lindex $stiAcrLz3  12]
+  point name=pR3P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy3  13] ; set tz [lindex $stiAcrLz3  13]
+  point name=pR3P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy3  14] ; set tz [lindex $stiAcrLz3  14]
+  point name=pR3P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy3  15] ; set tz [lindex $stiAcrLz3  15]
+  point name=pR3P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy3  16] ; set tz [lindex $stiAcrLz3  16]
+  point name=pR3P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy3  17] ; set tz [lindex $stiAcrLz3  17]
+  point name=pR3P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy3  18] ; set tz [lindex $stiAcrLz3  18]
+  point name=pR3P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy3  19] ; set tz [lindex $stiAcrLz3  19]
+  point name=pR3P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy3  20] ; set tz [lindex $stiAcrLz3  20]
+  point name=pR3P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy3  21] ; set tz [lindex $stiAcrLz3  21]
+  point name=pR3P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy3  22] ; set tz [lindex $stiAcrLz3  22]
+  point name=pR3P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy3  23] ; set tz [lindex $stiAcrLz3  23]
+  point name=pR3P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy3  24] ; set tz [lindex $stiAcrLz3  24]
+  point name=pR3P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy3  25] ; set tz [lindex $stiAcrLz3  25]
+  point name=pR3P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy3  26] ; set tz [lindex $stiAcrLz3  26]
+  point name=pR3P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy3  27] ; set tz [lindex $stiAcrLz3  27]
+  point name=pR3P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy3  28] ; set tz [lindex $stiAcrLz3  28]
+  point name=pR3P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy3  29] ; set tz [lindex $stiAcrLz3  29]
+  point name=pR3P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy3  30] ; set tz [lindex $stiAcrLz3  30]
+  point name=pR3P30  coord= { $tx $ty $tz }
+  # 60 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy4  0] ; set tz [lindex $stiAcrLz4  0]
+  point name=pR4P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy4  1] ; set tz [lindex $stiAcrLz4  1]
+  point name=pR4P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy4  2] ; set tz [lindex $stiAcrLz4  2]
+  point name=pR4P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy4  3] ; set tz [lindex $stiAcrLz4  3]
+  point name=pR4P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy4  4] ; set tz [lindex $stiAcrLz4  4]
+  point name=pR4P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy4  5] ; set tz [lindex $stiAcrLz4  5]
+  point name=pR4P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy4  6] ; set tz [lindex $stiAcrLz4  6]
+  point name=pR4P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy4  7] ; set tz [lindex $stiAcrLz4  7]
+  point name=pR4P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy4  8] ; set tz [lindex $stiAcrLz4  8]
+  point name=pR4P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy4  9] ; set tz [lindex $stiAcrLz4  9]
+  point name=pR4P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy4  10] ; set tz [lindex $stiAcrLz4  10]
+  point name=pR4P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy4  11] ; set tz [lindex $stiAcrLz4  11]
+  point name=pR4P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy4  12] ; set tz [lindex $stiAcrLz4  12]
+  point name=pR4P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy4  13] ; set tz [lindex $stiAcrLz4  13]
+  point name=pR4P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy4  14] ; set tz [lindex $stiAcrLz4  14]
+  point name=pR4P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy4  15] ; set tz [lindex $stiAcrLz4  15]
+  point name=pR4P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy4  16] ; set tz [lindex $stiAcrLz4  16]
+  point name=pR4P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy4  17] ; set tz [lindex $stiAcrLz4  17]
+  point name=pR4P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy4  18] ; set tz [lindex $stiAcrLz4  18]
+  point name=pR4P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy4  19] ; set tz [lindex $stiAcrLz4  19]
+  point name=pR4P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy4  20] ; set tz [lindex $stiAcrLz4  20]
+  point name=pR4P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy4  21] ; set tz [lindex $stiAcrLz4  21]
+  point name=pR4P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy4  22] ; set tz [lindex $stiAcrLz4  22]
+  point name=pR4P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy4  23] ; set tz [lindex $stiAcrLz4  23]
+  point name=pR4P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy4  24] ; set tz [lindex $stiAcrLz4  24]
+  point name=pR4P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy4  25] ; set tz [lindex $stiAcrLz4  25]
+  point name=pR4P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy4  26] ; set tz [lindex $stiAcrLz4  26]
+  point name=pR4P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy4  27] ; set tz [lindex $stiAcrLz4  27]
+  point name=pR4P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy4  28] ; set tz [lindex $stiAcrLz4  28]
+  point name=pR4P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy4  29] ; set tz [lindex $stiAcrLz4  29]
+  point name=pR4P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy4  30] ; set tz [lindex $stiAcrLz4  30]
+  point name=pR4P30  coord= { $tx $ty $tz }
+  # 75 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy5  0] ; set tz [lindex $stiAcrLz5  0]
+  point name=pR5P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy5  1] ; set tz [lindex $stiAcrLz5  1]
+  point name=pR5P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy5  2] ; set tz [lindex $stiAcrLz5  2]
+  point name=pR5P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy5  3] ; set tz [lindex $stiAcrLz5  3]
+  point name=pR5P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy5  4] ; set tz [lindex $stiAcrLz5  4]
+  point name=pR5P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy5  5] ; set tz [lindex $stiAcrLz5  5]
+  point name=pR5P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy5  6] ; set tz [lindex $stiAcrLz5  6]
+  point name=pR5P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy5  7] ; set tz [lindex $stiAcrLz5  7]
+  point name=pR5P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy5  8] ; set tz [lindex $stiAcrLz5  8]
+  point name=pR5P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy5  9] ; set tz [lindex $stiAcrLz5  9]
+  point name=pR5P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy5  10] ; set tz [lindex $stiAcrLz5  10]
+  point name=pR5P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy5  11] ; set tz [lindex $stiAcrLz5  11]
+  point name=pR5P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy5  12] ; set tz [lindex $stiAcrLz5  12]
+  point name=pR5P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy5  13] ; set tz [lindex $stiAcrLz5  13]
+  point name=pR5P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy5  14] ; set tz [lindex $stiAcrLz5  14]
+  point name=pR5P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy5  15] ; set tz [lindex $stiAcrLz5  15]
+  point name=pR5P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy5  16] ; set tz [lindex $stiAcrLz5  16]
+  point name=pR5P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy5  17] ; set tz [lindex $stiAcrLz5  17]
+  point name=pR5P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy5  18] ; set tz [lindex $stiAcrLz5  18]
+  point name=pR5P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy5  19] ; set tz [lindex $stiAcrLz5  19]
+  point name=pR5P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy5  20] ; set tz [lindex $stiAcrLz5  20]
+  point name=pR5P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy5  21] ; set tz [lindex $stiAcrLz5  21]
+  point name=pR5P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy5  22] ; set tz [lindex $stiAcrLz5  22]
+  point name=pR5P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy5  23] ; set tz [lindex $stiAcrLz5  23]
+  point name=pR5P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy5  24] ; set tz [lindex $stiAcrLz5  24]
+  point name=pR5P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy5  25] ; set tz [lindex $stiAcrLz5  25]
+  point name=pR5P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy5  26] ; set tz [lindex $stiAcrLz5  26]
+  point name=pR5P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy5  27] ; set tz [lindex $stiAcrLz5  27]
+  point name=pR5P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy5  28] ; set tz [lindex $stiAcrLz5  28]
+  point name=pR5P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy5  29] ; set tz [lindex $stiAcrLz5  29]
+  point name=pR5P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy5  30] ; set tz [lindex $stiAcrLz5  30]
+  point name=pR5P30  coord= { $tx $ty $tz }
+  # 90 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy6  0] ; set tz [lindex $stiAcrLz6  0]
+  point name=pR6P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy6  1] ; set tz [lindex $stiAcrLz6  1]
+  point name=pR6P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy6  2] ; set tz [lindex $stiAcrLz6  2]
+  point name=pR6P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy6  3] ; set tz [lindex $stiAcrLz6  3]
+  point name=pR6P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy6  4] ; set tz [lindex $stiAcrLz6  4]
+  point name=pR6P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy6  5] ; set tz [lindex $stiAcrLz6  5]
+  point name=pR6P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy6  6] ; set tz [lindex $stiAcrLz6  6]
+  point name=pR6P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy6  7] ; set tz [lindex $stiAcrLz6  7]
+  point name=pR6P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy6  8] ; set tz [lindex $stiAcrLz6  8]
+  point name=pR6P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy6  9] ; set tz [lindex $stiAcrLz6  9]
+  point name=pR6P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy6  10] ; set tz [lindex $stiAcrLz6  10]
+  point name=pR6P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy6  11] ; set tz [lindex $stiAcrLz6  11]
+  point name=pR6P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy6  12] ; set tz [lindex $stiAcrLz6  12]
+  point name=pR6P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy6  13] ; set tz [lindex $stiAcrLz6  13]
+  point name=pR6P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy6  14] ; set tz [lindex $stiAcrLz6  14]
+  point name=pR6P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy6  15] ; set tz [lindex $stiAcrLz6  15]
+  point name=pR6P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy6  16] ; set tz [lindex $stiAcrLz6  16]
+  point name=pR6P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy6  17] ; set tz [lindex $stiAcrLz6  17]
+  point name=pR6P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy6  18] ; set tz [lindex $stiAcrLz6  18]
+  point name=pR6P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy6  19] ; set tz [lindex $stiAcrLz6  19]
+  point name=pR6P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy6  20] ; set tz [lindex $stiAcrLz6  20]
+  point name=pR6P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy6  21] ; set tz [lindex $stiAcrLz6  21]
+  point name=pR6P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy6  22] ; set tz [lindex $stiAcrLz6  22]
+  point name=pR6P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy6  23] ; set tz [lindex $stiAcrLz6  23]
+  point name=pR6P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy6  24] ; set tz [lindex $stiAcrLz6  24]
+  point name=pR6P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy6  25] ; set tz [lindex $stiAcrLz6  25]
+  point name=pR6P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy6  26] ; set tz [lindex $stiAcrLz6  26]
+  point name=pR6P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy6  27] ; set tz [lindex $stiAcrLz6  27]
+  point name=pR6P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy6  28] ; set tz [lindex $stiAcrLz6  28]
+  point name=pR6P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy6  29] ; set tz [lindex $stiAcrLz6  29]
+  point name=pR6P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy6  30] ; set tz [lindex $stiAcrLz6  30]
+  point name=pR6P30  coord= { $tx $ty $tz }
+
+  # Corner point
+  if { ![string compare $dir "rf"] || ![string compare $dir "lb"] } {
+    set tx [lindex $stiRLx  0] ; set ty [lindex $stiAcrLy6   0] ; set tz [lindex $stiAcrLz0   0]
+    point name=pCUP0   coord= { $tx $ty $tz }
+    set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy6  30] ; set tz [lindex $stiAcrLz0  30]
+    point name=pCBP0   coord= { $tx $ty $tz }
+  } elseif { ![string compare $dir "rb"] || ![string compare $dir "lf"] } {
+    set tx [lindex $stiRLx  0] ; set ty [lindex $stiAcrLy0   0] ; set tz [lindex $stiAcrLz6   0]
+    point name=pCUP0   coord= { $tx $ty $tz }
+    set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy0  30] ; set tz [lindex $stiAcrLz6  30]
+    point name=pCBP0   coord= { $tx $ty $tz }
+  } else {
+    error "-- $dir -- \nWrong Direction: rf rb lb lf"
+    exit -1
+  }
+
+  # Polygons 
+  polygon name=pL0  points = { pR0P1 pR1P1 pR0P2 }
+  polygon name=pL1  points = { pR1P2 pR0P2 pR1P1 }
+  polygon name=pL2  points = { pR0P2 pR1P2 pR0P3 }
+  polygon name=pL3  points = { pR1P3 pR0P3 pR1P2 }
+  polygon name=pL4  points = { pR0P3 pR1P3 pR0P4 }
+  polygon name=pL5  points = { pR1P4 pR0P4 pR1P3 }
+  polygon name=pL6  points = { pR0P4 pR1P4 pR0P5 }
+  polygon name=pL7  points = { pR1P5 pR0P5 pR1P4 }
+  polygon name=pL8  points = { pR0P5 pR1P5 pR0P6 }
+  polygon name=pL9  points = { pR1P6 pR0P6 pR1P5 }
+  polygon name=pL10  points = { pR0P6 pR1P6 pR0P7 }
+  polygon name=pL11  points = { pR1P7 pR0P7 pR1P6 }
+  polygon name=pL12  points = { pR0P7 pR1P7 pR0P8 }
+  polygon name=pL13  points = { pR1P8 pR0P8 pR1P7 }
+  polygon name=pL14  points = { pR0P8 pR1P8 pR0P9 }
+  polygon name=pL15  points = { pR1P9 pR0P9 pR1P8 }
+  polygon name=pL16  points = { pR0P9 pR1P9 pR0P10 }
+  polygon name=pL17  points = { pR1P10 pR0P10 pR1P9 }
+  polygon name=pL18  points = { pR0P10 pR1P10 pR0P11 }
+  polygon name=pL19  points = { pR1P11 pR0P11 pR1P10 }
+  polygon name=pL20  points = { pR0P11 pR1P11 pR0P12 }
+  polygon name=pL21  points = { pR1P12 pR0P12 pR1P11 }
+  polygon name=pL22  points = { pR0P12 pR1P12 pR0P13 }
+  polygon name=pL23  points = { pR1P13 pR0P13 pR1P12 }
+  polygon name=pL24  points = { pR0P13 pR1P13 pR0P14 }
+  polygon name=pL25  points = { pR1P14 pR0P14 pR1P13 }
+  polygon name=pL26  points = { pR0P14 pR1P14 pR0P15 }
+  polygon name=pL27  points = { pR1P15 pR0P15 pR1P14 }
+  polygon name=pL28  points = { pR0P15 pR1P15 pR0P16 }
+  polygon name=pL29  points = { pR1P16 pR0P16 pR1P15 }
+  polygon name=pL30  points = { pR0P16 pR1P16 pR0P17 }
+  polygon name=pL31  points = { pR1P17 pR0P17 pR1P16 }
+  polygon name=pL32  points = { pR0P17 pR1P17 pR0P18 }
+  polygon name=pL33  points = { pR1P18 pR0P18 pR1P17 }
+  polygon name=pL34  points = { pR0P18 pR1P18 pR0P19 }
+  polygon name=pL35  points = { pR1P19 pR0P19 pR1P18 }
+  polygon name=pL36  points = { pR0P19 pR1P19 pR0P20 }
+  polygon name=pL37  points = { pR1P20 pR0P20 pR1P19 }
+  polygon name=pL38  points = { pR0P20 pR1P20 pR0P21 }
+  polygon name=pL39  points = { pR1P21 pR0P21 pR1P20 }
+  polygon name=pL40  points = { pR0P21 pR1P21 pR0P22 }
+  polygon name=pL41  points = { pR1P22 pR0P22 pR1P21 }
+  polygon name=pL42  points = { pR0P22 pR1P22 pR0P23 }
+  polygon name=pL43  points = { pR1P23 pR0P23 pR1P22 }
+  polygon name=pL44  points = { pR0P23 pR1P23 pR0P24 }
+  polygon name=pL45  points = { pR1P24 pR0P24 pR1P23 }
+  polygon name=pL46  points = { pR0P24 pR1P24 pR0P25 }
+  polygon name=pL47  points = { pR1P25 pR0P25 pR1P24 }
+  polygon name=pL48  points = { pR0P25 pR1P25 pR0P26 }
+  polygon name=pL49  points = { pR1P26 pR0P26 pR1P25 }
+  polygon name=pL50  points = { pR0P26 pR1P26 pR0P27 }
+  polygon name=pL51  points = { pR1P27 pR0P27 pR1P26 }
+  polygon name=pL52  points = { pR0P27 pR1P27 pR0P28 }
+  polygon name=pL53  points = { pR1P28 pR0P28 pR1P27 }
+  polygon name=pL54  points = { pR0P28 pR1P28 pR0P29 }
+  polygon name=pL55  points = { pR1P29 pR0P29 pR1P28 }
+  polygon name=pL56  points = { pR1P1 pR2P1 pR1P2 }
+  polygon name=pL57  points = { pR2P2 pR1P2 pR2P1 }
+  polygon name=pL58  points = { pR1P2 pR2P2 pR1P3 }
+  polygon name=pL59  points = { pR2P3 pR1P3 pR2P2 }
+  polygon name=pL60  points = { pR1P3 pR2P3 pR1P4 }
+  polygon name=pL61  points = { pR2P4 pR1P4 pR2P3 }
+  polygon name=pL62  points = { pR1P4 pR2P4 pR1P5 }
+  polygon name=pL63  points = { pR2P5 pR1P5 pR2P4 }
+  polygon name=pL64  points = { pR1P5 pR2P5 pR1P6 }
+  polygon name=pL65  points = { pR2P6 pR1P6 pR2P5 }
+  polygon name=pL66  points = { pR1P6 pR2P6 pR1P7 }
+  polygon name=pL67  points = { pR2P7 pR1P7 pR2P6 }
+  polygon name=pL68  points = { pR1P7 pR2P7 pR1P8 }
+  polygon name=pL69  points = { pR2P8 pR1P8 pR2P7 }
+  polygon name=pL70  points = { pR1P8 pR2P8 pR1P9 }
+  polygon name=pL71  points = { pR2P9 pR1P9 pR2P8 }
+  polygon name=pL72  points = { pR1P9 pR2P9 pR1P10 }
+  polygon name=pL73  points = { pR2P10 pR1P10 pR2P9 }
+  polygon name=pL74  points = { pR1P10 pR2P10 pR1P11 }
+  polygon name=pL75  points = { pR2P11 pR1P11 pR2P10 }
+  polygon name=pL76  points = { pR1P11 pR2P11 pR1P12 }
+  polygon name=pL77  points = { pR2P12 pR1P12 pR2P11 }
+  polygon name=pL78  points = { pR1P12 pR2P12 pR1P13 }
+  polygon name=pL79  points = { pR2P13 pR1P13 pR2P12 }
+  polygon name=pL80  points = { pR1P13 pR2P13 pR1P14 }
+  polygon name=pL81  points = { pR2P14 pR1P14 pR2P13 }
+  polygon name=pL82  points = { pR1P14 pR2P14 pR1P15 }
+  polygon name=pL83  points = { pR2P15 pR1P15 pR2P14 }
+  polygon name=pL84  points = { pR1P15 pR2P15 pR1P16 }
+  polygon name=pL85  points = { pR2P16 pR1P16 pR2P15 }
+  polygon name=pL86  points = { pR1P16 pR2P16 pR1P17 }
+  polygon name=pL87  points = { pR2P17 pR1P17 pR2P16 }
+  polygon name=pL88  points = { pR1P17 pR2P17 pR1P18 }
+  polygon name=pL89  points = { pR2P18 pR1P18 pR2P17 }
+  polygon name=pL90  points = { pR1P18 pR2P18 pR1P19 }
+  polygon name=pL91  points = { pR2P19 pR1P19 pR2P18 }
+  polygon name=pL92  points = { pR1P19 pR2P19 pR1P20 }
+  polygon name=pL93  points = { pR2P20 pR1P20 pR2P19 }
+  polygon name=pL94  points = { pR1P20 pR2P20 pR1P21 }
+  polygon name=pL95  points = { pR2P21 pR1P21 pR2P20 }
+  polygon name=pL96  points = { pR1P21 pR2P21 pR1P22 }
+  polygon name=pL97  points = { pR2P22 pR1P22 pR2P21 }
+  polygon name=pL98  points = { pR1P22 pR2P22 pR1P23 }
+  polygon name=pL99  points = { pR2P23 pR1P23 pR2P22 }
+  polygon name=pL100  points = { pR1P23 pR2P23 pR1P24 }
+  polygon name=pL101  points = { pR2P24 pR1P24 pR2P23 }
+  polygon name=pL102  points = { pR1P24 pR2P24 pR1P25 }
+  polygon name=pL103  points = { pR2P25 pR1P25 pR2P24 }
+  polygon name=pL104  points = { pR1P25 pR2P25 pR1P26 }
+  polygon name=pL105  points = { pR2P26 pR1P26 pR2P25 }
+  polygon name=pL106  points = { pR1P26 pR2P26 pR1P27 }
+  polygon name=pL107  points = { pR2P27 pR1P27 pR2P26 }
+  polygon name=pL108  points = { pR1P27 pR2P27 pR1P28 }
+  polygon name=pL109  points = { pR2P28 pR1P28 pR2P27 }
+  polygon name=pL110  points = { pR1P28 pR2P28 pR1P29 }
+  polygon name=pL111  points = { pR2P29 pR1P29 pR2P28 }
+  polygon name=pL112  points = { pR2P1 pR3P1 pR2P2 }
+  polygon name=pL113  points = { pR3P2 pR2P2 pR3P1 }
+  polygon name=pL114  points = { pR2P2 pR3P2 pR2P3 }
+  polygon name=pL115  points = { pR3P3 pR2P3 pR3P2 }
+  polygon name=pL116  points = { pR2P3 pR3P3 pR2P4 }
+  polygon name=pL117  points = { pR3P4 pR2P4 pR3P3 }
+  polygon name=pL118  points = { pR2P4 pR3P4 pR2P5 }
+  polygon name=pL119  points = { pR3P5 pR2P5 pR3P4 }
+  polygon name=pL120  points = { pR2P5 pR3P5 pR2P6 }
+  polygon name=pL121  points = { pR3P6 pR2P6 pR3P5 }
+  polygon name=pL122  points = { pR2P6 pR3P6 pR2P7 }
+  polygon name=pL123  points = { pR3P7 pR2P7 pR3P6 }
+  polygon name=pL124  points = { pR2P7 pR3P7 pR2P8 }
+  polygon name=pL125  points = { pR3P8 pR2P8 pR3P7 }
+  polygon name=pL126  points = { pR2P8 pR3P8 pR2P9 }
+  polygon name=pL127  points = { pR3P9 pR2P9 pR3P8 }
+  polygon name=pL128  points = { pR2P9 pR3P9 pR2P10 }
+  polygon name=pL129  points = { pR3P10 pR2P10 pR3P9 }
+  polygon name=pL130  points = { pR2P10 pR3P10 pR2P11 }
+  polygon name=pL131  points = { pR3P11 pR2P11 pR3P10 }
+  polygon name=pL132  points = { pR2P11 pR3P11 pR2P12 }
+  polygon name=pL133  points = { pR3P12 pR2P12 pR3P11 }
+  polygon name=pL134  points = { pR2P12 pR3P12 pR2P13 }
+  polygon name=pL135  points = { pR3P13 pR2P13 pR3P12 }
+  polygon name=pL136  points = { pR2P13 pR3P13 pR2P14 }
+  polygon name=pL137  points = { pR3P14 pR2P14 pR3P13 }
+  polygon name=pL138  points = { pR2P14 pR3P14 pR2P15 }
+  polygon name=pL139  points = { pR3P15 pR2P15 pR3P14 }
+  polygon name=pL140  points = { pR2P15 pR3P15 pR2P16 }
+  polygon name=pL141  points = { pR3P16 pR2P16 pR3P15 }
+  polygon name=pL142  points = { pR2P16 pR3P16 pR2P17 }
+  polygon name=pL143  points = { pR3P17 pR2P17 pR3P16 }
+  polygon name=pL144  points = { pR2P17 pR3P17 pR2P18 }
+  polygon name=pL145  points = { pR3P18 pR2P18 pR3P17 }
+  polygon name=pL146  points = { pR2P18 pR3P18 pR2P19 }
+  polygon name=pL147  points = { pR3P19 pR2P19 pR3P18 }
+  polygon name=pL148  points = { pR2P19 pR3P19 pR2P20 }
+  polygon name=pL149  points = { pR3P20 pR2P20 pR3P19 }
+  polygon name=pL150  points = { pR2P20 pR3P20 pR2P21 }
+  polygon name=pL151  points = { pR3P21 pR2P21 pR3P20 }
+  polygon name=pL152  points = { pR2P21 pR3P21 pR2P22 }
+  polygon name=pL153  points = { pR3P22 pR2P22 pR3P21 }
+  polygon name=pL154  points = { pR2P22 pR3P22 pR2P23 }
+  polygon name=pL155  points = { pR3P23 pR2P23 pR3P22 }
+  polygon name=pL156  points = { pR2P23 pR3P23 pR2P24 }
+  polygon name=pL157  points = { pR3P24 pR2P24 pR3P23 }
+  polygon name=pL158  points = { pR2P24 pR3P24 pR2P25 }
+  polygon name=pL159  points = { pR3P25 pR2P25 pR3P24 }
+  polygon name=pL160  points = { pR2P25 pR3P25 pR2P26 }
+  polygon name=pL161  points = { pR3P26 pR2P26 pR3P25 }
+  polygon name=pL162  points = { pR2P26 pR3P26 pR2P27 }
+  polygon name=pL163  points = { pR3P27 pR2P27 pR3P26 }
+  polygon name=pL164  points = { pR2P27 pR3P27 pR2P28 }
+  polygon name=pL165  points = { pR3P28 pR2P28 pR3P27 }
+  polygon name=pL166  points = { pR2P28 pR3P28 pR2P29 }
+  polygon name=pL167  points = { pR3P29 pR2P29 pR3P28 }
+  polygon name=pL168  points = { pR3P1 pR4P1 pR3P2 }
+  polygon name=pL169  points = { pR4P2 pR3P2 pR4P1 }
+  polygon name=pL170  points = { pR3P2 pR4P2 pR3P3 }
+  polygon name=pL171  points = { pR4P3 pR3P3 pR4P2 }
+  polygon name=pL172  points = { pR3P3 pR4P3 pR3P4 }
+  polygon name=pL173  points = { pR4P4 pR3P4 pR4P3 }
+  polygon name=pL174  points = { pR3P4 pR4P4 pR3P5 }
+  polygon name=pL175  points = { pR4P5 pR3P5 pR4P4 }
+  polygon name=pL176  points = { pR3P5 pR4P5 pR3P6 }
+  polygon name=pL177  points = { pR4P6 pR3P6 pR4P5 }
+  polygon name=pL178  points = { pR3P6 pR4P6 pR3P7 }
+  polygon name=pL179  points = { pR4P7 pR3P7 pR4P6 }
+  polygon name=pL180  points = { pR3P7 pR4P7 pR3P8 }
+  polygon name=pL181  points = { pR4P8 pR3P8 pR4P7 }
+  polygon name=pL182  points = { pR3P8 pR4P8 pR3P9 }
+  polygon name=pL183  points = { pR4P9 pR3P9 pR4P8 }
+  polygon name=pL184  points = { pR3P9 pR4P9 pR3P10 }
+  polygon name=pL185  points = { pR4P10 pR3P10 pR4P9 }
+  polygon name=pL186  points = { pR3P10 pR4P10 pR3P11 }
+  polygon name=pL187  points = { pR4P11 pR3P11 pR4P10 }
+  polygon name=pL188  points = { pR3P11 pR4P11 pR3P12 }
+  polygon name=pL189  points = { pR4P12 pR3P12 pR4P11 }
+  polygon name=pL190  points = { pR3P12 pR4P12 pR3P13 }
+  polygon name=pL191  points = { pR4P13 pR3P13 pR4P12 }
+  polygon name=pL192  points = { pR3P13 pR4P13 pR3P14 }
+  polygon name=pL193  points = { pR4P14 pR3P14 pR4P13 }
+  polygon name=pL194  points = { pR3P14 pR4P14 pR3P15 }
+  polygon name=pL195  points = { pR4P15 pR3P15 pR4P14 }
+  polygon name=pL196  points = { pR3P15 pR4P15 pR3P16 }
+  polygon name=pL197  points = { pR4P16 pR3P16 pR4P15 }
+  polygon name=pL198  points = { pR3P16 pR4P16 pR3P17 }
+  polygon name=pL199  points = { pR4P17 pR3P17 pR4P16 }
+  polygon name=pL200  points = { pR3P17 pR4P17 pR3P18 }
+  polygon name=pL201  points = { pR4P18 pR3P18 pR4P17 }
+  polygon name=pL202  points = { pR3P18 pR4P18 pR3P19 }
+  polygon name=pL203  points = { pR4P19 pR3P19 pR4P18 }
+  polygon name=pL204  points = { pR3P19 pR4P19 pR3P20 }
+  polygon name=pL205  points = { pR4P20 pR3P20 pR4P19 }
+  polygon name=pL206  points = { pR3P20 pR4P20 pR3P21 }
+  polygon name=pL207  points = { pR4P21 pR3P21 pR4P20 }
+  polygon name=pL208  points = { pR3P21 pR4P21 pR3P22 }
+  polygon name=pL209  points = { pR4P22 pR3P22 pR4P21 }
+  polygon name=pL210  points = { pR3P22 pR4P22 pR3P23 }
+  polygon name=pL211  points = { pR4P23 pR3P23 pR4P22 }
+  polygon name=pL212  points = { pR3P23 pR4P23 pR3P24 }
+  polygon name=pL213  points = { pR4P24 pR3P24 pR4P23 }
+  polygon name=pL214  points = { pR3P24 pR4P24 pR3P25 }
+  polygon name=pL215  points = { pR4P25 pR3P25 pR4P24 }
+  polygon name=pL216  points = { pR3P25 pR4P25 pR3P26 }
+  polygon name=pL217  points = { pR4P26 pR3P26 pR4P25 }
+  polygon name=pL218  points = { pR3P26 pR4P26 pR3P27 }
+  polygon name=pL219  points = { pR4P27 pR3P27 pR4P26 }
+  polygon name=pL220  points = { pR3P27 pR4P27 pR3P28 }
+  polygon name=pL221  points = { pR4P28 pR3P28 pR4P27 }
+  polygon name=pL222  points = { pR3P28 pR4P28 pR3P29 }
+  polygon name=pL223  points = { pR4P29 pR3P29 pR4P28 }
+  polygon name=pL224  points = { pR4P1 pR5P1 pR4P2 }
+  polygon name=pL225  points = { pR5P2 pR4P2 pR5P1 }
+  polygon name=pL226  points = { pR4P2 pR5P2 pR4P3 }
+  polygon name=pL227  points = { pR5P3 pR4P3 pR5P2 }
+  polygon name=pL228  points = { pR4P3 pR5P3 pR4P4 }
+  polygon name=pL229  points = { pR5P4 pR4P4 pR5P3 }
+  polygon name=pL230  points = { pR4P4 pR5P4 pR4P5 }
+  polygon name=pL231  points = { pR5P5 pR4P5 pR5P4 }
+  polygon name=pL232  points = { pR4P5 pR5P5 pR4P6 }
+  polygon name=pL233  points = { pR5P6 pR4P6 pR5P5 }
+  polygon name=pL234  points = { pR4P6 pR5P6 pR4P7 }
+  polygon name=pL235  points = { pR5P7 pR4P7 pR5P6 }
+  polygon name=pL236  points = { pR4P7 pR5P7 pR4P8 }
+  polygon name=pL237  points = { pR5P8 pR4P8 pR5P7 }
+  polygon name=pL238  points = { pR4P8 pR5P8 pR4P9 }
+  polygon name=pL239  points = { pR5P9 pR4P9 pR5P8 }
+  polygon name=pL240  points = { pR4P9 pR5P9 pR4P10 }
+  polygon name=pL241  points = { pR5P10 pR4P10 pR5P9 }
+  polygon name=pL242  points = { pR4P10 pR5P10 pR4P11 }
+  polygon name=pL243  points = { pR5P11 pR4P11 pR5P10 }
+  polygon name=pL244  points = { pR4P11 pR5P11 pR4P12 }
+  polygon name=pL245  points = { pR5P12 pR4P12 pR5P11 }
+  polygon name=pL246  points = { pR4P12 pR5P12 pR4P13 }
+  polygon name=pL247  points = { pR5P13 pR4P13 pR5P12 }
+  polygon name=pL248  points = { pR4P13 pR5P13 pR4P14 }
+  polygon name=pL249  points = { pR5P14 pR4P14 pR5P13 }
+  polygon name=pL250  points = { pR4P14 pR5P14 pR4P15 }
+  polygon name=pL251  points = { pR5P15 pR4P15 pR5P14 }
+  polygon name=pL252  points = { pR4P15 pR5P15 pR4P16 }
+  polygon name=pL253  points = { pR5P16 pR4P16 pR5P15 }
+  polygon name=pL254  points = { pR4P16 pR5P16 pR4P17 }
+  polygon name=pL255  points = { pR5P17 pR4P17 pR5P16 }
+  polygon name=pL256  points = { pR4P17 pR5P17 pR4P18 }
+  polygon name=pL257  points = { pR5P18 pR4P18 pR5P17 }
+  polygon name=pL258  points = { pR4P18 pR5P18 pR4P19 }
+  polygon name=pL259  points = { pR5P19 pR4P19 pR5P18 }
+  polygon name=pL260  points = { pR4P19 pR5P19 pR4P20 }
+  polygon name=pL261  points = { pR5P20 pR4P20 pR5P19 }
+  polygon name=pL262  points = { pR4P20 pR5P20 pR4P21 }
+  polygon name=pL263  points = { pR5P21 pR4P21 pR5P20 }
+  polygon name=pL264  points = { pR4P21 pR5P21 pR4P22 }
+  polygon name=pL265  points = { pR5P22 pR4P22 pR5P21 }
+  polygon name=pL266  points = { pR4P22 pR5P22 pR4P23 }
+  polygon name=pL267  points = { pR5P23 pR4P23 pR5P22 }
+  polygon name=pL268  points = { pR4P23 pR5P23 pR4P24 }
+  polygon name=pL269  points = { pR5P24 pR4P24 pR5P23 }
+  polygon name=pL270  points = { pR4P24 pR5P24 pR4P25 }
+  polygon name=pL271  points = { pR5P25 pR4P25 pR5P24 }
+  polygon name=pL272  points = { pR4P25 pR5P25 pR4P26 }
+  polygon name=pL273  points = { pR5P26 pR4P26 pR5P25 }
+  polygon name=pL274  points = { pR4P26 pR5P26 pR4P27 }
+  polygon name=pL275  points = { pR5P27 pR4P27 pR5P26 }
+  polygon name=pL276  points = { pR4P27 pR5P27 pR4P28 }
+  polygon name=pL277  points = { pR5P28 pR4P28 pR5P27 }
+  polygon name=pL278  points = { pR4P28 pR5P28 pR4P29 }
+  polygon name=pL279  points = { pR5P29 pR4P29 pR5P28 }
+  polygon name=pL280  points = { pR5P1 pR6P1 pR5P2 }
+  polygon name=pL281  points = { pR6P2 pR5P2 pR6P1 }
+  polygon name=pL282  points = { pR5P2 pR6P2 pR5P3 }
+  polygon name=pL283  points = { pR6P3 pR5P3 pR6P2 }
+  polygon name=pL284  points = { pR5P3 pR6P3 pR5P4 }
+  polygon name=pL285  points = { pR6P4 pR5P4 pR6P3 }
+  polygon name=pL286  points = { pR5P4 pR6P4 pR5P5 }
+  polygon name=pL287  points = { pR6P5 pR5P5 pR6P4 }
+  polygon name=pL288  points = { pR5P5 pR6P5 pR5P6 }
+  polygon name=pL289  points = { pR6P6 pR5P6 pR6P5 }
+  polygon name=pL290  points = { pR5P6 pR6P6 pR5P7 }
+  polygon name=pL291  points = { pR6P7 pR5P7 pR6P6 }
+  polygon name=pL292  points = { pR5P7 pR6P7 pR5P8 }
+  polygon name=pL293  points = { pR6P8 pR5P8 pR6P7 }
+  polygon name=pL294  points = { pR5P8 pR6P8 pR5P9 }
+  polygon name=pL295  points = { pR6P9 pR5P9 pR6P8 }
+  polygon name=pL296  points = { pR5P9 pR6P9 pR5P10 }
+  polygon name=pL297  points = { pR6P10 pR5P10 pR6P9 }
+  polygon name=pL298  points = { pR5P10 pR6P10 pR5P11 }
+  polygon name=pL299  points = { pR6P11 pR5P11 pR6P10 }
+  polygon name=pL300  points = { pR5P11 pR6P11 pR5P12 }
+  polygon name=pL301  points = { pR6P12 pR5P12 pR6P11 }
+  polygon name=pL302  points = { pR5P12 pR6P12 pR5P13 }
+  polygon name=pL303  points = { pR6P13 pR5P13 pR6P12 }
+  polygon name=pL304  points = { pR5P13 pR6P13 pR5P14 }
+  polygon name=pL305  points = { pR6P14 pR5P14 pR6P13 }
+  polygon name=pL306  points = { pR5P14 pR6P14 pR5P15 }
+  polygon name=pL307  points = { pR6P15 pR5P15 pR6P14 }
+  polygon name=pL308  points = { pR5P15 pR6P15 pR5P16 }
+  polygon name=pL309  points = { pR6P16 pR5P16 pR6P15 }
+  polygon name=pL310  points = { pR5P16 pR6P16 pR5P17 }
+  polygon name=pL311  points = { pR6P17 pR5P17 pR6P16 }
+  polygon name=pL312  points = { pR5P17 pR6P17 pR5P18 }
+  polygon name=pL313  points = { pR6P18 pR5P18 pR6P17 }
+  polygon name=pL314  points = { pR5P18 pR6P18 pR5P19 }
+  polygon name=pL315  points = { pR6P19 pR5P19 pR6P18 }
+  polygon name=pL316  points = { pR5P19 pR6P19 pR5P20 }
+  polygon name=pL317  points = { pR6P20 pR5P20 pR6P19 }
+  polygon name=pL318  points = { pR5P20 pR6P20 pR5P21 }
+  polygon name=pL319  points = { pR6P21 pR5P21 pR6P20 }
+  polygon name=pL320  points = { pR5P21 pR6P21 pR5P22 }
+  polygon name=pL321  points = { pR6P22 pR5P22 pR6P21 }
+  polygon name=pL322  points = { pR5P22 pR6P22 pR5P23 }
+  polygon name=pL323  points = { pR6P23 pR5P23 pR6P22 }
+  polygon name=pL324  points = { pR5P23 pR6P23 pR5P24 }
+  polygon name=pL325  points = { pR6P24 pR5P24 pR6P23 }
+  polygon name=pL326  points = { pR5P24 pR6P24 pR5P25 }
+  polygon name=pL327  points = { pR6P25 pR5P25 pR6P24 }
+  polygon name=pL328  points = { pR5P25 pR6P25 pR5P26 }
+  polygon name=pL329  points = { pR6P26 pR5P26 pR6P25 }
+  polygon name=pL330  points = { pR5P26 pR6P26 pR5P27 }
+  polygon name=pL331  points = { pR6P27 pR5P27 pR6P26 }
+  polygon name=pL332  points = { pR5P27 pR6P27 pR5P28 }
+  polygon name=pL333  points = { pR6P28 pR5P28 pR6P27 }
+  polygon name=pL334  points = { pR5P28 pR6P28 pR5P29 }
+  polygon name=pL335  points = { pR6P29 pR5P29 pR6P28 }
+  polygon name=pL336  points = { pR0P0 pR0P1 pR0P2 pR0P3 pR0P4 pR0P5 pR0P6 pR0P7 pR0P8 pR0P9 \
+    pR0P10 pR0P11 pR0P12 pR0P13 pR0P14 pR0P15 pR0P16 pR0P17 pR0P18 pR0P19 \
+    pR0P20 pR0P21 pR0P22 pR0P23 pR0P24 pR0P25 pR0P26 pR0P27 pR0P28 pR0P29 \
+    pR0P30  } 
+  polygon name=pL337  points = { pR6P0 pR6P1 pR6P2 pR6P3 pR6P4 pR6P5 pR6P6 pR6P7 pR6P8 pR6P9 \
+    pR6P10 pR6P11 pR6P12 pR6P13 pR6P14 pR6P15 pR6P16 pR6P17 pR6P18 pR6P19 \
+    pR6P20 pR6P21 pR6P22 pR6P23 pR6P24 pR6P25 pR6P26 pR6P27 pR6P28 pR6P29 \
+    pR6P30  } 
+  polygon name=pL338  points = { pR0P1 pR1P1 pR2P1 pR3P1 pR4P1 pR5P1 pR6P1 pCUP0 } 
+  polygon name=pL339  points = { pR0P29 pR1P29 pR2P29 pR3P29 pR4P29 pR5P29 pR6P29 pCBP0 } 
+ 
+  # Polyhedron 
+  polyhedron name= $name polygons = { pL0 pL1 pL2 pL3 pL4 pL5 pL6 pL7 pL8 pL9 \
+    pL10 pL11 pL12 pL13 pL14 pL15 pL16 pL17 pL18 pL19 \
+    pL20 pL21 pL22 pL23 pL24 pL25 pL26 pL27 pL28 pL29 \
+    pL30 pL31 pL32 pL33 pL34 pL35 pL36 pL37 pL38 pL39 \
+    pL40 pL41 pL42 pL43 pL44 pL45 pL46 pL47 pL48 pL49 \
+    pL50 pL51 pL52 pL53 pL54 pL55 pL56 pL57 pL58 pL59 \
+    pL60 pL61 pL62 pL63 pL64 pL65 pL66 pL67 pL68 pL69 \
+    pL70 pL71 pL72 pL73 pL74 pL75 pL76 pL77 pL78 pL79 \
+    pL80 pL81 pL82 pL83 pL84 pL85 pL86 pL87 pL88 pL89 \
+    pL90 pL91 pL92 pL93 pL94 pL95 pL96 pL97 pL98 pL99 \
+    pL100 pL101 pL102 pL103 pL104 pL105 pL106 pL107 pL108 pL109 \
+    pL110 pL111 pL112 pL113 pL114 pL115 pL116 pL117 pL118 pL119 \
+    pL120 pL121 pL122 pL123 pL124 pL125 pL126 pL127 pL128 pL129 \
+    pL130 pL131 pL132 pL133 pL134 pL135 pL136 pL137 pL138 pL139 \
+    pL140 pL141 pL142 pL143 pL144 pL145 pL146 pL147 pL148 pL149 \
+    pL150 pL151 pL152 pL153 pL154 pL155 pL156 pL157 pL158 pL159 \
+    pL160 pL161 pL162 pL163 pL164 pL165 pL166 pL167 pL168 pL169 \
+    pL170 pL171 pL172 pL173 pL174 pL175 pL176 pL177 pL178 pL179 \
+    pL180 pL181 pL182 pL183 pL184 pL185 pL186 pL187 pL188 pL189 \
+    pL190 pL191 pL192 pL193 pL194 pL195 pL196 pL197 pL198 pL199 \
+    pL200 pL201 pL202 pL203 pL204 pL205 pL206 pL207 pL208 pL209 \
+    pL210 pL211 pL212 pL213 pL214 pL215 pL216 pL217 pL218 pL219 \
+    pL220 pL221 pL222 pL223 pL224 pL225 pL226 pL227 pL228 pL229 \
+    pL230 pL231 pL232 pL233 pL234 pL235 pL236 pL237 pL238 pL239 \
+    pL240 pL241 pL242 pL243 pL244 pL245 pL246 pL247 pL248 pL249 \
+    pL250 pL251 pL252 pL253 pL254 pL255 pL256 pL257 pL258 pL259 \
+    pL260 pL261 pL262 pL263 pL264 pL265 pL266 pL267 pL268 pL269 \
+    pL270 pL271 pL272 pL273 pL274 pL275 pL276 pL277 pL278 pL279 \
+    pL280 pL281 pL282 pL283 pL284 pL285 pL286 pL287 pL288 pL289 \
+    pL290 pL291 pL292 pL293 pL294 pL295 pL296 pL297 pL298 pL299 \
+    pL300 pL301 pL302 pL303 pL304 pL305 pL306 pL307 pL308 pL309 \
+    pL310 pL311 pL312 pL313 pL314 pL315 pL316 pL317 pL318 pL319 \
+    pL320 pL321 pL322 pL323 pL324 pL325 pL326 pL327 pL328 pL329 \
+    pL330 pL331 pL332 pL333 pL334 pL335 pL336 pL337 pL338 pL339 } info=2 
+
+}
+
+
+fproc PolyHedronSTIaccv {args} {
+#rem # PolyHedronSTI - procedure to create STI shape for convex active corner
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. Direction - rb | lb | lf | rf
+#rem #  3. X0        - Active corner x-coordinate
+#rem #  4. Y0        - Active corner y-coordinate
+#rem #  5. Z0        - Active corner z-coordinate
+#rem #  6. Ymax      - STI end point
+#rem #  7. Tsti      - STI depth
+#rem #  8. Asti      - STI slope angle
+#rem #  9. Hsti      - STI height
+#rem # 10. Rdown     - Radius of down corner
+#rem # 11. Rbottom   - Radius of bottom corner
+#rem # 12. Rup       - Radius of up corner
+#rem # 13. Rac       - Radius of active corner
+
+  if {[llength $args] < 13 || [llength $args] > 13} {
+     error "PolyHedronSTIac: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set dir       [lindex $args 1]
+  set x0        [lindex $args 2]
+  set y0        [lindex $args 3]
+  set z0        [lindex $args 4]
+  set ymax      [lindex $args 5]
+  set Tsti      [lindex $args 6]
+  set Asti      [lindex $args 7]
+  set Hsti      [lindex $args 8]
+  set Rd        [lindex $args 9]
+  set Rb        [lindex $args 10]
+  set Ru        [lindex $args 11]
+  set Ra        [lindex $args 12]
+
+  set D2R       [expr (atan(1.0)/45.0)] ; #Degree to radiant conv.
+  set rN        10
+
+#---- Down corner rounding ------------------------
+  # Si surface line
+  set A0         1
+  set B0         0
+  set C0         0
+
+  # STI slope surface line
+  set A1         [expr tan((90-$Asti)*$D2R)]
+  set B1        -1
+  set C1         0
+
+  # STI half slope line
+  set A2         [expr tan(($Asti/2.0)*$D2R)]
+  set B2         1
+  set C2         0
+
+  # Down circle center point
+  set xdc       $Rd
+  set ydc       [expr (-1.0*$A2*$xdc)]
+
+  # Si surface line contact  point
+  set xdcp      0.0
+  set ydcp      $ydc
+
+  # STI slope line contact  point
+  set xdcps     [expr ($Rd*tan(($Asti/2.0)*$D2R)*sin($Asti*$D2R))]
+  set ydcps     [expr ($A1*$xdcps)]
+
+  # Bottom corner point          
+  set x1        [expr ($x0+$Tsti)]
+  set y1        [expr ($y0+$A1*$Tsti)]
+#--------------------------------------------------
+  
+#---- Bottom corner rounding ------------------------
+  # Bottom circle center point
+  set xbc       [expr (-1.0*$Rb)]
+  set ybc       [expr (-1.0*$A2*$xbc)]
+
+  # STI surface line contact  point
+  set xbcp      0.0
+  set ybcp      $ybc
+
+  # STI slope line contact  point
+  set xbcps     [expr (-1.0*$Rb*tan(($Asti/2.0)*$D2R)*sin($Asti*$D2R))]
+  set ybcps     [expr ($A1*$xbcps)]
+#--------------------------------------------------
+
+#---- Up corner rounding ------------------------
+  # Up circle center point
+  set xuc       [expr (-1.0*$Ru)]
+  set yuc       $ydc
+
+  # Top  point
+  set xutp      [expr (-1.0*$Hsti)]
+  set yutp      [expr ($yuc+sqrt(pow($Ru,2)-pow(($xutp-$xuc),2)))]
+#--------------------------------------------------
+
+#---- Restriction rule  ------------------------
+if { $Ru < $Hsti } {
+  error "Up corner rounding radius ( $Ru ) should be larger than STI height ( $Hsti )..."
+  exit -1
+}
+
+set tdcps [expr ($y0+$ydcps)]
+set tbcps [expr ($y1+$ybcps)]
+if { $tbcps < $tdcps } {
+  error "Down corner rounding slope contact point ( $tdcps ) should not be larger than bottom corner rounding slope contact point ( $tbcps )..."
+  exit -1
+}
+
+set tutp  [expr ($y0+$yutp)]
+set tymax [expr ($y0+$ymax)]
+if { $tymax <= $tutp } {
+  error "Ymax ( $ymax ) should be larger than up corner rounding end point ( $tutp )..."
+  exit -1
+}
+
+set tbcp  [expr ($y1+$ybcp)]
+set tymax [expr ($y0+$ymax)]
+if { $tymax <= $tbcp } {
+  error "Ymax ( $ymax ) should be larger than bottom corner rounding point ( $tbcp )..."
+  exit -1
+}
+
+
+#--- STI shape point list -----------------------------------------------------
+  set stiRLx  [list]
+  set stiRLy0 [list]
+  set stiRLy  [list]
+
+  #--- Up end ---
+  set tx [expr ($x0-$Hsti)]
+  set ty [expr (0.0+$ymax)]
+  lappend stiRLx  $tx
+  lappend stiRLy0 $ty
+
+  #--- Up corner ---
+  set dy  [expr (($yutp-$yuc)/($rN-1))] 
+  for {set i 0} {$i < [expr ($rN-1)]} {incr i 1} {
+    set ty [expr ($yutp-$i*$dy)]
+    set tx [expr ($xuc+sqrt(pow($Ru,2)-pow(($ty-$yuc),2)))]
+    set tx [expr ($x0+$tx)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Down corner ---
+  set dy  [expr (($ydcps-$ydcp)/($rN-1))] 
+  for {set i 0} {$i < $rN} {incr i 1} {
+    set ty [expr ($ydcp+$i*$dy)]
+    set tx [expr ($xdc-sqrt(pow($Rd,2)-pow(($ty-$ydc),2)))]
+    set tx [expr ($x0+$tx)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Bottom corner ---
+  set dy  [expr (($ybcp-$ybcps)/($rN-1))] 
+  for {set i 0} {$i < $rN} {incr i 1} {
+    set ty [expr ($ybcps+$i*$dy)]
+    set tx [expr ($xbc+sqrt(pow($Rb,2)-pow(($ty-$ybc),2)))]
+    set tx [expr ($x1+$tx)]
+    set ty [expr ($y1+$ty-$y0)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Bottom end ---
+  set tx [expr ($x0+$tx)]
+  set ty [expr (0.0+$ymax)]
+  lappend stiRLx  $tx
+  lappend stiRLy0 $ty
+
+  set pN  [expr (3*$rN+1)]
+
+set debug_point 0
+if { $debug_point } {
+
+  for {set i 0} {$i < $pN} {incr i 1} {
+    puts -nonewline [lindex $stiRLx  $i]
+    puts -nonewline " "
+    puts            [lindex $stiRLy0 $i]
+  }
+
+}
+
+  #--- Move the coordinate center to the center of the active corner circle ---
+  set tyc [expr (0.0-$Ra)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set ty0 [lindex $stiRLy0 $i]
+    set ty  [expr ($ty0-$tyc)]
+    lappend stiRLy  $ty
+  }
+
+  #--- Generate the active corner points ---
+  set acrN  7
+  set dA    15
+  if { ![string compare $dir "rf"] } {
+    set Adir    0
+    set ySign    1
+    set zSign    1
+  } elseif { ![string compare $dir "rb"] } {
+    set Adir   90
+    set ySign    1
+    set zSign   -1
+  } elseif { ![string compare $dir "lb"] } {
+    set Adir  180
+    set ySign   -1
+    set zSign   -1
+  } elseif { ![string compare $dir "lf"] } {
+    set Adir  270
+    set ySign   -1
+    set zSign    1
+  } else {
+    error "-- $dir -- \nWrong Direction: rf rb lb lf"
+    exit -1
+  }
+  set stiAcrLy0  [list] ; set stiAcrLz0  [list]
+  set stiAcrLy1  [list] ; set stiAcrLz1  [list]
+  set stiAcrLy2  [list] ; set stiAcrLz2  [list]
+  set stiAcrLy3  [list] ; set stiAcrLz3  [list]
+  set stiAcrLy4  [list] ; set stiAcrLz4  [list]
+  set stiAcrLy5  [list] ; set stiAcrLz5  [list]
+  set stiAcrLy6  [list] ; set stiAcrLz6  [list]
+
+  set tTheta [expr (($Adir+0.0*$dA)*$D2R)]
+  if { $Adir == 90 } {
+    set tAy 1 ; set tAz 0
+  } elseif { $Adir == 180 } {
+    set tAy 0 ; set tAz -1
+  } elseif { $Adir == 270 } {
+    set tAy -1 ; set tAz 0
+  } elseif { $Adir == 0 } {
+    set tAy 0 ; set tAz 1
+  } else {
+    error "-- $Adir $dir -- \nWrong Direction: rf rb lb lf"
+    exit -1
+  }
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*$tAy+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*$tAz+$zSign*$tyc+$z0)]
+    lappend stiAcrLy0 $ty 
+    lappend stiAcrLz0 $tz 
+  }
+
+  set tTheta [expr (($Adir+1.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy1 $ty 
+    lappend stiAcrLz1 $tz 
+  }
+
+  set tTheta [expr (($Adir+2.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy2 $ty 
+    lappend stiAcrLz2 $tz 
+  }
+
+  set tTheta [expr (($Adir+3.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy3 $ty 
+    lappend stiAcrLz3 $tz 
+  }
+
+  set tTheta [expr (($Adir+4.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy4 $ty 
+    lappend stiAcrLz4 $tz 
+  }
+
+  set tTheta [expr (($Adir+5.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*sin($tTheta)+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*cos($tTheta)+$zSign*$tyc+$z0)]
+    lappend stiAcrLy5 $ty 
+    lappend stiAcrLz5 $tz 
+  }
+
+  set tAdir [expr (($Adir+90)%360)]
+  if { $tAdir == 90 } {
+    set tAy 1 ; set tAz 0
+  } elseif { $tAdir == 180 } {
+    set tAy 0 ; set tAz -1
+  } elseif { $tAdir == 270 } {
+    set tAy -1 ; set tAz 0
+  } elseif { $tAdir == 0 } {
+    set tAy 0 ; set tAz 1
+  } else {
+    error "-- $tAdir $dir -- \nWrong Direction: rf rb lb lf"
+    exit -1
+  }
+  set tTheta [expr (($Adir+6.0*$dA)*$D2R)]
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set tyr  [lindex $stiRLy  $i]
+    set ty   [expr ($tyr*$tAy+$ySign*$tyc+$y0)]
+    set tz   [expr ($tyr*$tAz+$zSign*$tyc+$z0)]
+    lappend stiAcrLy6 $ty 
+    lappend stiAcrLz6 $tz 
+  }
+
+  # Points
+  # 0 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy0  0] ; set tz [lindex $stiAcrLz0  0]
+  point name=pR0P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy0  1] ; set tz [lindex $stiAcrLz0  1]
+  point name=pR0P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy0  2] ; set tz [lindex $stiAcrLz0  2]
+  point name=pR0P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy0  3] ; set tz [lindex $stiAcrLz0  3]
+  point name=pR0P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy0  4] ; set tz [lindex $stiAcrLz0  4]
+  point name=pR0P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy0  5] ; set tz [lindex $stiAcrLz0  5]
+  point name=pR0P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy0  6] ; set tz [lindex $stiAcrLz0  6]
+  point name=pR0P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy0  7] ; set tz [lindex $stiAcrLz0  7]
+  point name=pR0P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy0  8] ; set tz [lindex $stiAcrLz0  8]
+  point name=pR0P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy0  9] ; set tz [lindex $stiAcrLz0  9]
+  point name=pR0P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy0  10] ; set tz [lindex $stiAcrLz0  10]
+  point name=pR0P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy0  11] ; set tz [lindex $stiAcrLz0  11]
+  point name=pR0P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy0  12] ; set tz [lindex $stiAcrLz0  12]
+  point name=pR0P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy0  13] ; set tz [lindex $stiAcrLz0  13]
+  point name=pR0P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy0  14] ; set tz [lindex $stiAcrLz0  14]
+  point name=pR0P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy0  15] ; set tz [lindex $stiAcrLz0  15]
+  point name=pR0P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy0  16] ; set tz [lindex $stiAcrLz0  16]
+  point name=pR0P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy0  17] ; set tz [lindex $stiAcrLz0  17]
+  point name=pR0P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy0  18] ; set tz [lindex $stiAcrLz0  18]
+  point name=pR0P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy0  19] ; set tz [lindex $stiAcrLz0  19]
+  point name=pR0P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy0  20] ; set tz [lindex $stiAcrLz0  20]
+  point name=pR0P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy0  21] ; set tz [lindex $stiAcrLz0  21]
+  point name=pR0P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy0  22] ; set tz [lindex $stiAcrLz0  22]
+  point name=pR0P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy0  23] ; set tz [lindex $stiAcrLz0  23]
+  point name=pR0P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy0  24] ; set tz [lindex $stiAcrLz0  24]
+  point name=pR0P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy0  25] ; set tz [lindex $stiAcrLz0  25]
+  point name=pR0P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy0  26] ; set tz [lindex $stiAcrLz0  26]
+  point name=pR0P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy0  27] ; set tz [lindex $stiAcrLz0  27]
+  point name=pR0P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy0  28] ; set tz [lindex $stiAcrLz0  28]
+  point name=pR0P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy0  29] ; set tz [lindex $stiAcrLz0  29]
+  point name=pR0P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy0  30] ; set tz [lindex $stiAcrLz0  30]
+  point name=pR0P30  coord= { $tx $ty $tz }
+  # 15 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy1  0] ; set tz [lindex $stiAcrLz1  0]
+  point name=pR1P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy1  1] ; set tz [lindex $stiAcrLz1  1]
+  point name=pR1P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy1  2] ; set tz [lindex $stiAcrLz1  2]
+  point name=pR1P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy1  3] ; set tz [lindex $stiAcrLz1  3]
+  point name=pR1P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy1  4] ; set tz [lindex $stiAcrLz1  4]
+  point name=pR1P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy1  5] ; set tz [lindex $stiAcrLz1  5]
+  point name=pR1P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy1  6] ; set tz [lindex $stiAcrLz1  6]
+  point name=pR1P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy1  7] ; set tz [lindex $stiAcrLz1  7]
+  point name=pR1P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy1  8] ; set tz [lindex $stiAcrLz1  8]
+  point name=pR1P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy1  9] ; set tz [lindex $stiAcrLz1  9]
+  point name=pR1P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy1  10] ; set tz [lindex $stiAcrLz1  10]
+  point name=pR1P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy1  11] ; set tz [lindex $stiAcrLz1  11]
+  point name=pR1P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy1  12] ; set tz [lindex $stiAcrLz1  12]
+  point name=pR1P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy1  13] ; set tz [lindex $stiAcrLz1  13]
+  point name=pR1P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy1  14] ; set tz [lindex $stiAcrLz1  14]
+  point name=pR1P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy1  15] ; set tz [lindex $stiAcrLz1  15]
+  point name=pR1P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy1  16] ; set tz [lindex $stiAcrLz1  16]
+  point name=pR1P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy1  17] ; set tz [lindex $stiAcrLz1  17]
+  point name=pR1P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy1  18] ; set tz [lindex $stiAcrLz1  18]
+  point name=pR1P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy1  19] ; set tz [lindex $stiAcrLz1  19]
+  point name=pR1P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy1  20] ; set tz [lindex $stiAcrLz1  20]
+  point name=pR1P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy1  21] ; set tz [lindex $stiAcrLz1  21]
+  point name=pR1P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy1  22] ; set tz [lindex $stiAcrLz1  22]
+  point name=pR1P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy1  23] ; set tz [lindex $stiAcrLz1  23]
+  point name=pR1P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy1  24] ; set tz [lindex $stiAcrLz1  24]
+  point name=pR1P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy1  25] ; set tz [lindex $stiAcrLz1  25]
+  point name=pR1P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy1  26] ; set tz [lindex $stiAcrLz1  26]
+  point name=pR1P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy1  27] ; set tz [lindex $stiAcrLz1  27]
+  point name=pR1P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy1  28] ; set tz [lindex $stiAcrLz1  28]
+  point name=pR1P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy1  29] ; set tz [lindex $stiAcrLz1  29]
+  point name=pR1P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy1  30] ; set tz [lindex $stiAcrLz1  30]
+  point name=pR1P30  coord= { $tx $ty $tz }
+  # 30 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy2  0] ; set tz [lindex $stiAcrLz2  0]
+  point name=pR2P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy2  1] ; set tz [lindex $stiAcrLz2  1]
+  point name=pR2P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy2  2] ; set tz [lindex $stiAcrLz2  2]
+  point name=pR2P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy2  3] ; set tz [lindex $stiAcrLz2  3]
+  point name=pR2P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy2  4] ; set tz [lindex $stiAcrLz2  4]
+  point name=pR2P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy2  5] ; set tz [lindex $stiAcrLz2  5]
+  point name=pR2P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy2  6] ; set tz [lindex $stiAcrLz2  6]
+  point name=pR2P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy2  7] ; set tz [lindex $stiAcrLz2  7]
+  point name=pR2P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy2  8] ; set tz [lindex $stiAcrLz2  8]
+  point name=pR2P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy2  9] ; set tz [lindex $stiAcrLz2  9]
+  point name=pR2P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy2  10] ; set tz [lindex $stiAcrLz2  10]
+  point name=pR2P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy2  11] ; set tz [lindex $stiAcrLz2  11]
+  point name=pR2P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy2  12] ; set tz [lindex $stiAcrLz2  12]
+  point name=pR2P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy2  13] ; set tz [lindex $stiAcrLz2  13]
+  point name=pR2P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy2  14] ; set tz [lindex $stiAcrLz2  14]
+  point name=pR2P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy2  15] ; set tz [lindex $stiAcrLz2  15]
+  point name=pR2P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy2  16] ; set tz [lindex $stiAcrLz2  16]
+  point name=pR2P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy2  17] ; set tz [lindex $stiAcrLz2  17]
+  point name=pR2P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy2  18] ; set tz [lindex $stiAcrLz2  18]
+  point name=pR2P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy2  19] ; set tz [lindex $stiAcrLz2  19]
+  point name=pR2P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy2  20] ; set tz [lindex $stiAcrLz2  20]
+  point name=pR2P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy2  21] ; set tz [lindex $stiAcrLz2  21]
+  point name=pR2P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy2  22] ; set tz [lindex $stiAcrLz2  22]
+  point name=pR2P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy2  23] ; set tz [lindex $stiAcrLz2  23]
+  point name=pR2P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy2  24] ; set tz [lindex $stiAcrLz2  24]
+  point name=pR2P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy2  25] ; set tz [lindex $stiAcrLz2  25]
+  point name=pR2P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy2  26] ; set tz [lindex $stiAcrLz2  26]
+  point name=pR2P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy2  27] ; set tz [lindex $stiAcrLz2  27]
+  point name=pR2P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy2  28] ; set tz [lindex $stiAcrLz2  28]
+  point name=pR2P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy2  29] ; set tz [lindex $stiAcrLz2  29]
+  point name=pR2P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy2  30] ; set tz [lindex $stiAcrLz2  30]
+  point name=pR2P30  coord= { $tx $ty $tz }
+  # 45 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy3  0] ; set tz [lindex $stiAcrLz3  0]
+  point name=pR3P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy3  1] ; set tz [lindex $stiAcrLz3  1]
+  point name=pR3P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy3  2] ; set tz [lindex $stiAcrLz3  2]
+  point name=pR3P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy3  3] ; set tz [lindex $stiAcrLz3  3]
+  point name=pR3P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy3  4] ; set tz [lindex $stiAcrLz3  4]
+  point name=pR3P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy3  5] ; set tz [lindex $stiAcrLz3  5]
+  point name=pR3P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy3  6] ; set tz [lindex $stiAcrLz3  6]
+  point name=pR3P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy3  7] ; set tz [lindex $stiAcrLz3  7]
+  point name=pR3P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy3  8] ; set tz [lindex $stiAcrLz3  8]
+  point name=pR3P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy3  9] ; set tz [lindex $stiAcrLz3  9]
+  point name=pR3P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy3  10] ; set tz [lindex $stiAcrLz3  10]
+  point name=pR3P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy3  11] ; set tz [lindex $stiAcrLz3  11]
+  point name=pR3P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy3  12] ; set tz [lindex $stiAcrLz3  12]
+  point name=pR3P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy3  13] ; set tz [lindex $stiAcrLz3  13]
+  point name=pR3P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy3  14] ; set tz [lindex $stiAcrLz3  14]
+  point name=pR3P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy3  15] ; set tz [lindex $stiAcrLz3  15]
+  point name=pR3P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy3  16] ; set tz [lindex $stiAcrLz3  16]
+  point name=pR3P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy3  17] ; set tz [lindex $stiAcrLz3  17]
+  point name=pR3P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy3  18] ; set tz [lindex $stiAcrLz3  18]
+  point name=pR3P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy3  19] ; set tz [lindex $stiAcrLz3  19]
+  point name=pR3P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy3  20] ; set tz [lindex $stiAcrLz3  20]
+  point name=pR3P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy3  21] ; set tz [lindex $stiAcrLz3  21]
+  point name=pR3P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy3  22] ; set tz [lindex $stiAcrLz3  22]
+  point name=pR3P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy3  23] ; set tz [lindex $stiAcrLz3  23]
+  point name=pR3P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy3  24] ; set tz [lindex $stiAcrLz3  24]
+  point name=pR3P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy3  25] ; set tz [lindex $stiAcrLz3  25]
+  point name=pR3P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy3  26] ; set tz [lindex $stiAcrLz3  26]
+  point name=pR3P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy3  27] ; set tz [lindex $stiAcrLz3  27]
+  point name=pR3P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy3  28] ; set tz [lindex $stiAcrLz3  28]
+  point name=pR3P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy3  29] ; set tz [lindex $stiAcrLz3  29]
+  point name=pR3P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy3  30] ; set tz [lindex $stiAcrLz3  30]
+  point name=pR3P30  coord= { $tx $ty $tz }
+  # 60 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy4  0] ; set tz [lindex $stiAcrLz4  0]
+  point name=pR4P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy4  1] ; set tz [lindex $stiAcrLz4  1]
+  point name=pR4P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy4  2] ; set tz [lindex $stiAcrLz4  2]
+  point name=pR4P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy4  3] ; set tz [lindex $stiAcrLz4  3]
+  point name=pR4P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy4  4] ; set tz [lindex $stiAcrLz4  4]
+  point name=pR4P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy4  5] ; set tz [lindex $stiAcrLz4  5]
+  point name=pR4P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy4  6] ; set tz [lindex $stiAcrLz4  6]
+  point name=pR4P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy4  7] ; set tz [lindex $stiAcrLz4  7]
+  point name=pR4P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy4  8] ; set tz [lindex $stiAcrLz4  8]
+  point name=pR4P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy4  9] ; set tz [lindex $stiAcrLz4  9]
+  point name=pR4P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy4  10] ; set tz [lindex $stiAcrLz4  10]
+  point name=pR4P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy4  11] ; set tz [lindex $stiAcrLz4  11]
+  point name=pR4P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy4  12] ; set tz [lindex $stiAcrLz4  12]
+  point name=pR4P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy4  13] ; set tz [lindex $stiAcrLz4  13]
+  point name=pR4P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy4  14] ; set tz [lindex $stiAcrLz4  14]
+  point name=pR4P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy4  15] ; set tz [lindex $stiAcrLz4  15]
+  point name=pR4P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy4  16] ; set tz [lindex $stiAcrLz4  16]
+  point name=pR4P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy4  17] ; set tz [lindex $stiAcrLz4  17]
+  point name=pR4P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy4  18] ; set tz [lindex $stiAcrLz4  18]
+  point name=pR4P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy4  19] ; set tz [lindex $stiAcrLz4  19]
+  point name=pR4P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy4  20] ; set tz [lindex $stiAcrLz4  20]
+  point name=pR4P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy4  21] ; set tz [lindex $stiAcrLz4  21]
+  point name=pR4P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy4  22] ; set tz [lindex $stiAcrLz4  22]
+  point name=pR4P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy4  23] ; set tz [lindex $stiAcrLz4  23]
+  point name=pR4P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy4  24] ; set tz [lindex $stiAcrLz4  24]
+  point name=pR4P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy4  25] ; set tz [lindex $stiAcrLz4  25]
+  point name=pR4P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy4  26] ; set tz [lindex $stiAcrLz4  26]
+  point name=pR4P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy4  27] ; set tz [lindex $stiAcrLz4  27]
+  point name=pR4P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy4  28] ; set tz [lindex $stiAcrLz4  28]
+  point name=pR4P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy4  29] ; set tz [lindex $stiAcrLz4  29]
+  point name=pR4P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy4  30] ; set tz [lindex $stiAcrLz4  30]
+  point name=pR4P30  coord= { $tx $ty $tz }
+  # 75 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy5  0] ; set tz [lindex $stiAcrLz5  0]
+  point name=pR5P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy5  1] ; set tz [lindex $stiAcrLz5  1]
+  point name=pR5P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy5  2] ; set tz [lindex $stiAcrLz5  2]
+  point name=pR5P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy5  3] ; set tz [lindex $stiAcrLz5  3]
+  point name=pR5P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy5  4] ; set tz [lindex $stiAcrLz5  4]
+  point name=pR5P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy5  5] ; set tz [lindex $stiAcrLz5  5]
+  point name=pR5P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy5  6] ; set tz [lindex $stiAcrLz5  6]
+  point name=pR5P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy5  7] ; set tz [lindex $stiAcrLz5  7]
+  point name=pR5P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy5  8] ; set tz [lindex $stiAcrLz5  8]
+  point name=pR5P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy5  9] ; set tz [lindex $stiAcrLz5  9]
+  point name=pR5P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy5  10] ; set tz [lindex $stiAcrLz5  10]
+  point name=pR5P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy5  11] ; set tz [lindex $stiAcrLz5  11]
+  point name=pR5P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy5  12] ; set tz [lindex $stiAcrLz5  12]
+  point name=pR5P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy5  13] ; set tz [lindex $stiAcrLz5  13]
+  point name=pR5P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy5  14] ; set tz [lindex $stiAcrLz5  14]
+  point name=pR5P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy5  15] ; set tz [lindex $stiAcrLz5  15]
+  point name=pR5P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy5  16] ; set tz [lindex $stiAcrLz5  16]
+  point name=pR5P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy5  17] ; set tz [lindex $stiAcrLz5  17]
+  point name=pR5P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy5  18] ; set tz [lindex $stiAcrLz5  18]
+  point name=pR5P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy5  19] ; set tz [lindex $stiAcrLz5  19]
+  point name=pR5P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy5  20] ; set tz [lindex $stiAcrLz5  20]
+  point name=pR5P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy5  21] ; set tz [lindex $stiAcrLz5  21]
+  point name=pR5P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy5  22] ; set tz [lindex $stiAcrLz5  22]
+  point name=pR5P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy5  23] ; set tz [lindex $stiAcrLz5  23]
+  point name=pR5P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy5  24] ; set tz [lindex $stiAcrLz5  24]
+  point name=pR5P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy5  25] ; set tz [lindex $stiAcrLz5  25]
+  point name=pR5P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy5  26] ; set tz [lindex $stiAcrLz5  26]
+  point name=pR5P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy5  27] ; set tz [lindex $stiAcrLz5  27]
+  point name=pR5P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy5  28] ; set tz [lindex $stiAcrLz5  28]
+  point name=pR5P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy5  29] ; set tz [lindex $stiAcrLz5  29]
+  point name=pR5P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy5  30] ; set tz [lindex $stiAcrLz5  30]
+  point name=pR5P30  coord= { $tx $ty $tz }
+  # 90 degree radial line
+  set tx [lindex $stiRLx 0] ; set ty [lindex $stiAcrLy6  0] ; set tz [lindex $stiAcrLz6  0]
+  point name=pR6P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 1] ; set ty [lindex $stiAcrLy6  1] ; set tz [lindex $stiAcrLz6  1]
+  point name=pR6P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 2] ; set ty [lindex $stiAcrLy6  2] ; set tz [lindex $stiAcrLz6  2]
+  point name=pR6P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 3] ; set ty [lindex $stiAcrLy6  3] ; set tz [lindex $stiAcrLz6  3]
+  point name=pR6P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 4] ; set ty [lindex $stiAcrLy6  4] ; set tz [lindex $stiAcrLz6  4]
+  point name=pR6P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 5] ; set ty [lindex $stiAcrLy6  5] ; set tz [lindex $stiAcrLz6  5]
+  point name=pR6P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 6] ; set ty [lindex $stiAcrLy6  6] ; set tz [lindex $stiAcrLz6  6]
+  point name=pR6P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 7] ; set ty [lindex $stiAcrLy6  7] ; set tz [lindex $stiAcrLz6  7]
+  point name=pR6P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 8] ; set ty [lindex $stiAcrLy6  8] ; set tz [lindex $stiAcrLz6  8]
+  point name=pR6P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 9] ; set ty [lindex $stiAcrLy6  9] ; set tz [lindex $stiAcrLz6  9]
+  point name=pR6P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiAcrLy6  10] ; set tz [lindex $stiAcrLz6  10]
+  point name=pR6P10  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiAcrLy6  11] ; set tz [lindex $stiAcrLz6  11]
+  point name=pR6P11  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiAcrLy6  12] ; set tz [lindex $stiAcrLz6  12]
+  point name=pR6P12  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiAcrLy6  13] ; set tz [lindex $stiAcrLz6  13]
+  point name=pR6P13  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiAcrLy6  14] ; set tz [lindex $stiAcrLz6  14]
+  point name=pR6P14  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiAcrLy6  15] ; set tz [lindex $stiAcrLz6  15]
+  point name=pR6P15  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiAcrLy6  16] ; set tz [lindex $stiAcrLz6  16]
+  point name=pR6P16  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiAcrLy6  17] ; set tz [lindex $stiAcrLz6  17]
+  point name=pR6P17  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiAcrLy6  18] ; set tz [lindex $stiAcrLz6  18]
+  point name=pR6P18  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiAcrLy6  19] ; set tz [lindex $stiAcrLz6  19]
+  point name=pR6P19  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiAcrLy6  20] ; set tz [lindex $stiAcrLz6  20]
+  point name=pR6P20  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiAcrLy6  21] ; set tz [lindex $stiAcrLz6  21]
+  point name=pR6P21  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiAcrLy6  22] ; set tz [lindex $stiAcrLz6  22]
+  point name=pR6P22  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiAcrLy6  23] ; set tz [lindex $stiAcrLz6  23]
+  point name=pR6P23  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiAcrLy6  24] ; set tz [lindex $stiAcrLz6  24]
+  point name=pR6P24  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiAcrLy6  25] ; set tz [lindex $stiAcrLz6  25]
+  point name=pR6P25  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiAcrLy6  26] ; set tz [lindex $stiAcrLz6  26]
+  point name=pR6P26  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiAcrLy6  27] ; set tz [lindex $stiAcrLz6  27]
+  point name=pR6P27  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiAcrLy6  28] ; set tz [lindex $stiAcrLz6  28]
+  point name=pR6P28  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiAcrLy6  29] ; set tz [lindex $stiAcrLz6  29]
+  point name=pR6P29  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy6  30] ; set tz [lindex $stiAcrLz6  30]
+  point name=pR6P30  coord= { $tx $ty $tz }
+
+  # Corner point
+  if { ![string compare $dir "rf"] || ![string compare $dir "lb"] } {
+    set tx [lindex $stiRLx  0] ; set ty [lindex $stiAcrLy6   0] ; set tz [lindex $stiAcrLz0   0]
+    point name=pCUP0   coord= { $tx $ty $tz }
+    set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy6  30] ; set tz [lindex $stiAcrLz0  30]
+    point name=pCBP0   coord= { $tx $ty $tz }
+  } elseif { ![string compare $dir "rb"] || ![string compare $dir "lf"] } {
+    set tx [lindex $stiRLx  0] ; set ty [lindex $stiAcrLy0   0] ; set tz [lindex $stiAcrLz6   0]
+    point name=pCUP0   coord= { $tx $ty $tz }
+    set tx [lindex $stiRLx 30] ; set ty [lindex $stiAcrLy0  30] ; set tz [lindex $stiAcrLz6  30]
+    point name=pCBP0   coord= { $tx $ty $tz }
+  } else {
+    error "-- $dir -- \nWrong Direction: rf rb lb lf"
+    exit -1
+  }
+
+  # Polygons 
+  polygon name=pL0  points = { pR0P1 pR1P1 pR0P2 }
+  polygon name=pL1  points = { pR1P2 pR0P2 pR1P1 }
+  polygon name=pL2  points = { pR0P2 pR1P2 pR0P3 }
+  polygon name=pL3  points = { pR1P3 pR0P3 pR1P2 }
+  polygon name=pL4  points = { pR0P3 pR1P3 pR0P4 }
+  polygon name=pL5  points = { pR1P4 pR0P4 pR1P3 }
+  polygon name=pL6  points = { pR0P4 pR1P4 pR0P5 }
+  polygon name=pL7  points = { pR1P5 pR0P5 pR1P4 }
+  polygon name=pL8  points = { pR0P5 pR1P5 pR0P6 }
+  polygon name=pL9  points = { pR1P6 pR0P6 pR1P5 }
+  polygon name=pL10  points = { pR0P6 pR1P6 pR0P7 }
+  polygon name=pL11  points = { pR1P7 pR0P7 pR1P6 }
+  polygon name=pL12  points = { pR0P7 pR1P7 pR0P8 }
+  polygon name=pL13  points = { pR1P8 pR0P8 pR1P7 }
+  polygon name=pL14  points = { pR0P8 pR1P8 pR0P9 }
+  polygon name=pL15  points = { pR1P9 pR0P9 pR1P8 }
+  polygon name=pL16  points = { pR0P9 pR1P9 pR0P10 }
+  polygon name=pL17  points = { pR1P10 pR0P10 pR1P9 }
+  polygon name=pL18  points = { pR0P10 pR1P10 pR0P11 }
+  polygon name=pL19  points = { pR1P11 pR0P11 pR1P10 }
+  polygon name=pL20  points = { pR0P11 pR1P11 pR0P12 }
+  polygon name=pL21  points = { pR1P12 pR0P12 pR1P11 }
+  polygon name=pL22  points = { pR0P12 pR1P12 pR0P13 }
+  polygon name=pL23  points = { pR1P13 pR0P13 pR1P12 }
+  polygon name=pL24  points = { pR0P13 pR1P13 pR0P14 }
+  polygon name=pL25  points = { pR1P14 pR0P14 pR1P13 }
+  polygon name=pL26  points = { pR0P14 pR1P14 pR0P15 }
+  polygon name=pL27  points = { pR1P15 pR0P15 pR1P14 }
+  polygon name=pL28  points = { pR0P15 pR1P15 pR0P16 }
+  polygon name=pL29  points = { pR1P16 pR0P16 pR1P15 }
+  polygon name=pL30  points = { pR0P16 pR1P16 pR0P17 }
+  polygon name=pL31  points = { pR1P17 pR0P17 pR1P16 }
+  polygon name=pL32  points = { pR0P17 pR1P17 pR0P18 }
+  polygon name=pL33  points = { pR1P18 pR0P18 pR1P17 }
+  polygon name=pL34  points = { pR0P18 pR1P18 pR0P19 }
+  polygon name=pL35  points = { pR1P19 pR0P19 pR1P18 }
+  polygon name=pL36  points = { pR0P19 pR1P19 pR0P20 }
+  polygon name=pL37  points = { pR1P20 pR0P20 pR1P19 }
+  polygon name=pL38  points = { pR0P20 pR1P20 pR0P21 }
+  polygon name=pL39  points = { pR1P21 pR0P21 pR1P20 }
+  polygon name=pL40  points = { pR0P21 pR1P21 pR0P22 }
+  polygon name=pL41  points = { pR1P22 pR0P22 pR1P21 }
+  polygon name=pL42  points = { pR0P22 pR1P22 pR0P23 }
+  polygon name=pL43  points = { pR1P23 pR0P23 pR1P22 }
+  polygon name=pL44  points = { pR0P23 pR1P23 pR0P24 }
+  polygon name=pL45  points = { pR1P24 pR0P24 pR1P23 }
+  polygon name=pL46  points = { pR0P24 pR1P24 pR0P25 }
+  polygon name=pL47  points = { pR1P25 pR0P25 pR1P24 }
+  polygon name=pL48  points = { pR0P25 pR1P25 pR0P26 }
+  polygon name=pL49  points = { pR1P26 pR0P26 pR1P25 }
+  polygon name=pL50  points = { pR0P26 pR1P26 pR0P27 }
+  polygon name=pL51  points = { pR1P27 pR0P27 pR1P26 }
+  polygon name=pL52  points = { pR0P27 pR1P27 pR0P28 }
+  polygon name=pL53  points = { pR1P28 pR0P28 pR1P27 }
+  polygon name=pL54  points = { pR0P28 pR1P28 pR0P29 }
+  polygon name=pL55  points = { pR1P29 pR0P29 pR1P28 }
+  polygon name=pL56  points = { pR1P1 pR2P1 pR1P2 }
+  polygon name=pL57  points = { pR2P2 pR1P2 pR2P1 }
+  polygon name=pL58  points = { pR1P2 pR2P2 pR1P3 }
+  polygon name=pL59  points = { pR2P3 pR1P3 pR2P2 }
+  polygon name=pL60  points = { pR1P3 pR2P3 pR1P4 }
+  polygon name=pL61  points = { pR2P4 pR1P4 pR2P3 }
+  polygon name=pL62  points = { pR1P4 pR2P4 pR1P5 }
+  polygon name=pL63  points = { pR2P5 pR1P5 pR2P4 }
+  polygon name=pL64  points = { pR1P5 pR2P5 pR1P6 }
+  polygon name=pL65  points = { pR2P6 pR1P6 pR2P5 }
+  polygon name=pL66  points = { pR1P6 pR2P6 pR1P7 }
+  polygon name=pL67  points = { pR2P7 pR1P7 pR2P6 }
+  polygon name=pL68  points = { pR1P7 pR2P7 pR1P8 }
+  polygon name=pL69  points = { pR2P8 pR1P8 pR2P7 }
+  polygon name=pL70  points = { pR1P8 pR2P8 pR1P9 }
+  polygon name=pL71  points = { pR2P9 pR1P9 pR2P8 }
+  polygon name=pL72  points = { pR1P9 pR2P9 pR1P10 }
+  polygon name=pL73  points = { pR2P10 pR1P10 pR2P9 }
+  polygon name=pL74  points = { pR1P10 pR2P10 pR1P11 }
+  polygon name=pL75  points = { pR2P11 pR1P11 pR2P10 }
+  polygon name=pL76  points = { pR1P11 pR2P11 pR1P12 }
+  polygon name=pL77  points = { pR2P12 pR1P12 pR2P11 }
+  polygon name=pL78  points = { pR1P12 pR2P12 pR1P13 }
+  polygon name=pL79  points = { pR2P13 pR1P13 pR2P12 }
+  polygon name=pL80  points = { pR1P13 pR2P13 pR1P14 }
+  polygon name=pL81  points = { pR2P14 pR1P14 pR2P13 }
+  polygon name=pL82  points = { pR1P14 pR2P14 pR1P15 }
+  polygon name=pL83  points = { pR2P15 pR1P15 pR2P14 }
+  polygon name=pL84  points = { pR1P15 pR2P15 pR1P16 }
+  polygon name=pL85  points = { pR2P16 pR1P16 pR2P15 }
+  polygon name=pL86  points = { pR1P16 pR2P16 pR1P17 }
+  polygon name=pL87  points = { pR2P17 pR1P17 pR2P16 }
+  polygon name=pL88  points = { pR1P17 pR2P17 pR1P18 }
+  polygon name=pL89  points = { pR2P18 pR1P18 pR2P17 }
+  polygon name=pL90  points = { pR1P18 pR2P18 pR1P19 }
+  polygon name=pL91  points = { pR2P19 pR1P19 pR2P18 }
+  polygon name=pL92  points = { pR1P19 pR2P19 pR1P20 }
+  polygon name=pL93  points = { pR2P20 pR1P20 pR2P19 }
+  polygon name=pL94  points = { pR1P20 pR2P20 pR1P21 }
+  polygon name=pL95  points = { pR2P21 pR1P21 pR2P20 }
+  polygon name=pL96  points = { pR1P21 pR2P21 pR1P22 }
+  polygon name=pL97  points = { pR2P22 pR1P22 pR2P21 }
+  polygon name=pL98  points = { pR1P22 pR2P22 pR1P23 }
+  polygon name=pL99  points = { pR2P23 pR1P23 pR2P22 }
+  polygon name=pL100  points = { pR1P23 pR2P23 pR1P24 }
+  polygon name=pL101  points = { pR2P24 pR1P24 pR2P23 }
+  polygon name=pL102  points = { pR1P24 pR2P24 pR1P25 }
+  polygon name=pL103  points = { pR2P25 pR1P25 pR2P24 }
+  polygon name=pL104  points = { pR1P25 pR2P25 pR1P26 }
+  polygon name=pL105  points = { pR2P26 pR1P26 pR2P25 }
+  polygon name=pL106  points = { pR1P26 pR2P26 pR1P27 }
+  polygon name=pL107  points = { pR2P27 pR1P27 pR2P26 }
+  polygon name=pL108  points = { pR1P27 pR2P27 pR1P28 }
+  polygon name=pL109  points = { pR2P28 pR1P28 pR2P27 }
+  polygon name=pL110  points = { pR1P28 pR2P28 pR1P29 }
+  polygon name=pL111  points = { pR2P29 pR1P29 pR2P28 }
+  polygon name=pL112  points = { pR2P1 pR3P1 pR2P2 }
+  polygon name=pL113  points = { pR3P2 pR2P2 pR3P1 }
+  polygon name=pL114  points = { pR2P2 pR3P2 pR2P3 }
+  polygon name=pL115  points = { pR3P3 pR2P3 pR3P2 }
+  polygon name=pL116  points = { pR2P3 pR3P3 pR2P4 }
+  polygon name=pL117  points = { pR3P4 pR2P4 pR3P3 }
+  polygon name=pL118  points = { pR2P4 pR3P4 pR2P5 }
+  polygon name=pL119  points = { pR3P5 pR2P5 pR3P4 }
+  polygon name=pL120  points = { pR2P5 pR3P5 pR2P6 }
+  polygon name=pL121  points = { pR3P6 pR2P6 pR3P5 }
+  polygon name=pL122  points = { pR2P6 pR3P6 pR2P7 }
+  polygon name=pL123  points = { pR3P7 pR2P7 pR3P6 }
+  polygon name=pL124  points = { pR2P7 pR3P7 pR2P8 }
+  polygon name=pL125  points = { pR3P8 pR2P8 pR3P7 }
+  polygon name=pL126  points = { pR2P8 pR3P8 pR2P9 }
+  polygon name=pL127  points = { pR3P9 pR2P9 pR3P8 }
+  polygon name=pL128  points = { pR2P9 pR3P9 pR2P10 }
+  polygon name=pL129  points = { pR3P10 pR2P10 pR3P9 }
+  polygon name=pL130  points = { pR2P10 pR3P10 pR2P11 }
+  polygon name=pL131  points = { pR3P11 pR2P11 pR3P10 }
+  polygon name=pL132  points = { pR2P11 pR3P11 pR2P12 }
+  polygon name=pL133  points = { pR3P12 pR2P12 pR3P11 }
+  polygon name=pL134  points = { pR2P12 pR3P12 pR2P13 }
+  polygon name=pL135  points = { pR3P13 pR2P13 pR3P12 }
+  polygon name=pL136  points = { pR2P13 pR3P13 pR2P14 }
+  polygon name=pL137  points = { pR3P14 pR2P14 pR3P13 }
+  polygon name=pL138  points = { pR2P14 pR3P14 pR2P15 }
+  polygon name=pL139  points = { pR3P15 pR2P15 pR3P14 }
+  polygon name=pL140  points = { pR2P15 pR3P15 pR2P16 }
+  polygon name=pL141  points = { pR3P16 pR2P16 pR3P15 }
+  polygon name=pL142  points = { pR2P16 pR3P16 pR2P17 }
+  polygon name=pL143  points = { pR3P17 pR2P17 pR3P16 }
+  polygon name=pL144  points = { pR2P17 pR3P17 pR2P18 }
+  polygon name=pL145  points = { pR3P18 pR2P18 pR3P17 }
+  polygon name=pL146  points = { pR2P18 pR3P18 pR2P19 }
+  polygon name=pL147  points = { pR3P19 pR2P19 pR3P18 }
+  polygon name=pL148  points = { pR2P19 pR3P19 pR2P20 }
+  polygon name=pL149  points = { pR3P20 pR2P20 pR3P19 }
+  polygon name=pL150  points = { pR2P20 pR3P20 pR2P21 }
+  polygon name=pL151  points = { pR3P21 pR2P21 pR3P20 }
+  polygon name=pL152  points = { pR2P21 pR3P21 pR2P22 }
+  polygon name=pL153  points = { pR3P22 pR2P22 pR3P21 }
+  polygon name=pL154  points = { pR2P22 pR3P22 pR2P23 }
+  polygon name=pL155  points = { pR3P23 pR2P23 pR3P22 }
+  polygon name=pL156  points = { pR2P23 pR3P23 pR2P24 }
+  polygon name=pL157  points = { pR3P24 pR2P24 pR3P23 }
+  polygon name=pL158  points = { pR2P24 pR3P24 pR2P25 }
+  polygon name=pL159  points = { pR3P25 pR2P25 pR3P24 }
+  polygon name=pL160  points = { pR2P25 pR3P25 pR2P26 }
+  polygon name=pL161  points = { pR3P26 pR2P26 pR3P25 }
+  polygon name=pL162  points = { pR2P26 pR3P26 pR2P27 }
+  polygon name=pL163  points = { pR3P27 pR2P27 pR3P26 }
+  polygon name=pL164  points = { pR2P27 pR3P27 pR2P28 }
+  polygon name=pL165  points = { pR3P28 pR2P28 pR3P27 }
+  polygon name=pL166  points = { pR2P28 pR3P28 pR2P29 }
+  polygon name=pL167  points = { pR3P29 pR2P29 pR3P28 }
+  polygon name=pL168  points = { pR3P1 pR4P1 pR3P2 }
+  polygon name=pL169  points = { pR4P2 pR3P2 pR4P1 }
+  polygon name=pL170  points = { pR3P2 pR4P2 pR3P3 }
+  polygon name=pL171  points = { pR4P3 pR3P3 pR4P2 }
+  polygon name=pL172  points = { pR3P3 pR4P3 pR3P4 }
+  polygon name=pL173  points = { pR4P4 pR3P4 pR4P3 }
+  polygon name=pL174  points = { pR3P4 pR4P4 pR3P5 }
+  polygon name=pL175  points = { pR4P5 pR3P5 pR4P4 }
+  polygon name=pL176  points = { pR3P5 pR4P5 pR3P6 }
+  polygon name=pL177  points = { pR4P6 pR3P6 pR4P5 }
+  polygon name=pL178  points = { pR3P6 pR4P6 pR3P7 }
+  polygon name=pL179  points = { pR4P7 pR3P7 pR4P6 }
+  polygon name=pL180  points = { pR3P7 pR4P7 pR3P8 }
+  polygon name=pL181  points = { pR4P8 pR3P8 pR4P7 }
+  polygon name=pL182  points = { pR3P8 pR4P8 pR3P9 }
+  polygon name=pL183  points = { pR4P9 pR3P9 pR4P8 }
+  polygon name=pL184  points = { pR3P9 pR4P9 pR3P10 }
+  polygon name=pL185  points = { pR4P10 pR3P10 pR4P9 }
+  polygon name=pL186  points = { pR3P10 pR4P10 pR3P11 }
+  polygon name=pL187  points = { pR4P11 pR3P11 pR4P10 }
+  polygon name=pL188  points = { pR3P11 pR4P11 pR3P12 }
+  polygon name=pL189  points = { pR4P12 pR3P12 pR4P11 }
+  polygon name=pL190  points = { pR3P12 pR4P12 pR3P13 }
+  polygon name=pL191  points = { pR4P13 pR3P13 pR4P12 }
+  polygon name=pL192  points = { pR3P13 pR4P13 pR3P14 }
+  polygon name=pL193  points = { pR4P14 pR3P14 pR4P13 }
+  polygon name=pL194  points = { pR3P14 pR4P14 pR3P15 }
+  polygon name=pL195  points = { pR4P15 pR3P15 pR4P14 }
+  polygon name=pL196  points = { pR3P15 pR4P15 pR3P16 }
+  polygon name=pL197  points = { pR4P16 pR3P16 pR4P15 }
+  polygon name=pL198  points = { pR3P16 pR4P16 pR3P17 }
+  polygon name=pL199  points = { pR4P17 pR3P17 pR4P16 }
+  polygon name=pL200  points = { pR3P17 pR4P17 pR3P18 }
+  polygon name=pL201  points = { pR4P18 pR3P18 pR4P17 }
+  polygon name=pL202  points = { pR3P18 pR4P18 pR3P19 }
+  polygon name=pL203  points = { pR4P19 pR3P19 pR4P18 }
+  polygon name=pL204  points = { pR3P19 pR4P19 pR3P20 }
+  polygon name=pL205  points = { pR4P20 pR3P20 pR4P19 }
+  polygon name=pL206  points = { pR3P20 pR4P20 pR3P21 }
+  polygon name=pL207  points = { pR4P21 pR3P21 pR4P20 }
+  polygon name=pL208  points = { pR3P21 pR4P21 pR3P22 }
+  polygon name=pL209  points = { pR4P22 pR3P22 pR4P21 }
+  polygon name=pL210  points = { pR3P22 pR4P22 pR3P23 }
+  polygon name=pL211  points = { pR4P23 pR3P23 pR4P22 }
+  polygon name=pL212  points = { pR3P23 pR4P23 pR3P24 }
+  polygon name=pL213  points = { pR4P24 pR3P24 pR4P23 }
+  polygon name=pL214  points = { pR3P24 pR4P24 pR3P25 }
+  polygon name=pL215  points = { pR4P25 pR3P25 pR4P24 }
+  polygon name=pL216  points = { pR3P25 pR4P25 pR3P26 }
+  polygon name=pL217  points = { pR4P26 pR3P26 pR4P25 }
+  polygon name=pL218  points = { pR3P26 pR4P26 pR3P27 }
+  polygon name=pL219  points = { pR4P27 pR3P27 pR4P26 }
+  polygon name=pL220  points = { pR3P27 pR4P27 pR3P28 }
+  polygon name=pL221  points = { pR4P28 pR3P28 pR4P27 }
+  polygon name=pL222  points = { pR3P28 pR4P28 pR3P29 }
+  polygon name=pL223  points = { pR4P29 pR3P29 pR4P28 }
+  polygon name=pL224  points = { pR4P1 pR5P1 pR4P2 }
+  polygon name=pL225  points = { pR5P2 pR4P2 pR5P1 }
+  polygon name=pL226  points = { pR4P2 pR5P2 pR4P3 }
+  polygon name=pL227  points = { pR5P3 pR4P3 pR5P2 }
+  polygon name=pL228  points = { pR4P3 pR5P3 pR4P4 }
+  polygon name=pL229  points = { pR5P4 pR4P4 pR5P3 }
+  polygon name=pL230  points = { pR4P4 pR5P4 pR4P5 }
+  polygon name=pL231  points = { pR5P5 pR4P5 pR5P4 }
+  polygon name=pL232  points = { pR4P5 pR5P5 pR4P6 }
+  polygon name=pL233  points = { pR5P6 pR4P6 pR5P5 }
+  polygon name=pL234  points = { pR4P6 pR5P6 pR4P7 }
+  polygon name=pL235  points = { pR5P7 pR4P7 pR5P6 }
+  polygon name=pL236  points = { pR4P7 pR5P7 pR4P8 }
+  polygon name=pL237  points = { pR5P8 pR4P8 pR5P7 }
+  polygon name=pL238  points = { pR4P8 pR5P8 pR4P9 }
+  polygon name=pL239  points = { pR5P9 pR4P9 pR5P8 }
+  polygon name=pL240  points = { pR4P9 pR5P9 pR4P10 }
+  polygon name=pL241  points = { pR5P10 pR4P10 pR5P9 }
+  polygon name=pL242  points = { pR4P10 pR5P10 pR4P11 }
+  polygon name=pL243  points = { pR5P11 pR4P11 pR5P10 }
+  polygon name=pL244  points = { pR4P11 pR5P11 pR4P12 }
+  polygon name=pL245  points = { pR5P12 pR4P12 pR5P11 }
+  polygon name=pL246  points = { pR4P12 pR5P12 pR4P13 }
+  polygon name=pL247  points = { pR5P13 pR4P13 pR5P12 }
+  polygon name=pL248  points = { pR4P13 pR5P13 pR4P14 }
+  polygon name=pL249  points = { pR5P14 pR4P14 pR5P13 }
+  polygon name=pL250  points = { pR4P14 pR5P14 pR4P15 }
+  polygon name=pL251  points = { pR5P15 pR4P15 pR5P14 }
+  polygon name=pL252  points = { pR4P15 pR5P15 pR4P16 }
+  polygon name=pL253  points = { pR5P16 pR4P16 pR5P15 }
+  polygon name=pL254  points = { pR4P16 pR5P16 pR4P17 }
+  polygon name=pL255  points = { pR5P17 pR4P17 pR5P16 }
+  polygon name=pL256  points = { pR4P17 pR5P17 pR4P18 }
+  polygon name=pL257  points = { pR5P18 pR4P18 pR5P17 }
+  polygon name=pL258  points = { pR4P18 pR5P18 pR4P19 }
+  polygon name=pL259  points = { pR5P19 pR4P19 pR5P18 }
+  polygon name=pL260  points = { pR4P19 pR5P19 pR4P20 }
+  polygon name=pL261  points = { pR5P20 pR4P20 pR5P19 }
+  polygon name=pL262  points = { pR4P20 pR5P20 pR4P21 }
+  polygon name=pL263  points = { pR5P21 pR4P21 pR5P20 }
+  polygon name=pL264  points = { pR4P21 pR5P21 pR4P22 }
+  polygon name=pL265  points = { pR5P22 pR4P22 pR5P21 }
+  polygon name=pL266  points = { pR4P22 pR5P22 pR4P23 }
+  polygon name=pL267  points = { pR5P23 pR4P23 pR5P22 }
+  polygon name=pL268  points = { pR4P23 pR5P23 pR4P24 }
+  polygon name=pL269  points = { pR5P24 pR4P24 pR5P23 }
+  polygon name=pL270  points = { pR4P24 pR5P24 pR4P25 }
+  polygon name=pL271  points = { pR5P25 pR4P25 pR5P24 }
+  polygon name=pL272  points = { pR4P25 pR5P25 pR4P26 }
+  polygon name=pL273  points = { pR5P26 pR4P26 pR5P25 }
+  polygon name=pL274  points = { pR4P26 pR5P26 pR4P27 }
+  polygon name=pL275  points = { pR5P27 pR4P27 pR5P26 }
+  polygon name=pL276  points = { pR4P27 pR5P27 pR4P28 }
+  polygon name=pL277  points = { pR5P28 pR4P28 pR5P27 }
+  polygon name=pL278  points = { pR4P28 pR5P28 pR4P29 }
+  polygon name=pL279  points = { pR5P29 pR4P29 pR5P28 }
+  polygon name=pL280  points = { pR5P1 pR6P1 pR5P2 }
+  polygon name=pL281  points = { pR6P2 pR5P2 pR6P1 }
+  polygon name=pL282  points = { pR5P2 pR6P2 pR5P3 }
+  polygon name=pL283  points = { pR6P3 pR5P3 pR6P2 }
+  polygon name=pL284  points = { pR5P3 pR6P3 pR5P4 }
+  polygon name=pL285  points = { pR6P4 pR5P4 pR6P3 }
+  polygon name=pL286  points = { pR5P4 pR6P4 pR5P5 }
+  polygon name=pL287  points = { pR6P5 pR5P5 pR6P4 }
+  polygon name=pL288  points = { pR5P5 pR6P5 pR5P6 }
+  polygon name=pL289  points = { pR6P6 pR5P6 pR6P5 }
+  polygon name=pL290  points = { pR5P6 pR6P6 pR5P7 }
+  polygon name=pL291  points = { pR6P7 pR5P7 pR6P6 }
+  polygon name=pL292  points = { pR5P7 pR6P7 pR5P8 }
+  polygon name=pL293  points = { pR6P8 pR5P8 pR6P7 }
+  polygon name=pL294  points = { pR5P8 pR6P8 pR5P9 }
+  polygon name=pL295  points = { pR6P9 pR5P9 pR6P8 }
+  polygon name=pL296  points = { pR5P9 pR6P9 pR5P10 }
+  polygon name=pL297  points = { pR6P10 pR5P10 pR6P9 }
+  polygon name=pL298  points = { pR5P10 pR6P10 pR5P11 }
+  polygon name=pL299  points = { pR6P11 pR5P11 pR6P10 }
+  polygon name=pL300  points = { pR5P11 pR6P11 pR5P12 }
+  polygon name=pL301  points = { pR6P12 pR5P12 pR6P11 }
+  polygon name=pL302  points = { pR5P12 pR6P12 pR5P13 }
+  polygon name=pL303  points = { pR6P13 pR5P13 pR6P12 }
+  polygon name=pL304  points = { pR5P13 pR6P13 pR5P14 }
+  polygon name=pL305  points = { pR6P14 pR5P14 pR6P13 }
+  polygon name=pL306  points = { pR5P14 pR6P14 pR5P15 }
+  polygon name=pL307  points = { pR6P15 pR5P15 pR6P14 }
+  polygon name=pL308  points = { pR5P15 pR6P15 pR5P16 }
+  polygon name=pL309  points = { pR6P16 pR5P16 pR6P15 }
+  polygon name=pL310  points = { pR5P16 pR6P16 pR5P17 }
+  polygon name=pL311  points = { pR6P17 pR5P17 pR6P16 }
+  polygon name=pL312  points = { pR5P17 pR6P17 pR5P18 }
+  polygon name=pL313  points = { pR6P18 pR5P18 pR6P17 }
+  polygon name=pL314  points = { pR5P18 pR6P18 pR5P19 }
+  polygon name=pL315  points = { pR6P19 pR5P19 pR6P18 }
+  polygon name=pL316  points = { pR5P19 pR6P19 pR5P20 }
+  polygon name=pL317  points = { pR6P20 pR5P20 pR6P19 }
+  polygon name=pL318  points = { pR5P20 pR6P20 pR5P21 }
+  polygon name=pL319  points = { pR6P21 pR5P21 pR6P20 }
+  polygon name=pL320  points = { pR5P21 pR6P21 pR5P22 }
+  polygon name=pL321  points = { pR6P22 pR5P22 pR6P21 }
+  polygon name=pL322  points = { pR5P22 pR6P22 pR5P23 }
+  polygon name=pL323  points = { pR6P23 pR5P23 pR6P22 }
+  polygon name=pL324  points = { pR5P23 pR6P23 pR5P24 }
+  polygon name=pL325  points = { pR6P24 pR5P24 pR6P23 }
+  polygon name=pL326  points = { pR5P24 pR6P24 pR5P25 }
+  polygon name=pL327  points = { pR6P25 pR5P25 pR6P24 }
+  polygon name=pL328  points = { pR5P25 pR6P25 pR5P26 }
+  polygon name=pL329  points = { pR6P26 pR5P26 pR6P25 }
+  polygon name=pL330  points = { pR5P26 pR6P26 pR5P27 }
+  polygon name=pL331  points = { pR6P27 pR5P27 pR6P26 }
+  polygon name=pL332  points = { pR5P27 pR6P27 pR5P28 }
+  polygon name=pL333  points = { pR6P28 pR5P28 pR6P27 }
+  polygon name=pL334  points = { pR5P28 pR6P28 pR5P29 }
+  polygon name=pL335  points = { pR6P29 pR5P29 pR6P28 }
+  polygon name=pL336  points = { pR0P0 pR0P1 pR0P2 pR0P3 pR0P4 pR0P5 pR0P6 pR0P7 pR0P8 pR0P9 \
+    pR0P10 pR0P11 pR0P12 pR0P13 pR0P14 pR0P15 pR0P16 pR0P17 pR0P18 pR0P19 \
+    pR0P20 pR0P21 pR0P22 pR0P23 pR0P24 pR0P25 pR0P26 pR0P27 pR0P28 pR0P29 \
+    pR0P30  } 
+  polygon name=pL337  points = { pR6P0 pR6P1 pR6P2 pR6P3 pR6P4 pR6P5 pR6P6 pR6P7 pR6P8 pR6P9 \
+    pR6P10 pR6P11 pR6P12 pR6P13 pR6P14 pR6P15 pR6P16 pR6P17 pR6P18 pR6P19 \
+    pR6P20 pR6P21 pR6P22 pR6P23 pR6P24 pR6P25 pR6P26 pR6P27 pR6P28 pR6P29 \
+    pR6P30  } 
+  polygon name=pL338  points = { pR0P1 pR1P1 pR2P1 pR3P1 pR4P1 pR5P1 pR6P1 pR6P0 pCUP0 pR0P0  } 
+  polygon name=pL339  points = { pR0P29 pR1P29 pR2P29 pR3P29 pR4P29 pR5P29 pR6P29 pR6P30 pCBP0 pR0P30  } 
+  polygon name=pL340  points = { pR0P0 pCUP0 pCBP0 pR0P30 }
+  polygon name=pL341  points = { pCUP0 pR6P0 pR6P30 pCBP0 }
+ 
+  # Polyhedron 
+  polyhedron name= $name polygons = { pL0 pL1 pL2 pL3 pL4 pL5 pL6 pL7 pL8 pL9 \
+    pL10 pL11 pL12 pL13 pL14 pL15 pL16 pL17 pL18 pL19 \
+    pL20 pL21 pL22 pL23 pL24 pL25 pL26 pL27 pL28 pL29 \
+    pL30 pL31 pL32 pL33 pL34 pL35 pL36 pL37 pL38 pL39 \
+    pL40 pL41 pL42 pL43 pL44 pL45 pL46 pL47 pL48 pL49 \
+    pL50 pL51 pL52 pL53 pL54 pL55 pL56 pL57 pL58 pL59 \
+    pL60 pL61 pL62 pL63 pL64 pL65 pL66 pL67 pL68 pL69 \
+    pL70 pL71 pL72 pL73 pL74 pL75 pL76 pL77 pL78 pL79 \
+    pL80 pL81 pL82 pL83 pL84 pL85 pL86 pL87 pL88 pL89 \
+    pL90 pL91 pL92 pL93 pL94 pL95 pL96 pL97 pL98 pL99 \
+    pL100 pL101 pL102 pL103 pL104 pL105 pL106 pL107 pL108 pL109 \
+    pL110 pL111 pL112 pL113 pL114 pL115 pL116 pL117 pL118 pL119 \
+    pL120 pL121 pL122 pL123 pL124 pL125 pL126 pL127 pL128 pL129 \
+    pL130 pL131 pL132 pL133 pL134 pL135 pL136 pL137 pL138 pL139 \
+    pL140 pL141 pL142 pL143 pL144 pL145 pL146 pL147 pL148 pL149 \
+    pL150 pL151 pL152 pL153 pL154 pL155 pL156 pL157 pL158 pL159 \
+    pL160 pL161 pL162 pL163 pL164 pL165 pL166 pL167 pL168 pL169 \
+    pL170 pL171 pL172 pL173 pL174 pL175 pL176 pL177 pL178 pL179 \
+    pL180 pL181 pL182 pL183 pL184 pL185 pL186 pL187 pL188 pL189 \
+    pL190 pL191 pL192 pL193 pL194 pL195 pL196 pL197 pL198 pL199 \
+    pL200 pL201 pL202 pL203 pL204 pL205 pL206 pL207 pL208 pL209 \
+    pL210 pL211 pL212 pL213 pL214 pL215 pL216 pL217 pL218 pL219 \
+    pL220 pL221 pL222 pL223 pL224 pL225 pL226 pL227 pL228 pL229 \
+    pL230 pL231 pL232 pL233 pL234 pL235 pL236 pL237 pL238 pL239 \
+    pL240 pL241 pL242 pL243 pL244 pL245 pL246 pL247 pL248 pL249 \
+    pL250 pL251 pL252 pL253 pL254 pL255 pL256 pL257 pL258 pL259 \
+    pL260 pL261 pL262 pL263 pL264 pL265 pL266 pL267 pL268 pL269 \
+    pL270 pL271 pL272 pL273 pL274 pL275 pL276 pL277 pL278 pL279 \
+    pL280 pL281 pL282 pL283 pL284 pL285 pL286 pL287 pL288 pL289 \
+    pL290 pL291 pL292 pL293 pL294 pL295 pL296 pL297 pL298 pL299 \
+    pL300 pL301 pL302 pL303 pL304 pL305 pL306 pL307 pL308 pL309 \
+    pL310 pL311 pL312 pL313 pL314 pL315 pL316 pL317 pL318 pL319 \
+    pL320 pL321 pL322 pL323 pL324 pL325 pL326 pL327 pL328 pL329 \
+    pL330 pL331 pL332 pL333 pL334 pL335 pL336 pL337 pL338 pL339 \
+    pL340 pL341  } info=2 
+
+}
+
+
+fproc PolyHedronSTI {args} {
+#rem # PolyHedronSTI - procedure to create STI shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. Direction - left | right | back | front
+#rem #  3. X0        - Active edge x-coordinate
+#rem #  4. Y0        - Active edge y-coordinate
+#rem #  5. Ymax      - STI end point
+#rem #  6. Zmin      - STI end point
+#rem #  7. Zmax      - STI end point
+#rem #  8. Tsti      - STI depth
+#rem #  9. Asti      - STI slope angle
+#rem # 10. Hsti      - STI height
+#rem # 11. Rdown     - Radius of down corner
+#rem # 12. Rbottom   - Radius of bottom corner
+#rem # 13. Rup       - Radius of up corner
+
+  if {[llength $args] < 13 || [llength $args] > 13} {
+     error "PolyHedronSTI: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set dir       [lindex $args 1]
+  set x0        [lindex $args 2]
+  set y0        [lindex $args 3]
+  set ymax      [lindex $args 4]
+  set zmin      [lindex $args 5]
+  set zmax      [lindex $args 6]
+  set Tsti      [lindex $args 7]
+  set Asti      [lindex $args 8]
+  set Hsti      [lindex $args 9]
+  set Rd        [lindex $args 10]
+  set Rb        [lindex $args 11]
+  set Ru        [lindex $args 12]
+
+  set D2R       [expr (atan(1.0)/45.0)] ; #Degree to radiant conv.
+  set rN        10
+
+#---- Down corner rounding ------------------------
+  # Si surface line
+  set A0         1
+  set B0         0
+  set C0         0
+
+  # STI slope surface line
+  set A1         [expr tan((90-$Asti)*$D2R)]
+  set B1        -1
+  set C1         0
+
+  # STI half slope line
+  set A2         [expr tan(($Asti/2.0)*$D2R)]
+  set B2         1
+  set C2         0
+
+  # Down circle center point
+  set xdc       $Rd
+  set ydc       [expr (-1.0*$A2*$xdc)]
+
+  # Si surface line contact  point
+  set xdcp      0.0
+  set ydcp      $ydc
+
+  # STI slope line contact  point
+  set xdcps     [expr ($Rd*tan(($Asti/2.0)*$D2R)*sin($Asti*$D2R))]
+  set ydcps     [expr ($A1*$xdcps)]
+
+  # Bottom corner point          
+  set x1        [expr ($x0+$Tsti)]
+  set y1        [expr ($y0+$A1*$Tsti)]
+#--------------------------------------------------
+  
+#---- Bottom corner rounding ------------------------
+  # Bottom circle center point
+  set xbc       [expr (-1.0*$Rb)]
+  set ybc       [expr (-1.0*$A2*$xbc)]
+
+  # STI surface line contact  point
+  set xbcp      0.0
+  set ybcp      $ybc
+
+  # STI slope line contact  point
+  set xbcps     [expr (-1.0*$Rb*tan(($Asti/2.0)*$D2R)*sin($Asti*$D2R))]
+  set ybcps     [expr ($A1*$xbcps)]
+#--------------------------------------------------
+
+#---- Up corner rounding ------------------------
+  # Up circle center point
+  set xuc       [expr (-1.0*$Ru)]
+  set yuc       $ydc
+
+  # Top  point
+  set xutp      [expr (-1.0*$Hsti)]
+  set yutp      [expr ($yuc+sqrt(pow($Ru,2)-pow(($xutp-$xuc),2)))]
+#--------------------------------------------------
+
+
+#---- Restriction rule  ------------------------
+if { $Ru < $Hsti } {
+  error "Up corner rounding radius ( $Ru ) should be larger than STI height ( $Hsti )..."
+  exit -1
+}
+
+set tdcps [expr ($y0+$ydcps)]
+set tbcps [expr ($y1+$ybcps)]
+if { $tbcps < $tdcps } {
+  error "Down corner rounding slope contact point ( $tdcps ) should not be larger than bottom corner rounding slope contact point ( $tbcps )..."
+  exit -1
+}
+
+set tutp  [expr ($y0+$yutp)]
+set tymax [expr ($y0+$ymax)]
+if { $tymax <= $tutp } {
+  error "Ymax ( $tymax ) should be larger than up corner rounding end point ( $tutp )..."
+  exit -1
+}
+
+set tbcp  [expr ($y1+$ybcp)]
+set tymax [expr ($y0+$ymax)]
+if { $tymax <= $tbcp } {
+  error "Ymax ( $tymax ) should be larger than bottom corner rounding point ( $tbcp )..."
+  exit -1
+}
+
+
+#--- STI shape point list -----------------------------------------------------
+  set stiRLx  [list]
+  set stiRLy0 [list]
+
+  #--- Up end ---
+  set tx [expr ($x0-$Hsti)]
+  set ty [expr (0.0+$ymax)]
+  lappend stiRLx  $tx
+  lappend stiRLy0 $ty
+
+  #--- Up corner ---
+  set dy  [expr (($yutp-$yuc)/($rN-1))]
+  for {set i 0} {$i < [expr ($rN-1)]} {incr i 1} {
+    set ty [expr ($yutp-$i*$dy)]
+    set tx [expr ($xuc+sqrt(pow($Ru,2)-pow(($ty-$yuc),2)))]
+    set tx [expr ($x0+$tx)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Down corner ---
+  set dy  [expr (($ydcps-$ydcp)/($rN-1))]
+  for {set i 0} {$i < $rN} {incr i 1} {
+    set ty [expr ($ydcp+$i*$dy)]
+    set tx [expr ($xdc-sqrt(pow($Rd,2)-pow(($ty-$ydc),2)))]
+    set tx [expr ($x0+$tx)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Bottom corner ---
+  set dy  [expr (($ybcp-$ybcps)/($rN-1))]
+  for {set i 0} {$i < $rN} {incr i 1} {
+    set ty [expr ($ybcps+$i*$dy)]
+    set tx [expr ($xbc+sqrt(pow($Rb,2)-pow(($ty-$ybc),2)))]
+    set tx [expr ($x1+$tx)]
+    set ty [expr ($y1+$ty-$y0)]
+    lappend stiRLx  $tx
+    lappend stiRLy0 $ty
+  }
+
+  #--- Bottom end ---
+  set tx [expr ($x0+$Tsti)]
+  set ty [expr (0.0+$ymax)]
+  lappend stiRLx  $tx
+  lappend stiRLy0 $ty
+
+  set pN  [expr (3*$rN+1)]
+
+set debug_point 0
+if { $debug_point } {
+
+  for {set i 0} {$i < $pN} {incr i 1} {
+    puts -nonewline [lindex $stiRLx  $i]
+    puts -nonewline " "
+    puts            [lindex $stiRLy0 $i]
+  }
+
+}
+
+  set stiR0Ly [list]
+  set stiR0Lz [list]
+  set stiR1Ly [list]
+  set stiR1Lz [list]
+  # Points
+  for {set i 0} {$i < $pN} {incr i 1} {
+    set ty   [lindex $stiRLy0 $i]
+    if { ![string compare $dir "left"] || ![string compare $dir "back"] } {
+      set ty   [expr (-1.0*$ty)]
+    }
+    set ty   [expr ($y0+$ty)]
+    set tz0  $zmin
+    set tz1  $zmax
+    if { ![string compare $dir "right"] || ![string compare $dir "left"] } {
+      lappend stiR0Ly $ty
+      lappend stiR0Lz $tz0
+      lappend stiR1Ly $ty
+      lappend stiR1Lz $tz1
+    } elseif { ![string compare $dir "front"] || ![string compare $dir "back"] } {
+      lappend stiR0Ly $tz0
+      lappend stiR0Lz $ty
+      lappend stiR1Ly $tz1
+      lappend stiR1Lz $ty
+    } else {
+      error "-- $dir -- \nWrong Direction: right left front back"
+      exit -1
+    }
+  }
+  set tx [lindex $stiRLx  0] ; set ty [lindex $stiR0Ly  0] ; set tz [lindex $stiR0Lz  0]
+  point name=pR0P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  1] ; set ty [lindex $stiR0Ly  1] ; set tz [lindex $stiR0Lz  1]
+  point name=pR0P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  2] ; set ty [lindex $stiR0Ly  2] ; set tz [lindex $stiR0Lz  2]
+  point name=pR0P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  3] ; set ty [lindex $stiR0Ly  3] ; set tz [lindex $stiR0Lz  3]
+  point name=pR0P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  4] ; set ty [lindex $stiR0Ly  4] ; set tz [lindex $stiR0Lz  4]
+  point name=pR0P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  5] ; set ty [lindex $stiR0Ly  5] ; set tz [lindex $stiR0Lz  5]
+  point name=pR0P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  6] ; set ty [lindex $stiR0Ly  6] ; set tz [lindex $stiR0Lz  6]
+  point name=pR0P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  7] ; set ty [lindex $stiR0Ly  7] ; set tz [lindex $stiR0Lz  7]
+  point name=pR0P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  8] ; set ty [lindex $stiR0Ly  8] ; set tz [lindex $stiR0Lz  8]
+  point name=pR0P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  9] ; set ty [lindex $stiR0Ly  9] ; set tz [lindex $stiR0Lz  9]
+  point name=pR0P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiR0Ly 10] ; set tz [lindex $stiR0Lz 10]
+  point name=pR0P10 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiR0Ly 11] ; set tz [lindex $stiR0Lz 11]
+  point name=pR0P11 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiR0Ly 12] ; set tz [lindex $stiR0Lz 12]
+  point name=pR0P12 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiR0Ly 13] ; set tz [lindex $stiR0Lz 13]
+  point name=pR0P13 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiR0Ly 14] ; set tz [lindex $stiR0Lz 14]
+  point name=pR0P14 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiR0Ly 15] ; set tz [lindex $stiR0Lz 15]
+  point name=pR0P15 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiR0Ly 16] ; set tz [lindex $stiR0Lz 16]
+  point name=pR0P16 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiR0Ly 17] ; set tz [lindex $stiR0Lz 17]
+  point name=pR0P17 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiR0Ly 18] ; set tz [lindex $stiR0Lz 18]
+  point name=pR0P18 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiR0Ly 19] ; set tz [lindex $stiR0Lz 19]
+  point name=pR0P19 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiR0Ly 20] ; set tz [lindex $stiR0Lz 20]
+  point name=pR0P20 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiR0Ly 21] ; set tz [lindex $stiR0Lz 21]
+  point name=pR0P21 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiR0Ly 22] ; set tz [lindex $stiR0Lz 22]
+  point name=pR0P22 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiR0Ly 23] ; set tz [lindex $stiR0Lz 23]
+  point name=pR0P23 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiR0Ly 24] ; set tz [lindex $stiR0Lz 24]
+  point name=pR0P24 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiR0Ly 25] ; set tz [lindex $stiR0Lz 25]
+  point name=pR0P25 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiR0Ly 26] ; set tz [lindex $stiR0Lz 26]
+  point name=pR0P26 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiR0Ly 27] ; set tz [lindex $stiR0Lz 27]
+  point name=pR0P27 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiR0Ly 28] ; set tz [lindex $stiR0Lz 28]
+  point name=pR0P28 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiR0Ly 29] ; set tz [lindex $stiR0Lz 29]
+  point name=pR0P29 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiR0Ly 30] ; set tz [lindex $stiR0Lz 30]
+  point name=pR0P30 coord= { $tx $ty $tz }
+
+  set tx [lindex $stiRLx  0] ; set ty [lindex $stiR1Ly  0] ; set tz [lindex $stiR1Lz  0]
+  point name=pR1P0  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  1] ; set ty [lindex $stiR1Ly  1] ; set tz [lindex $stiR1Lz  1]
+  point name=pR1P1  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  2] ; set ty [lindex $stiR1Ly  2] ; set tz [lindex $stiR1Lz  2]
+  point name=pR1P2  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  3] ; set ty [lindex $stiR1Ly  3] ; set tz [lindex $stiR1Lz  3]
+  point name=pR1P3  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  4] ; set ty [lindex $stiR1Ly  4] ; set tz [lindex $stiR1Lz  4]
+  point name=pR1P4  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  5] ; set ty [lindex $stiR1Ly  5] ; set tz [lindex $stiR1Lz  5]
+  point name=pR1P5  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  6] ; set ty [lindex $stiR1Ly  6] ; set tz [lindex $stiR1Lz  6]
+  point name=pR1P6  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  7] ; set ty [lindex $stiR1Ly  7] ; set tz [lindex $stiR1Lz  7]
+  point name=pR1P7  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  8] ; set ty [lindex $stiR1Ly  8] ; set tz [lindex $stiR1Lz  8]
+  point name=pR1P8  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx  9] ; set ty [lindex $stiR1Ly  9] ; set tz [lindex $stiR1Lz  9]
+  point name=pR1P9  coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 10] ; set ty [lindex $stiR1Ly 10] ; set tz [lindex $stiR1Lz 10]
+  point name=pR1P10 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 11] ; set ty [lindex $stiR1Ly 11] ; set tz [lindex $stiR1Lz 11]
+  point name=pR1P11 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 12] ; set ty [lindex $stiR1Ly 12] ; set tz [lindex $stiR1Lz 12]
+  point name=pR1P12 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 13] ; set ty [lindex $stiR1Ly 13] ; set tz [lindex $stiR1Lz 13]
+  point name=pR1P13 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 14] ; set ty [lindex $stiR1Ly 14] ; set tz [lindex $stiR1Lz 14]
+  point name=pR1P14 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 15] ; set ty [lindex $stiR1Ly 15] ; set tz [lindex $stiR1Lz 15]
+  point name=pR1P15 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 16] ; set ty [lindex $stiR1Ly 16] ; set tz [lindex $stiR1Lz 16]
+  point name=pR1P16 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 17] ; set ty [lindex $stiR1Ly 17] ; set tz [lindex $stiR1Lz 17]
+  point name=pR1P17 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 18] ; set ty [lindex $stiR1Ly 18] ; set tz [lindex $stiR1Lz 18]
+  point name=pR1P18 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 19] ; set ty [lindex $stiR1Ly 19] ; set tz [lindex $stiR1Lz 19]
+  point name=pR1P19 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 20] ; set ty [lindex $stiR1Ly 20] ; set tz [lindex $stiR1Lz 20]
+  point name=pR1P20 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 21] ; set ty [lindex $stiR1Ly 21] ; set tz [lindex $stiR1Lz 21]
+  point name=pR1P21 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 22] ; set ty [lindex $stiR1Ly 22] ; set tz [lindex $stiR1Lz 22]
+  point name=pR1P22 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 23] ; set ty [lindex $stiR1Ly 23] ; set tz [lindex $stiR1Lz 23]
+  point name=pR1P23 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 24] ; set ty [lindex $stiR1Ly 24] ; set tz [lindex $stiR1Lz 24]
+  point name=pR1P24 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 25] ; set ty [lindex $stiR1Ly 25] ; set tz [lindex $stiR1Lz 25]
+  point name=pR1P25 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 26] ; set ty [lindex $stiR1Ly 26] ; set tz [lindex $stiR1Lz 26]
+  point name=pR1P26 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 27] ; set ty [lindex $stiR1Ly 27] ; set tz [lindex $stiR1Lz 27]
+  point name=pR1P27 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 28] ; set ty [lindex $stiR1Ly 28] ; set tz [lindex $stiR1Lz 28]
+  point name=pR1P28 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 29] ; set ty [lindex $stiR1Ly 29] ; set tz [lindex $stiR1Lz 29]
+  point name=pR1P29 coord= { $tx $ty $tz }
+  set tx [lindex $stiRLx 30] ; set ty [lindex $stiR1Ly 30] ; set tz [lindex $stiR1Lz 30]
+  point name=pR1P30 coord= { $tx $ty $tz }
+
+
+  # Polygons
+  polygon name=pL0   points = { pR0P0 pR0P1 pR1P1 pR1P0 }
+  polygon name=pL1   points = { pR0P1 pR0P2 pR1P2 pR1P1 }
+  polygon name=pL2   points = { pR0P2 pR0P3 pR1P3 pR1P2 }
+  polygon name=pL3   points = { pR0P3 pR0P4 pR1P4 pR1P3 }
+  polygon name=pL4   points = { pR0P4 pR0P5 pR1P5 pR1P4 }
+  polygon name=pL5   points = { pR0P5 pR0P6 pR1P6 pR1P5 }
+  polygon name=pL6   points = { pR0P6 pR0P7 pR1P7 pR1P6 }
+  polygon name=pL7   points = { pR0P7 pR0P8 pR1P8 pR1P7 }
+  polygon name=pL8   points = { pR0P8 pR0P9 pR1P9 pR1P8 }
+  polygon name=pL9   points = { pR0P9 pR0P10 pR1P10 pR1P9 }
+  polygon name=pL10   points = { pR0P10 pR0P11 pR1P11 pR1P10 }
+  polygon name=pL11   points = { pR0P11 pR0P12 pR1P12 pR1P11 }
+  polygon name=pL12   points = { pR0P12 pR0P13 pR1P13 pR1P12 }
+  polygon name=pL13   points = { pR0P13 pR0P14 pR1P14 pR1P13 }
+  polygon name=pL14   points = { pR0P14 pR0P15 pR1P15 pR1P14 }
+  polygon name=pL15   points = { pR0P15 pR0P16 pR1P16 pR1P15 }
+  polygon name=pL16   points = { pR0P16 pR0P17 pR1P17 pR1P16 }
+  polygon name=pL17   points = { pR0P17 pR0P18 pR1P18 pR1P17 }
+  polygon name=pL18   points = { pR0P18 pR0P19 pR1P19 pR1P18 }
+  polygon name=pL19   points = { pR0P19 pR0P20 pR1P20 pR1P19 }
+  polygon name=pL20   points = { pR0P20 pR0P21 pR1P21 pR1P20 }
+  polygon name=pL21   points = { pR0P21 pR0P22 pR1P22 pR1P21 }
+  polygon name=pL22   points = { pR0P22 pR0P23 pR1P23 pR1P22 }
+  polygon name=pL23   points = { pR0P23 pR0P24 pR1P24 pR1P23 }
+  polygon name=pL24   points = { pR0P24 pR0P25 pR1P25 pR1P24 }
+  polygon name=pL25   points = { pR0P25 pR0P26 pR1P26 pR1P25 }
+  polygon name=pL26   points = { pR0P26 pR0P27 pR1P27 pR1P26 }
+  polygon name=pL27   points = { pR0P27 pR0P28 pR1P28 pR1P27 }
+  polygon name=pL28   points = { pR0P28 pR0P29 pR1P29 pR1P28 }
+  polygon name=pL29   points = { pR0P29 pR0P30 pR1P30 pR1P29 }
+  polygon name=pL30   points = { pR0P30 pR0P0 pR1P0 pR1P30 }
+  polygon name=pL31   points = { pR0P0 pR0P1 pR0P2 pR0P3 pR0P4 pR0P5 pR0P6 pR0P7 pR0P8 pR0P9 \
+                                 pR0P10 pR0P11 pR0P12 pR0P13 pR0P14 \
+                                 pR0P15 pR0P16 pR0P17 pR0P18 pR0P19 \
+                                 pR0P20 pR0P21 pR0P22 pR0P23 pR0P24 \
+                                 pR0P25 pR0P26 pR0P27 pR0P28 pR0P29 \
+                                 pR0P30 }
+  polygon name=pL32   points = { pR1P0 pR1P1 pR1P2 pR1P3 pR1P4 pR1P5 pR1P6 pR1P7 pR1P8 pR1P9 \
+                                 pR1P10 pR1P11 pR1P12 pR1P13 pR1P14 \
+                                 pR1P15 pR1P16 pR1P17 pR1P18 pR1P19 \
+                                 pR1P20 pR1P21 pR1P22 pR1P23 pR1P24 \
+                                 pR1P25 pR1P26 pR1P27 pR1P28 pR1P29 \
+                                 pR1P30 }
+
+  polyhedron name= $name polygons = { pL0 pL1 pL2 pL3 pL4 pL5 pL6 pL7 pL8 pL9 \
+                                      pL10 pL11 pL12 pL13 pL14 pL15 pL16 pL17 pL18 pL19 \
+                                      pL20 pL21 pL22 pL23 pL24 pL25 pL26 pL27 pL28 pL29 \
+                                      pL30 pL31 pL32 } info=2
+
+}
+
+
+
+fproc PolyHedronCylinder {args} {
+#rem # PolyHedronCylinder - procedure to create Cylinder shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. X0        - Cylinder bottom position
+#rem #  3. Y0        - Cylinder center point
+#rem #  4. Z0        - Cylinder center point
+#rem #  5. Rc        - Radius
+#rem #  6. Hc        - Cylinder height
+#rem #  7. Direction - Cylinder direction
+
+  if {[llength $args] < 7 || [llength $args] > 7} {
+     error "PolyHedronCylinder: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set x0        [lindex $args 1]
+  set y0        [lindex $args 2]
+  set z0        [lindex $args 3]
+  set Rc        [lindex $args 4]
+  set Hc        [lindex $args 5]
+  set Dir       [string toupper [lindex $args 6]]
+
+  set D2R       [expr (atan(1.0)/45.0)] ; #Degree to radiant conv.
+  set rN        36
+  set dA        10
+
+#---- Cylinder point ------------------------
+  set x1         [expr ($x0+$Hc)]
+
+  #--- Surface circle ---
+  if { $Dir == "Z" } {
+    for {set i 0} {$i < $rN} {incr i 1} {
+      set ty [expr ($y0+$Rc*sin($i*$dA*$D2R))]
+      set tz [expr ($z0+$Rc*cos($i*$dA*$D2R))]
+
+      set pbName "pB$i" ; set ptName "pT$i" ;
+      eval point name=$pbName coord= \{$tz $ty $x0\}
+      eval point name=$ptName coord= \{$tz $ty $x1\}
+    }
+  } elseif { $Dir == "X" } {
+    for {set i 0} {$i < $rN} {incr i 1} {
+      set ty [expr ($y0+$Rc*sin($i*$dA*$D2R))]
+      set tz [expr ($z0+$Rc*cos($i*$dA*$D2R))]
+
+      set pbName "pB$i" ; set ptName "pT$i" ;
+      eval point name=$pbName coord= \{$x0 $ty $tz\}
+      eval point name=$ptName coord= \{$x1 $ty $tz\}
+    }
+  } else {
+    puts "Under constructuin !!!"
+  }
+
+  # Polygons
+  for {set i 0} {$i < $rN} {incr i 1} {
+    set j [expr ($i+1)]
+    if { $j == $rN } {
+      set j 0
+    } 
+    set pb0Name "pB$i" ; set pt0Name "pT$i" ;
+    set pb1Name "pB$j" ; set pt1Name "pT$j" ;
+    set pLName "pL$i" 
+    eval polygon name=$pLName points = \{ $pb0Name $pb1Name $pt1Name $pt0Name \}
+  }
+
+  set pBlist "" ; set pTlist ""
+  for {set i 0} {$i < $rN} {incr i 1} {
+    set pbName "pB$i" ; set ptName "pT$i" ;
+    append pBlist " " ; append pTlist " " ; 
+    append pBlist $pbName ; append pTlist $ptName ; 
+  }
+  set i $rN ; set pLName "pL$i" 
+  eval polygon name=$pLName   points = \{ $pBlist \}
+  set i [expr ($rN+1)] ; set pLName "pL$i" 
+  eval polygon name=$pLName   points = \{ $pTlist \}
+
+  set pLlist "" 
+  for {set i 0} {$i < [expr ($rN+2)]} {incr i 1} {
+    set pLName "pL$i" 
+    append pLlist " "
+    append pLlist $pLName 
+  }
+  eval polyhedron name= $name polygons = \{ $pLlist \} info=2
+}
+
+
+
+fproc PolyHedronRoundedCuboidExtrusion {args} {
+#rem # PolyHedronRoundedCuboid - procedure to create RoundedCuboid shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. Center Coordinate List        - Cuboid center 
+#rem #  3. Cuboid size List       - Cuboid size (width, height, length)
+#rem #  4. Rc        - Corner radius (sharp corner when < 0)
+#rem #  5. Channel (length) Direction - Cuboid legnth direction
+#rem #  6. Tech type - BulkFinFET / FinFET / GAA
+
+  if {[llength $args] != 6} {
+     error "PolyHedronRoundedCuboid: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set xm        [lindex [lindex $args 1] 0]
+  set ym        [lindex [lindex $args 1] 1]
+  set zm        [lindex [lindex $args 1] 2]
+  set h         [lindex [lindex $args 2] 0]
+  set w         [lindex [lindex $args 2] 1]
+  set l         [lindex [lindex $args 2] 2]
+  set Rc        [lindex $args 3]
+  set Dir       [string toupper [lindex $args 4]]
+  set Tech      [lindex $args 5]
+
+  set D2R       [expr (atan(1.0)/45.0)] ; #Degree to radiant conv.
+  set rN        10
+  set dA        10
+
+  if { $w < $h } {
+    set shortSide $w
+  } else {
+    set shortSide $h
+  }
+
+#---- Cuboid point ------------------------
+  set z0         [expr ($zm-0.5*$l)]
+  set z1         [expr ($zm+0.5*$l)]
+
+  #--- Cross-section ---
+  set crossRectX0 [expr $xm-0.5*$h]
+  set crossRectX1 [expr $xm+0.5*$h]
+  set crossRectY0 [expr $ym-0.5*$w]
+  set crossRectY1 [expr $ym+0.5*$w]
+  set pxList [list]
+  set pyList [list]
+  if { $Rc < 0.0 } {
+    lappend pxList $crossRectX0 $crossRectX0 $crossRectX1 $crossRectX1
+    lappend pyList $crossRectY0 $crossRectY1 $crossRectY1 $crossRectY0
+  } else {
+    if { [expr 2.0*$Rc] > $shortSide } {
+      #--- change the corner rounding
+      set Rc [expr 0.5*$shortSide]
+    }
+    if { $Tech == "GAA" } {
+      set xrcen [expr $crossRectX0+$Rc]
+      set yrcen [expr $crossRectY0+$Rc]
+      for {set i 0} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((18+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((18+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+      if {$ty < $ym && [expr abs($ty-$ym)] > 1.0e-5} {
+        set starti 0
+      } else {
+        set starti 1
+      }
+      set xrcen [expr $crossRectX0+$Rc]
+      set yrcen [expr $crossRectY1-$Rc]
+      for {set i $starti} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((27+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((27+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+      if {$tx < $xm && [expr abs($tx-$xm)] > 1.0e-5} {
+        set starti 0
+      } else {
+        set starti 1
+      }
+      set xrcen [expr $crossRectX1-$Rc]
+      set yrcen [expr $crossRectY1-$Rc]
+      for {set i $starti} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((0+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((0+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+      if {$ty > $ym && [expr abs($ty-$ym)] > 1.0e-5} {
+        set starti 0
+      } else {
+        set starti 1
+      }
+      set xrcen [expr $crossRectX1-$Rc]
+      set yrcen [expr $crossRectY0+$Rc]
+      for {set i $starti} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((9+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((9+$i)*$dA*$D2R))]
+        if {$tx < $xm && [expr abs($tx-$xm)] > 1.0e-5} {
+          lappend pxList $tx
+          lappend pyList $ty
+        }
+      }
+    } else {
+      lappend pxList $crossRectX1 $crossRectX1
+      lappend pyList $crossRectY1 $crossRectY0
+
+      set xrcen [expr $crossRectX0+$Rc]
+      set yrcen [expr $crossRectY1-$Rc]
+      for {set i 0} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((18+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((18+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+      if {$ty > $ym && [expr abs($ty-$ym)] > 1.0e-5} {
+        set starti 0
+      } else {
+        set starti 1
+      }
+      set xrcen [expr $crossRectX0+$Rc]
+      set yrcen [expr $crossRectY0+$Rc]
+      for {set i $starti} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((27+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((27+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+    }
+  }
+
+  set i 0
+  foreach tx $pxList ty $pyList {
+    set pName "p$i"
+    eval point name=$pName coord= \{$ty $tx\}
+    set i [expr 1+$i]
+  }
+  set ptSize [llength $pxList]
+
+  if { $ptSize < 3 } {
+    puts "Cross-section is NOT polygon !!!"
+    exit
+  }
+
+  # Polygons
+  set plist ""
+  for {set i 0} {$i < $ptSize} {incr i 1} {
+    set pName "p$i" 
+    append plist " $pName"
+  }
+  set pLName "pL0" 
+  eval polygon name=$pLName   points = \{ $plist \}
+
+  if { $Dir == "Z" } {
+    set rList {0 -90 0}
+  } elseif { $Dir == "X" } {
+    set rList {0 0 0}
+  } elseif { $Dir == "Y" } {
+    set rList {90 0 -90}
+  } else {
+    puts "Wrong channel direction !!!"
+    exit
+  }
+
+  eval polyhedron name= $name polygons = \{ $pLName \} min= $z0 max= $z1 rotate.angles= \{ $rList \} rotate.center= \{ $xm $ym $zm \} info=2
+}
+
+
+
+fproc PolyHedronRoundedCuboid {args} {
+#rem # PolyHedronRoundedCuboid - procedure to create RoundedCuboid shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name                        - name of the polyhedron
+#rem #  2. Center Coordinate List      - Cuboid center 
+#rem #  3. Cuboid size List            - Cuboid size (width, height, length)
+#rem #  4. Rc                          - Corner radius (sharp corner when < 0)
+#rem #  5. Channel (length) Direction  - Cuboid legnth direction
+#rem #  6. Tech type                   - BulkFinFET / FinFET / GAA
+
+  if {[llength $args] != 6} {
+     error "PolyHedronRoundedCuboid: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set xm        [lindex [lindex $args 1] 0]
+  set ym        [lindex [lindex $args 1] 1]
+  set zm        [lindex [lindex $args 1] 2]
+  set h         [lindex [lindex $args 2] 0]
+  set w         [lindex [lindex $args 2] 1]
+  set l         [lindex [lindex $args 2] 2]
+  set Rc        [lindex $args 3]
+  set Dir       [string toupper [lindex $args 4]]
+  set Tech      [lindex $args 5]
+
+  set D2R       [expr (atan(1.0)/45.0)] ; #Degree to radiant conv.
+  set rN        10
+  set dA        10
+
+  if { $w < $h } {
+    set shortSide $w
+  } else {
+    set shortSide $h
+  }
+
+#---- Cuboid point ------------------------
+  set z0         [expr ($zm-0.5*$l)]
+  set z1         [expr ($zm+0.5*$l)]
+
+  #--- Cross-section ---
+  set crossRectX0 [expr $xm-0.5*$h]
+  set crossRectX1 [expr $xm+0.5*$h]
+  set crossRectY0 [expr $ym-0.5*$w]
+  set crossRectY1 [expr $ym+0.5*$w]
+  set pxList [list]
+  set pyList [list]
+  if { $Rc < 0.0 } {
+    lappend pxList $crossRectX0 $crossRectX0 $crossRectX1 $crossRectX1
+    lappend pyList $crossRectY0 $crossRectY1 $crossRectY1 $crossRectY0
+  } else {
+    if { [expr 2.0*$Rc] > $shortSide } {
+      #--- change the corner rounding
+      set Rc [expr 0.5*$shortSide]
+    }
+    if { $Tech == "GAA" } {
+      set xrcen [expr $crossRectX0+$Rc]
+      set yrcen [expr $crossRectY0+$Rc]
+      for {set i 0} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((18+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((18+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+      if {$ty < $ym && [expr abs($ty-$ym)] > 1.0e-5} {
+        set starti 0
+      } else {
+        set starti 1
+      }
+      set xrcen [expr $crossRectX0+$Rc]
+      set yrcen [expr $crossRectY1-$Rc]
+      for {set i $starti} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((27+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((27+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+      if {$tx < $xm && [expr abs($tx-$xm)] > 1.0e-5} {
+        set starti 0
+      } else {
+        set starti 1
+      }
+      set xrcen [expr $crossRectX1-$Rc]
+      set yrcen [expr $crossRectY1-$Rc]
+      for {set i $starti} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((0+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((0+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+      if {$ty > $ym && [expr abs($ty-$ym)] > 1.0e-5} {
+        set starti 0
+      } else {
+        set starti 1
+      }
+      set xrcen [expr $crossRectX1-$Rc]
+      set yrcen [expr $crossRectY0+$Rc]
+      for {set i $starti} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((9+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((9+$i)*$dA*$D2R))]
+        if {$tx > $xm && [expr abs($tx-$xm)] > 1.0e-5} {
+          lappend pxList $tx
+          lappend pyList $ty
+        }
+      }
+    } else {
+      lappend pxList $crossRectX1 $crossRectX1
+      lappend pyList $crossRectY1 $crossRectY0
+
+      set xrcen [expr $crossRectX0+$Rc]
+      set yrcen [expr $crossRectY0+$Rc]
+      for {set i 0} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((18+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((18+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+      if {$ty > $ym && [expr abs($ty-$ym)] > 1.0e-5} {
+        set starti 0
+      } else {
+        set starti 1
+      }
+      set xrcen [expr $crossRectX0+$Rc]
+      set yrcen [expr $crossRectY1-$Rc]
+      for {set i $starti} {$i < $rN} {incr i 1} {
+        set tx [expr ($xrcen+$Rc*sin((27+$i)*$dA*$D2R))]
+        set ty [expr ($yrcen+$Rc*cos((27+$i)*$dA*$D2R))]
+        lappend pxList $tx
+        lappend pyList $ty
+      }
+    }
+  }
+
+  set i 0
+  foreach tx $pxList ty $pyList {
+    set pbName "pB$i" ; set ptName "pT$i" ;
+    if { $Dir == "Z" } {
+      eval point name=$pbName coord= \{$tx $ty $z0\}
+      eval point name=$ptName coord= \{$tx $ty $z1\}
+    } elseif { $Dir == "X" } {
+      eval point name=$pbName coord= \{$z0 $ty $tx\}
+      eval point name=$ptName coord= \{$z1 $ty $tx\}
+    } elseif { $Dir == "Y" } {
+      eval point name=$pbName coord= \{$tx $z0 $ty\}
+      eval point name=$ptName coord= \{$tx $z1 $ty\}
+    } else {
+      puts "Wrong channel direction !!!"
+      exit
+    }
+    set i [expr 1+$i]
+  }
+  set ptSize [llength $pxList]
+
+  if { $ptSize < 3 } {
+    puts "Cross-section is NOT polygon !!!"
+    exit
+  }
+
+  # Polygons
+  for {set i 0} {$i < $ptSize} {incr i 1} {
+    set j [expr ($i+1)]
+    if { $j == $ptSize } {
+      set j 0
+    } 
+    set pb0Name "pB$i" ; set pt0Name "pT$i" ;
+    set pb1Name "pB$j" ; set pt1Name "pT$j" ;
+    set li [expr 2*$i]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ $pb0Name $pb1Name $pt1Name \}
+    set li [expr 2*$i+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ $pt1Name $pt0Name $pb0Name \}
+  }
+
+  for {set i 1} {$i < [expr $ptSize-1]} {incr i 1} {
+    set j [expr ($i+1)]
+    set p0Name "pT$i" ; set p1Name "pT$j" ;
+    set li [expr $li+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ pT0 $p0Name $p1Name \}
+  }
+  for {set i 1} {$i < [expr $ptSize-1]} {incr i 1} {
+    set j [expr ($i+1)]
+    set p0Name "pB$i" ; set p1Name "pB$j" ;
+    set li [expr $li+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ pB0 $p0Name $p1Name \}
+  }
+
+  ##set pBlist "" ; set pTlist ""
+  ##for {set i 0} {$i < $ptSize} {incr i 1} {
+  ##  set pbName "pB$i" ; set ptName "pT$i" ;
+  ##  append pBlist " " ; append pTlist " " ; 
+  ##  append pBlist $pbName ; append pTlist $ptName ; 
+  ##}
+  ##set i [expr 2*$ptSize] ; set pLName "pL$i" 
+  ##eval polygon name=$pLName   points = \{ $pBlist \}
+  ##set i [expr 2*$ptSize+1] ; set pLName "pL$i" 
+  ##eval polygon name=$pLName   points = \{ $pTlist \}
+
+  set pLlist "" 
+  for {set i 0} {$i <= $li} {incr i 1} {
+    set pLName "pL$i" 
+    append pLlist " "
+    append pLlist $pLName 
+  }
+  eval polyhedron name= $name polygons = \{ $pLlist \} info=2
+}
+
+
+
+fproc BrickGeneration {args} {
+#rem # BrickGeneration - procedure to create brick
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name                               - name of the brick
+#rem #  2. Brick List                         - Brick list in z-channel direction 
+#rem #  3. Replace material List              - Materials replaced by new material
+#rem #  4. New material                       - New material name
+#rem #  5. New region name (length) Direction - Region name
+#rem #  6. Channel (length) Direction         - Channel legnth direction
+#rem #  7. is Selectvie HKMG                  - Selective HKMG / ALD_HKMG
+
+  if {[llength $args] != 7} {
+     error "BrickGeneration: wrong number of arguments"
+     exit -1
+  }
+  set name              [lindex $args 0]
+  set bricklist         [lindex $args 1]
+  set repalceMaterials  [lindex $args 2]
+  set newMaterial       [lindex $args 3]
+  set newRegion         [lindex $args 4]
+  set Dir               [string toupper [lindex $args 5]]
+  set isExecution       [lindex $args 6]
+
+  if { $isExecution > 0 } {
+
+    if { $Dir == "Z" } {
+      set brickList $bricklist
+    } elseif { $Dir == "X" } {
+      set brickList [list [lindex $bricklist 2] [lindex $bricklist 1] [lindex $bricklist 0] [lindex $bricklist 5] [lindex $bricklist 4] [lindex $bricklist 3]]
+    } elseif { $Dir == "Y" } {
+      set brickList [list [lindex $bricklist 0] [lindex $bricklist 2] [lindex $bricklist 1] [lindex $bricklist 3] [lindex $bricklist 5] [lindex $bricklist 4]]
+    } else {
+      puts "Wrong channel direction !!!"
+      exit
+    }
+
+    eval polyhedron name= $name brick= \{ $brickList \}
+    polygon list
+    eval insert polyhedron= $name replace.materials= \{ $repalceMaterials \} new.material= $newMaterial new.region= $newRegion
+    PolyHedronClear
+  }
+}
+
+
+
+fproc PolygonExtrusion {args} {
+#rem # PolygonExtrusion - procedure to create polygon extrusion
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name                               - name of the extruded polygon
+#rem #  2. Polygon List                       - Polygon list in x-y plane 
+#rem #  3. Zstart                             - Point where the extrusion starts
+#rem #  4. Zend                               - Point where the extrusion ends
+#rem #  5. Replace material List              - Materials replaced by new material
+#rem #  6. New material                       - New material name
+#rem #  7. New region name                    - Region name
+#rem #  8. Channel (length) Direction         - Channel legnth direction
+
+  if {[llength $args] != 8} {
+     error "PolygonExtrusion: wrong number of arguments"
+     exit -1
+  }
+  set name              [lindex $args 0]
+  set polygonlist       [lindex $args 1]
+  set z0                [lindex $args 2]
+  set z1                [lindex $args 3]
+  set repalceMaterials  [lindex $args 4]
+  set newMaterial       [lindex $args 5]
+  set newRegion         [lindex $args 6]
+  set Dir               [string toupper [lindex $args 7]]
+
+  if { [expr [llength $polygonlist]%2] != 0 } {
+    puts "Polygon list is wrong!!!"
+    puts "Polygon list : $polygonlist "
+    exit
+  }
+
+  set ptSize [expr [llength $polygonlist]/2]
+  set pxList [list] ; set pyList [list] ;
+  for {set i 0} {$i < $ptSize} {incr i} {
+    set pi [expr 2*$i] ;  set ni [expr 2*$i+1]
+    lappend pxList [lindex $polygonlist $pi]
+    lappend pyList [lindex $polygonlist $ni]
+  }
+
+  set i 0
+  foreach tx $pxList ty $pyList {
+    set pbName "pB$i" ; set ptName "pT$i" ;
+    if { $Dir == "Z" } {
+      eval point name=$pbName coord= \{$tx $ty $z0\}
+      eval point name=$ptName coord= \{$tx $ty $z1\}
+    } elseif { $Dir == "X" } {
+      eval point name=$pbName coord= \{$z0 $ty $tx\}
+      eval point name=$ptName coord= \{$z1 $ty $tx\}
+    } elseif { $Dir == "Y" } {
+      eval point name=$pbName coord= \{$tx $z0 $ty\}
+      eval point name=$ptName coord= \{$tx $z1 $ty\}
+    } else {
+      puts "Wrong channel direction !!!"
+      exit
+    }
+    set i [expr 1+$i]
+  }
+  set ptSize [llength $pxList]
+
+  if { $ptSize < 3 } {
+    puts "Cross-section is NOT polygon !!!"
+    exit
+  }
+
+  # Polygons
+  for {set i 0} {$i < $ptSize} {incr i 1} {
+    set j [expr ($i+1)]
+    if { $j == $ptSize } {
+      set j 0
+    } 
+    set pb0Name "pB$i" ; set pt0Name "pT$i" ;
+    set pb1Name "pB$j" ; set pt1Name "pT$j" ;
+    set li [expr 2*$i]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ $pb0Name $pb1Name $pt1Name \}
+    set li [expr 2*$i+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ $pt1Name $pt0Name $pb0Name \}
+  }
+
+  for {set i 1} {$i < [expr $ptSize-1]} {incr i 1} {
+    set j [expr ($i+1)]
+    set p0Name "pT$i" ; set p1Name "pT$j" ;
+    set li [expr $li+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ pT0 $p0Name $p1Name \}
+  }
+  for {set i 1} {$i < [expr $ptSize-1]} {incr i 1} {
+    set j [expr ($i+1)]
+    set p0Name "pB$i" ; set p1Name "pB$j" ;
+    set li [expr $li+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ pB0 $p0Name $p1Name \}
+  }
+
+  set pLlist "" 
+  for {set i 0} {$i <= $li} {incr i 1} {
+    set pLName "pL$i" 
+    append pLlist " "
+    append pLlist $pLName 
+  }
+  eval polyhedron name= $name polygons = \{ $pLlist \} info=2
+  polygon list
+  eval insert polyhedron= $name replace.materials= \{ $repalceMaterials \} new.material= $newMaterial new.region= $newRegion
+  PolyHedronClear
+}
+
+
+
+fproc HexahedronGeneration {args} {
+#rem # HexahedronGeneration - procedure to create hexahedron
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name                               - name of the extruded polygon
+#rem #  2. Left Quadrilateral List            - Left Quadrilateral List in x-y plane 
+#rem #  3. Right Quadrilateral List           - Right Quadrilateral List in x-y plane 
+#rem #  4. Zstart                             - Point where the extrusion starts
+#rem #  5. Zend                               - Point where the extrusion ends
+#rem #  6. Replace material List              - Materials replaced by new material
+#rem #  7. New material                       - New material name
+#rem #  8. New region name                    - Region name
+#rem #  9. Channel (length) Direction         - Channel legnth direction
+
+
+  if {[llength $args] != 9} {
+     error "HexahedronGeneration: wrong number of arguments"
+     exit -1
+  }
+  set name              [lindex $args 0]
+  set leftlist          [lindex $args 1]
+  set rightlist         [lindex $args 2]
+  set z0                [lindex $args 3]
+  set z1                [lindex $args 4]
+  set repalceMaterials  [lindex $args 5]
+  set newMaterial       [lindex $args 6]
+  set newRegion         [lindex $args 7]
+  set Dir               [string toupper [lindex $args 8]]
+
+  if { [llength $leftlist] != 8 } {
+    puts "Left Quadrilateral list is wrong!!!"
+    puts "Left Quadrilateral list : $leftlist "
+    exit
+  }
+
+  if { [llength $rightlist] != 8 } {
+    puts "Right Quadrilateral list is wrong!!!"
+    puts "Right Quadrilateral list : $rightlist "
+    exit
+  }
+
+  set pxlList [list] ; set pylList [list] ;
+  set pxrList [list] ; set pyrList [list] ;
+  for {set i 0} {$i < 4} {incr i} {
+    set pi [expr 2*$i] ;  set ni [expr 2*$i+1]
+    lappend pxlList [lindex $leftlist $pi]
+    lappend pylList [lindex $leftlist $ni]
+    lappend pxrList [lindex $rightlist $pi]
+    lappend pyrList [lindex $rightlist $ni]
+  }
+
+  set i 0
+  foreach txl $pxlList tyl $pylList txr $pxrList tyr $pyrList {
+    set pbName "pB$i" ; set ptName "pT$i" ;
+    if { $Dir == "Z" } {
+      eval point name=$pbName coord= \{$txl $tyl $z0\}
+      eval point name=$ptName coord= \{$txr $tyr $z1\}
+    } elseif { $Dir == "X" } {
+      eval point name=$pbName coord= \{$z0 $tyl $txl\}
+      eval point name=$ptName coord= \{$z1 $tyr $txr\}
+    } elseif { $Dir == "Y" } {
+      eval point name=$pbName coord= \{$txl $z0 $tyl\}
+      eval point name=$ptName coord= \{$trx $z1 $tyr\}
+    } else {
+      puts "Wrong channel direction !!!"
+      exit
+    }
+    set i [expr 1+$i]
+  }
+  set ptSize [llength $pxlList]
+
+  # Polygons
+  for {set i 0} {$i < $ptSize} {incr i 1} {
+    set j [expr ($i+1)]
+    if { $j == $ptSize } {
+      set j 0
+    } 
+    set pb0Name "pB$i" ; set pt0Name "pT$i" ;
+    set pb1Name "pB$j" ; set pt1Name "pT$j" ;
+    set li [expr 2*$i]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ $pb0Name $pb1Name $pt1Name \}
+    set li [expr 2*$i+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ $pt1Name $pt0Name $pb0Name \}
+  }
+
+  for {set i 1} {$i < [expr $ptSize-1]} {incr i 1} {
+    set j [expr ($i+1)]
+    set p0Name "pT$i" ; set p1Name "pT$j" ;
+    set li [expr $li+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ pT0 $p0Name $p1Name \}
+  }
+  for {set i 1} {$i < [expr $ptSize-1]} {incr i 1} {
+    set j [expr ($i+1)]
+    set p0Name "pB$i" ; set p1Name "pB$j" ;
+    set li [expr $li+1]
+    set pLName "pL$li" 
+    eval polygon name=$pLName points = \{ pB0 $p0Name $p1Name \}
+  }
+
+  set pLlist "" 
+  for {set i 0} {$i <= $li} {incr i 1} {
+    set pLName "pL$i" 
+    append pLlist " "
+    append pLlist $pLName 
+  }
+  eval polyhedron name= $name polygons = \{ $pLlist \} info=2
+  polygon list
+  eval insert polyhedron= $name replace.materials= \{ $repalceMaterials \} new.material= $newMaterial new.region= $newRegion
+  PolyHedronClear
+}
+
+
+
+fproc PolygonWaferMask {args} {
+#rem # PolyHedronWafer - procedure to create Wafer shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. Y0        - Wafer center point
+#rem #  3. Z0        - Wafer center point
+#rem #  4. Rw        - Radius
+#rem #  5. Lf        - Wafer flat
+
+  if {[llength $args] < 5 || [llength $args] > 5} {
+     error "PolygonWaferMask: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set y0        [lindex $args 1]
+  set z0        [lindex $args 2]
+  set Rw        [lindex $args 3]
+  set Lf        [lindex $args 4]
+
+  if { $Lf >= [expr (2.0*$Rw)] } {
+     error "Flat is larger than the wafer diameter...!!!"
+     exit -1
+  }
+
+  set D2R       [expr (atan(1.0)/45.0)] ; #Degree to radiant conv.
+  set rN        36
+  set hfA       [expr (1.0*asin(($Lf/2.0)/$Rw)/$D2R)]
+  set dA        [expr ((360.0-2.0*$hfA)/$rN)]
+
+#---- Wafer point ------------------------
+  set wfLy [list]
+  set wfLz [list]
+
+  #--- Surface circle ---
+  for {set i 0} {$i <= $rN} {incr i 1} {
+    set ty [expr ($y0+$Rw*sin(($hfA+$i*$dA)*$D2R))]
+    set tz [expr ($z0+$Rw*cos(($hfA+$i*$dA)*$D2R))]
+
+    lappend wfLy $ty
+    lappend wfLz $tz
+  }
+
+
+  set ty [lindex $wfLy  0] ; set tz [lindex $wfLz  0] ; point name=p00  coord= { $ty $tz } 
+  set ty [lindex $wfLy  1] ; set tz [lindex $wfLz  1] ; point name=p01  coord= { $ty $tz } 
+  set ty [lindex $wfLy  2] ; set tz [lindex $wfLz  2] ; point name=p02  coord= { $ty $tz } 
+  set ty [lindex $wfLy  3] ; set tz [lindex $wfLz  3] ; point name=p03  coord= { $ty $tz } 
+  set ty [lindex $wfLy  4] ; set tz [lindex $wfLz  4] ; point name=p04  coord= { $ty $tz } 
+  set ty [lindex $wfLy  5] ; set tz [lindex $wfLz  5] ; point name=p05  coord= { $ty $tz } 
+  set ty [lindex $wfLy  6] ; set tz [lindex $wfLz  6] ; point name=p06  coord= { $ty $tz } 
+  set ty [lindex $wfLy  7] ; set tz [lindex $wfLz  7] ; point name=p07  coord= { $ty $tz } 
+  set ty [lindex $wfLy  8] ; set tz [lindex $wfLz  8] ; point name=p08  coord= { $ty $tz } 
+  set ty [lindex $wfLy  9] ; set tz [lindex $wfLz  9] ; point name=p09  coord= { $ty $tz } 
+  set ty [lindex $wfLy 10] ; set tz [lindex $wfLz 10] ; point name=p10  coord= { $ty $tz } 
+  set ty [lindex $wfLy 11] ; set tz [lindex $wfLz 11] ; point name=p11  coord= { $ty $tz } 
+  set ty [lindex $wfLy 12] ; set tz [lindex $wfLz 12] ; point name=p12  coord= { $ty $tz } 
+  set ty [lindex $wfLy 13] ; set tz [lindex $wfLz 13] ; point name=p13  coord= { $ty $tz } 
+  set ty [lindex $wfLy 14] ; set tz [lindex $wfLz 14] ; point name=p14  coord= { $ty $tz } 
+  set ty [lindex $wfLy 15] ; set tz [lindex $wfLz 15] ; point name=p15  coord= { $ty $tz } 
+  set ty [lindex $wfLy 16] ; set tz [lindex $wfLz 16] ; point name=p16  coord= { $ty $tz } 
+  set ty [lindex $wfLy 17] ; set tz [lindex $wfLz 17] ; point name=p17  coord= { $ty $tz } 
+  set ty [lindex $wfLy 18] ; set tz [lindex $wfLz 18] ; point name=p18  coord= { $ty $tz } 
+  set ty [lindex $wfLy 19] ; set tz [lindex $wfLz 19] ; point name=p19  coord= { $ty $tz } 
+  set ty [lindex $wfLy 20] ; set tz [lindex $wfLz 20] ; point name=p20  coord= { $ty $tz } 
+  set ty [lindex $wfLy 21] ; set tz [lindex $wfLz 21] ; point name=p21  coord= { $ty $tz } 
+  set ty [lindex $wfLy 22] ; set tz [lindex $wfLz 22] ; point name=p22  coord= { $ty $tz } 
+  set ty [lindex $wfLy 23] ; set tz [lindex $wfLz 23] ; point name=p23  coord= { $ty $tz } 
+  set ty [lindex $wfLy 24] ; set tz [lindex $wfLz 24] ; point name=p24  coord= { $ty $tz } 
+  set ty [lindex $wfLy 25] ; set tz [lindex $wfLz 25] ; point name=p25  coord= { $ty $tz } 
+  set ty [lindex $wfLy 26] ; set tz [lindex $wfLz 26] ; point name=p26  coord= { $ty $tz } 
+  set ty [lindex $wfLy 27] ; set tz [lindex $wfLz 27] ; point name=p27  coord= { $ty $tz } 
+  set ty [lindex $wfLy 28] ; set tz [lindex $wfLz 28] ; point name=p28  coord= { $ty $tz } 
+  set ty [lindex $wfLy 29] ; set tz [lindex $wfLz 29] ; point name=p29  coord= { $ty $tz } 
+  set ty [lindex $wfLy 30] ; set tz [lindex $wfLz 30] ; point name=p30  coord= { $ty $tz } 
+  set ty [lindex $wfLy 31] ; set tz [lindex $wfLz 31] ; point name=p31  coord= { $ty $tz } 
+  set ty [lindex $wfLy 32] ; set tz [lindex $wfLz 32] ; point name=p32  coord= { $ty $tz } 
+  set ty [lindex $wfLy 33] ; set tz [lindex $wfLz 33] ; point name=p33  coord= { $ty $tz } 
+  set ty [lindex $wfLy 34] ; set tz [lindex $wfLz 34] ; point name=p34  coord= { $ty $tz } 
+  set ty [lindex $wfLy 35] ; set tz [lindex $wfLz 35] ; point name=p35  coord= { $ty $tz } 
+  set ty [lindex $wfLy 36] ; set tz [lindex $wfLz 36] ; point name=p36  coord= { $ty $tz } 
+
+
+
+  # Polygons
+  polygon name= $name  points = { p00 p01 p02 p03 p04 p05 p06 p07 p08 p09 \
+                                  p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 \
+                                  p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 \
+                                  p30 p31 p32 p33 p34 p35 p36 } 
+
+}
+
+
+fproc PolyHedronEpiDiamond {args} {
+#rem # PolyHedronEpiDiamond - procedure to create epi diamond shape
+#rem # using
+#rem # It take the following arguments:
+#rem #  1. Name      - name of the polyhedron
+#rem #  2. X0        - channel surface x-coordinate
+#rem #  3. Y0        - epi center y-coordinate
+#rem #  4. Z0        - epi center z-coordinate
+#rem #  5. Wepi      - epi width
+#rem #  6. Lepi      - epi length
+#rem #  7. Hup       - epi up height
+#rem #  8. Hdown     - epi down height
+#rem #  9. Drecess   - recess 
+
+  if {[llength $args] < 9 || [llength $args] > 9} {
+     error "PolyHedronEpiDiamond: wrong number of arguments"
+     exit -1
+  }
+  set name      [lindex $args 0]
+  set x0        [lindex $args 1]
+  set y0        [lindex $args 2]
+  set z0        [lindex $args 3]
+  set Wepi      [lindex $args 4]
+  set Lepi      [lindex $args 5]
+  set Hup       [lindex $args 6]
+  set Hdown     [lindex $args 7]
+  set Drecess   [lindex $args 8]
+
+  set D2R       [expr (atan(1.0)/45.0)] ; #Degree to radiant conv.
+  set A111      55.0
+
+  set hw   [expr (($Wepi/2.0)*tan($A111*$D2R))]
+  set hl   [expr (($Lepi/2.0)*tan($A111*$D2R))]
+  if { $hl < $hw } {
+    set hmin $hl
+  } else {
+    set hmin $hw
+  }
+
+  set xm   [expr ($x0+$Drecess)]
+  set ym0  [expr ($y0-$Lepi/2.0)]
+  set ym1  [expr ($y0+$Lepi/2.0)]
+  set zm0  [expr ($z0-$Wepi/2.0)]
+  set zm1  [expr ($z0+$Wepi/2.0)]
+
+  # Middle points
+  point name=pm0 coord = { $xm $ym0 $zm0}
+  point name=pm1 coord = { $xm $ym0 $zm1}
+  point name=pm2 coord = { $xm $ym1 $zm1}
+  point name=pm3 coord = { $xm $ym1 $zm0}
+
+#  # Polygons
+#  polygon name=pLM0   points = { pm0 pm1 pm2 pm3 }
+
+  # Up epi
+  if { $Hup < $hmin } {
+    set wu   [expr ($Wepi-2.0*$Hup/tan($A111*$D2R))]
+    set lu   [expr ($Lepi-2.0*$Hup/tan($A111*$D2R))]
+
+    set xu   [expr ($x0+$Drecess-$Hup)]
+    set yu0  [expr ($y0-$lu/2.0)]
+    set yu1  [expr ($y0+$lu/2.0)]
+    set zu0  [expr ($z0-$wu/2.0)]
+    set zu1  [expr ($z0+$wu/2.0)]
+
+    # Up points
+    point name=pu0 coord = { $xu $yu0 $zu0}
+    point name=pu1 coord = { $xu $yu0 $zu1}
+    point name=pu2 coord = { $xu $yu1 $zu1}
+    point name=pu3 coord = { $xu $yu1 $zu0}
+
+    # Polygons
+    polygon name=pLU0   points = { pm0 pm1 pu1 pu0 }
+    polygon name=pLU1   points = { pm1 pm2 pu2 pu1 }
+    polygon name=pLU2   points = { pm2 pm3 pu3 pu2 }
+    polygon name=pLU3   points = { pm3 pm0 pu0 pu3 }
+    polygon name=pLU4   points = { pu0 pu1 pu2 pu3 }
+
+  } else {
+    if { $hw == $hl } {
+      set xu   [expr ($x0+$Drecess-$hw)]
+      set yu   $y0
+      set zu   $z0
+
+      # Up points
+      point name=pu0 coord = { $xu $yu $zu}
+
+      # Polygons
+      polygon name=pLU0   points = { pm0 pm1 pu0 }
+      polygon name=pLU1   points = { pm1 pm2 pu0 }
+      polygon name=pLU2   points = { pm2 pm3 pu0 }
+      polygon name=pLU3   points = { pm3 pm0 pu0 }
+
+    } elseif { $hw < $hl } {
+      set xu   [expr ($x0+$Drecess-$hw)]
+      set lu   [expr ($Lepi-2.0*$hw/tan($A111*$D2R))]
+      set yu0  [expr ($y0-$lu/2.0)]
+      set yu1  [expr ($y0+$lu/2.0)]
+      set zu   $z0
+
+      # Up points
+      point name=pu0 coord = { $xu $yu0 $zu}
+      point name=pu1 coord = { $xu $yu1 $zu}
+
+      # Polygons
+      polygon name=pLU0   points = { pm0 pm1 pu0 pu1 }
+      polygon name=pLU1   points = { pm1 pm2 pu0 }
+      polygon name=pLU2   points = { pm2 pm3 pu1 pu0 }
+      polygon name=pLU3   points = { pm3 pm0 pu1 }
+
+    } elseif { $hw > $hl } {
+      set xu   [expr ($x0+$Drecess-$hl)]
+      set wu   [expr ($Wepi-2.0*$hl/tan($A111*$D2R))]
+      set yu   $y0
+      set zu0  [expr ($z0-$wu/2.0)]
+      set zu1  [expr ($z0+$wu/2.0)]
+
+      # Up points
+      point name=pu0 coord = { $xu $yu $zu0}
+      point name=pu1 coord = { $xu $yu $zu1}
+
+      # Polygons
+      polygon name=pLU0   points = { pm0 pm1 pu0 }
+      polygon name=pLU1   points = { pm1 pm2 pu1 pu0 }
+      polygon name=pLU2   points = { pm2 pm3 pu1 }
+      polygon name=pLU3   points = { pm3 pm0 pu0 pu1 }
+
+    }
+  }
+
+  # Down epi
+  if { $Hdown < $hmin } {
+    set wd   [expr ($Wepi-2.0*$Hdown/tan($A111*$D2R))]
+    set ld   [expr ($Lepi-2.0*$Hdown/tan($A111*$D2R))]
+
+    set xd   [expr ($x0+$Drecess+$Hdown)]
+    set yd0  [expr ($y0-$ld/2.0)]
+    set yd1  [expr ($y0+$ld/2.0)]
+    set zd0  [expr ($z0-$wd/2.0)]
+    set zd1  [expr ($z0+$wd/2.0)]
+
+    # Down points
+    point name=pd0 coord = { $xd $yd0 $zd0}
+    point name=pd1 coord = { $xd $yd0 $zd1}
+    point name=pd2 coord = { $xd $yd1 $zd1}
+    point name=pd3 coord = { $xd $yd1 $zd0}
+
+    # Polygons
+    polygon name=pLD0   points = { pm0 pm1 pd1 pd0 }
+    polygon name=pLD1   points = { pm1 pm2 pd2 pd1 }
+    polygon name=pLD2   points = { pm2 pm3 pd3 pd2 }
+    polygon name=pLD3   points = { pm3 pm0 pd0 pd3 }
+    polygon name=pLD4   points = { pd0 pd1 pd2 pd3 }
+
+  } else {
+    if { $hw == $hl } {
+      set xd   [expr ($x0+$Drecess+$hw)]
+      set yd   $y0
+      set zd   $z0
+
+      # Down points
+      point name=pd0 coord = { $xd $yd $zd}
+
+      # Polygons
+      polygon name=pLD0   points = { pm0 pm1 pd0 }
+      polygon name=pLD1   points = { pm1 pm2 pd0 }
+      polygon name=pLD2   points = { pm2 pm3 pd0 }
+      polygon name=pLD3   points = { pm3 pm0 pd0 }
+
+    } elseif { $hw < $hl } {
+      set xd   [expr ($x0+$Drecess+$hw)]
+      set ld   [expr ($Lepi-2.0*$hw/tan($A111*$D2R))]
+      set yd0  [expr ($y0-$ld/2.0)]
+      set yd1  [expr ($y0+$ld/2.0)]
+      set zd   $z0
+
+      # Up points
+      point name=pd0 coord = { $xd $yd0 $zd}
+      point name=pd1 coord = { $xd $yd1 $zd}
+
+      # Polygons
+      polygon name=pLD0   points = { pm0 pm1 pd0 pd1 }
+      polygon name=pLD1   points = { pm1 pm2 pd0 }
+      polygon name=pLD2   points = { pm2 pm3 pd1 pd0 }
+      polygon name=pLD3   points = { pm3 pm0 pd1 }
+
+    } elseif { $hw > $hl } {
+      set xd   [expr ($x0+$Drecess+$hl)]
+      set wd   [expr ($Wepi-2.0*$hl/tan($A111*$D2R))]
+      set yd   $y0
+      set zd0  [expr ($z0-$wd/2.0)]
+      set zd1  [expr ($z0+$wd/2.0)]
+
+      # Up points
+      point name=pd0 coord = { $xd $yd $zd0}
+      point name=pd1 coord = { $xd $yd $zd1}
+
+      # Polygons
+      polygon name=pLD0   points = { pm0 pm1 pd0 }
+      polygon name=pLD1   points = { pm1 pm2 pd1 pd0 }
+      polygon name=pLD2   points = { pm2 pm3 pd1 }
+      polygon name=pLD3   points = { pm3 pm0 pd0 pd1 }
+
+    }
+  }
+
+  if { $Hup < $hmin } {
+    if { $Hdown < $hmin } {
+      polyhedron name= $name polygons = { pLU0 pLU1 pLU2 pLU3 pLU4 pLD0 pLD1 pLD2 pLD3 pLD4 } info=2
+    } else {
+      polyhedron name= $name polygons = { pLU0 pLU1 pLU2 pLU3 pLU4 pLD0 pLD1 pLD2 pLD3 } info=2
+    }
+  } else {
+    if { $Hdown < $hmin } {
+      polyhedron name= $name polygons = { pLU0 pLU1 pLU2 pLU3 pLD0 pLD1 pLD2 pLD3 pLD4 } info=2
+    } else {
+      polyhedron name= $name polygons = { pLU0 pLU1 pLU2 pLU3 pLD0 pLD1 pLD2 pLD3 } info=2
+    }
+  }
+
+}
+
+
+fproc PolyHedronClear {} {
+
+  point      clear
+  polygon    clear
+  polyhedron clear
+}
+
+

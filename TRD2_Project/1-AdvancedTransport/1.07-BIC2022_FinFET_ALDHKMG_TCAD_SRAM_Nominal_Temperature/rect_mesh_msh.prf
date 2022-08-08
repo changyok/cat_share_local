@@ -1,0 +1,3 @@
+set WB_tool(snmesh,input,commands,user) 1
+set WB_tool(snmesh,input,parameter,common) 1
+set WB_tool(snmesh,parallel,activate) 1

@@ -1,0 +1,24 @@
+DF-ISE text
+
+Info {
+  version   = 1.0
+  type      = xyplot
+  datasets  = [
+    "ndrain OuterVoltage" "ndrain TotalCurrent" "nsource OuterVoltage" "nsource TotalCurrent" "substrate OuterVoltage" "ngate OuterVoltage" ]
+  functions  = [
+    OuterVoltage TotalCurrent OuterVoltage TotalCurrent OuterVoltage OuterVoltage ]
+}
+
+Data {
+0.0 0 0.0 0 0.0 0.9
+0.05 7.1970732216e-5 0.0 -7.19703468767e-5 0.0 0.9
+0.1 0.000113615945882 0.0 -0.000113609615265 0.0 0.9
+0.2 0.000136756077293 0.0 -0.000136717094205 0.0 0.9
+0.3 0.00014000176926 0.0 -0.000139948821388 0.0 0.9
+0.4 0.000141628457408 0.0 -0.000141565796918 0.0 0.9
+0.5 0.000142781945897 0.0 -0.000142712445458 0.0 0.9
+0.6 0.000143703672774 0.0 -0.000143627688474 0.0 0.9
+0.7 0.00014448147438 0.0 -0.000144404326007 0.0 0.9
+0.8 0.000145161619104 0.0 -0.000145083890262 0.0 0.9
+0.9 0.000145769482233 0.0 -0.000145690947076 0.0 0.9
+}

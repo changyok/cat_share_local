@@ -1,0 +1,143 @@
+.subckt p_w20nm d g s b l=1.3e-08 nfin=3 delvtrand=0 rgc_en=1 rdc_en=1 rsc_en=1
+
+
+.param rgc = 0
+.param rgc_fin = rgc*rgc_en
+.param rsc = 0
+.param rsc_fin = rsc*rsc_en
+.param rdc = 0
+.param rdc_fin = rdc*rdc_en
+
+
+
+
+rd d d_i rdc_fin
+rs s s_i rsc_fin
+rg g g_i rgc_fin
+
+
+mos d_i g_i s_i b mosmod l=l nfin=nfin delvtrand=delvtrand
+.model mosmod pmos 
++ DEVTYPE=0
++ EASUB=4.0727
++ NI0SUB=1.1055e+16
++ BG0SUB=1.1242
++ NC0SUB=2.9951e+25
++ phig=4.72397
++ eot=1e-09
++ RDSW=0
++ rdswmin=30.6431
++ cdscd=0.217125
++ vsat=69808.2
++ vsat1=24150.6
++ u0=0.010468
++ ua=0.1
++ pdibl2=3.04402e-09
++ PCLM=1e-09
++ PCLMG=0.1
++ CHARGEWF=0
++ GEOMOD=2
++ level=72
++ VERSION=108
++ BULKMOD=1
++ CAPMOD=1
++ IGCMOD=0
++ IGBMOD=0
++ GIDLMOD=0
++ COREMOD=0
++ CGEOMOD=0
++ IIMOD=0
++ RDSMOD=0
++ TNOM=27
++ XL=0
++ LINT=0
++ LL=0
++ LLC=0
++ LLN=1
++ DLC=0
++ tfin=5e-09
++ hfin=2e-08
++ FPITCH=3e-08
++ FECH=1
++ NBODY=2e+20
++ NSD=3e+26
++ NGATE=0
++ LPHIG=0
++ LRDSW=0
++ ARDSW=0
++ BRDSW=1e-08
++ CIT=0
++ cdsc=1.07027
++ LCDSC=0
++ LCDSCD=0
++ DVT0=0
++ LDVT0=0
++ DVT1=0.7
++ LDVT1=0
++ PHIN=0
++ LPHIN=0
++ eta0=0
++ LETA0=0
++ DSUB=1.06
++ LDSUB=0
++ K1RSCE=0
++ LK1RSCE=0
++ LPE0=0
++ LLPE0=0
++ QMFACTOR=1
++ qm0=3.30359
++ LVSAT=0
++ AVSAT=0
++ BVSAT=6e-08
++ AVSAT1=0
++ BVSAT1=6e-08
++ ksativ=1.99193
++ LKSATIV=0
++ DELTAVSAT=1
++ mexp=7.08294
++ LMEXP=0
++ AMEXP=0
++ BMEXP=1
++ ptwg=0.599488
++ LPTWG=0
++ APTWG=0
++ BPTWG=6e-08
++ LU0=0
++ etamob=2.66639
++ UP=0
++ LUP=0
++ LPA=1
++ LUA=0
++ AUA=0
++ BUA=6e-08
++ eu=2.43796
++ LEU=0
++ ud=0.0910786
++ LUD=0
++ AUD=0
++ BUD=5e-08
++ ucs=1.60601
++ LUCS=0
++ PDIBL1=1e-20
++ LPDIBL1=0
++ LPDIBL2=0
++ DROUT=1.06
++ LDROUT=0
++ pvag=1.00222
++ LPVAG=0
++ LPCLM=0
++ CFS=0
++ cgsl=1.12033e-10
++ dvtp0=-0.0640939
++ dvtp1=1
++ cgso=3.25039e-11
++ cgdo=3.25039e-11
++ cgdl=1.12033e-10
++ ckappas=1.73911
++ deltawcv=-9.01393e-10
++ qmtcencv=0.469298
++ ckappad=1.73911
+
+
+.ends
+

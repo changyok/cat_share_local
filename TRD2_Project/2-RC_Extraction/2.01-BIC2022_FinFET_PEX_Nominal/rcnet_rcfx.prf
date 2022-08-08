@@ -1,0 +1,2 @@
+set WB_tool(raphaelfx,input,commands,user) 1
+set WB_tool(raphaelfx,parallel,activate) 0

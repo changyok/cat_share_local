@@ -1,0 +1,12 @@
+[30/12/2020 08:42:36] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth already exists.
+[30/12/2020 08:42:36] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 08:42:36
+[30/12/2020 08:42:36] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth/../CHILD_DIR/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth_126_2020-12-30_08.42.36/gtree.dat"
+[30/12/2020 08:50:28] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth already exists.
+[30/12/2020 08:50:28] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 08:50:28
+[30/12/2020 08:50:28] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth/../CHILD_DIR/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth_127_2020-12-30_08.50.28/gtree.dat"
+[31/12/2020 03:08:37] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth already exists.
+[31/12/2020 03:08:37] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 03:08:37
+[31/12/2020 03:08:37] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth/../CHILD_DIR/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth_124_2020-12-31_03.08.37/gtree.dat"
+[31/12/2020 03:10:22] DEBUG [swbpy.gtree.gtree] Project /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth already exists.
+[31/12/2020 03:10:22] DEBUG [swbpy.gtree.gtree] Acquired lock for BridgeNodeToChildProject at: 03:10:22
+[31/12/2020 03:10:22] DEBUG [swbpy.gtree.gtree] Path doesn't exist: "/nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/SNPS_DTCO/TRD2/20201220/BIC2022/1-AdvancedTransport/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth/../CHILD_DIR/1.09-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_FinWidth_125_2020-12-31_03.10.22/gtree.dat"

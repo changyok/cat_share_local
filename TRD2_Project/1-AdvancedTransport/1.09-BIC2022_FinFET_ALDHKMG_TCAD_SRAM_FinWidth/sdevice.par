@@ -1,0 +1,508 @@
+
+## X or Z
+#define _ChanDir_     @Channel_UCS@
+
+#if "_ChanDir_" == "z"
+#define _TopSurfDir_  x
+#elif "_ChanDir_" == "x"
+#define _TopSurfDir_  z
+#else
+puts "Channel direction should be \"x\" or \"z\" in UCS"
+exit
+#endif
+
+#define _TechType_  @TechType@
+#if "_TechType_" == "CFET"
+#define _TechType_  GAA
+#elif "_TechType_" == "VFET"
+#define _TechType_  GAA
+#elif "_TechType_" == "SRAM"
+#define _TechType_  GAA
+#endif
+
+Material = "Silicon" {
+
+!(
+# ---------------------------- MATERIAL ORIENTATION ----------------------------
+# Specify device orientation based on WaferDir and ChannelDir
+# wafer orientation (100)
+#       channel direction <100> <110>
+# wafer orientation (110)
+#       channel direction <100> <110> <111> <112>
+# wafer orientation (111)
+#       channel direction <110> <112>
+# wafer orientation (112)
+#       channel direction <110> <111>
+
+set xUCS @Xucs_Crystal@
+set zUCS @Zucs_Crystal@
+set XucsAxis   [split @Xucs_Crystal@ ":"]
+set ZucsAxis   [split @Zucs_Crystal@ ":"]
+
+set scalarProduct 0.0
+foreach x $XucsAxis y $ZucsAxis {
+ set scalarProduct [expr ($scalarProduct + $x*$y)]
+}
+if { $scalarProduct > 1.0e-10 } {
+  puts "xDirection (XucsAxis)    = { $XucsAxis } "
+  puts "zDirection (ZucsAxis)    = { $ZucsAxis } "
+  return -code error "Xucs_Crystal and Zucs_Crystal should be orthogonal!!"
+}
+
+# crossProduct 
+set xv0 [lindex $XucsAxis 0]
+set xv1 [lindex $XucsAxis 1]
+set xv2 [lindex $XucsAxis 2]
+set zv0 [lindex $ZucsAxis 0]
+set zv1 [lindex $ZucsAxis 1]
+set zv2 [lindex $ZucsAxis 2]
+
+set yv0 [expr $xv1*$zv2-$xv2*$zv1]
+set yv1 [expr $xv2*$zv0-$xv0*$zv2]
+set yv2 [expr $xv0*$zv1-$xv1*$zv0]
+
+#if "_ChanDir_" == "z"
+set noneZeros [list]
+foreach vc [list $zv0 $zv1 $zv2] {
+ if { $vc != 0 } {
+  lappend noneZeros $vc
+ }
+}
+
+#elif "_ChanDir_" == "x"
+set noneZeros [list]
+foreach vc [list $xv0 $xv1 $xv2] {
+ if { $vc != 0 } {
+  lappend noneZeros $vc
+ }
+}
+
+#elif "_ChanDir_" == "y"
+set noneZeros [list]
+foreach vc [list $yv0 $yv1 $yv2] {
+ if { $vc != 0 } {
+  lappend noneZeros $vc
+ }
+}
+
+#endif
+if { [llength $noneZeros] == 1 } {
+ set paramfile "Siliconc100.par"
+} else {
+ set paramfile "Siliconc110.par"
+}
+
+##puts $paramfile
+set f [open $paramfile]
+set lines [split [read $f] \n]
+close $f
+foreach line $lines {
+ puts $line
+}
+
+puts "LatticeParameters "
+puts "        { "
+#if @[ lsearch {mn_Extraction} @toolname@  ]@ < 0
+puts "        X       = ($xv0, $xv1, $xv2) "
+puts "        Y       = ($yv0, $yv1, $yv2) "
+#else
+### 2D cross-section simulation
+ #if "_ChanDir_" == "x" 
+puts "        X       = ($zv0, $zv1, $zv2) "
+puts "        Y       = ($yv0, $yv1, $yv2) "
+ #elif "_ChanDir_" == "y"
+puts "        X       = ($xv0, $xv1, $xv2) "
+puts "        Y       = ($zv0, $zv1, $zv2) "
+ #elif "_ChanDir_" == "z"
+puts "        X       = ($xv0, $xv1, $xv2) "
+puts "        Y       = ($yv0, $yv1, $yv2) "
+ #endif
+#endif
+puts "        } "
+)!
+
+
+SBmob:
+	{
+		autoorientation = 2
+#if @[ lsearch {mn_Extraction} @toolname@  ]@ < 0
+ #if "_ChanDir_" == "x" 
+		coordinatesystem = 1
+ #elif "_ChanDir_" == "y"
+  #if "_TopSurfDir_" == "x"
+		coordinatesystem = 2
+  #elif "_TopSurfDir_" == "z"
+		coordinatesystem = 3
+  #endif
+ #elif "_ChanDir_" == "z"
+  #if "_TopSurfDir_" == "x"
+		coordinatesystem = 4
+  #elif "_TopSurfDir_" == "y"
+		coordinatesystem = 5
+  #endif
+ #endif
+#else
+### 2D cross-section simulation
+		coordinatesystem = 4
+#endif
+	}
+
+# Thin-layer mobility model uses the acoustic phonon mobility from IAL mob
+# after considering the stress effect.
+# And, then the thin-layer mobility multiplied by the stress factor.
+# 'a_ph2d' should be set to 0 so that the stress factor is not double counted.
+IALMob "100":{ a_ph2d  = 0.0 ,   0.0 }
+IALMob "110":{ a_ph2d  = 0.0 ,   0.0 }
+IALMob "111":{ a_ph2d  = 0.0 ,   0.0 }
+
+
+######################################
+# For the mobility calibration #######
+ # Use the default parameters for the initial setup
+BalMob:
+	{
+        	k       = 20 ,  20      # [cm^2/(V s nm)]
+	}
+
+HighFieldDependence:
+       {
+        beta0   = 1.109 ,       1.213   # [1]
+        vsat0   = 1.0700e+07 ,  8.3700e+06      # [1]
+       }
+
+# For the mobility calibration #######
+######################################
+
+#if @[ lsearch {mn_Extraction} @toolname@  ]@ < 0
+  #if "_TechType_" == "BulkFinFET"
+QuantumPotentialParameters 
+	{
+		alpha[1] = @alpha1_Stop@ @alpha1_Stop@
+		alpha[2] = @alpha2_Stop@ @alpha2_Stop@
+		alpha[3] = @alpha3_Stop@ @alpha3_Stop@
+		gamma = 1.0  1.0
+	}
+  #endif
+#endif
+
+#if "_TechType_" == "BulkFinFET"
+
+eDOSMass {
+        Formula         =       2
+        Nc300           =       @dosStop@   
+}
+hDOSMass {
+        Formula         =       2     
+        Nv300           =       @dosStop@          
+}
+
+#endif
+
+}
+
+Material = "SiliconGermanium" {
+
+!(
+# ---------------------------- MATERIAL ORIENTATION ----------------------------
+# Specify device orientation based on WaferDir and ChannelDir
+# wafer orientation (100)
+#       channel direction <100> <110>
+# wafer orientation (110)
+#       channel direction <100> <110> <111> <112>
+# wafer orientation (111)
+#       channel direction <110> <112>
+# wafer orientation (112)
+#       channel direction <110> <111>
+
+set xUCS @Xucs_Crystal@
+set zUCS @Zucs_Crystal@
+set XucsAxis   [split @Xucs_Crystal@ ":"]
+set ZucsAxis   [split @Zucs_Crystal@ ":"]
+
+set scalarProduct 0.0
+foreach x $XucsAxis y $ZucsAxis {
+ set scalarProduct [expr ($scalarProduct + $x*$y)]
+}
+if { $scalarProduct > 1.0e-10 } {
+  puts "xDirection (XucsAxis)    = { $XucsAxis } "
+  puts "zDirection (ZucsAxis)    = { $ZucsAxis } "
+  return -code error "Xucs_Crystal and Zucs_Crystal should be orthogonal!!"
+}
+
+# crossProduct 
+set xv0 [lindex $XucsAxis 0]
+set xv1 [lindex $XucsAxis 1]
+set xv2 [lindex $XucsAxis 2]
+set zv0 [lindex $ZucsAxis 0]
+set zv1 [lindex $ZucsAxis 1]
+set zv2 [lindex $ZucsAxis 2]
+
+set yv0 [expr $xv1*$zv2-$xv2*$zv1]
+set yv1 [expr $xv2*$zv0-$xv0*$zv2]
+set yv2 [expr $xv0*$zv1-$xv1*$zv0]
+
+#if "_ChanDir_" == "z"
+set noneZeros [list]
+foreach vc [list $zv0 $zv1 $zv2] {
+ if { $vc != 0 } {
+  lappend noneZeros $vc
+ }
+}
+
+#elif "_ChanDir_" == "x"
+set noneZeros [list]
+foreach vc [list $xv0 $xv1 $xv2] {
+ if { $vc != 0 } {
+  lappend noneZeros $vc
+ }
+}
+
+#elif "_ChanDir_" == "y"
+set noneZeros [list]
+foreach vc [list $yv0 $yv1 $yv2] {
+ if { $vc != 0 } {
+  lappend noneZeros $vc
+ }
+}
+
+#endif
+if { [llength $noneZeros] == 1 } {
+ set paramfile "SiliconGermaniumc100.par"
+} else {
+ set paramfile "SiliconGermaniumc110.par"
+}
+
+##puts $paramfile
+set f [open $paramfile]
+set lines [split [read $f] \n]
+close $f
+foreach line $lines {
+ puts $line
+}
+
+puts "LatticeParameters "
+puts "        { "
+#if @[ lsearch {mn_Extraction} @toolname@  ]@ < 0
+puts "        X       = ($xv0, $xv1, $xv2) "
+puts "        Y       = ($yv0, $yv1, $yv2) "
+#else
+### 2D cross-section simulation
+ #if "_ChanDir_" == "x" 
+puts "        X       = ($zv0, $zv1, $zv2) "
+puts "        Y       = ($yv0, $yv1, $yv2) "
+ #elif "_ChanDir_" == "y"
+puts "        X       = ($xv0, $xv1, $xv2) "
+puts "        Y       = ($zv0, $zv1, $zv2) "
+ #elif "_ChanDir_" == "z"
+puts "        X       = ($xv0, $xv1, $xv2) "
+puts "        Y       = ($yv0, $yv1, $yv2) "
+ #endif
+#endif
+puts "        } "
+)!
+
+
+#include "common_SiGe.par"
+
+
+SBmob:
+	{
+		autoorientation = 2
+#if @[ lsearch {mn_Extraction} @toolname@  ]@ < 0
+ #if "_ChanDir_" == "x" 
+		coordinatesystem = 1
+ #elif "_ChanDir_" == "y"
+  #if "_TopSurfDir_" == "x"
+		coordinatesystem = 2
+  #elif "_TopSurfDir_" == "z"
+		coordinatesystem = 3
+  #endif
+ #elif "_ChanDir_" == "z"
+  #if "_TopSurfDir_" == "x"
+		coordinatesystem = 4
+  #elif "_TopSurfDir_" == "y"
+		coordinatesystem = 5
+  #endif
+ #endif
+#else
+### 2D cross-section simulation
+		coordinatesystem = 4
+#endif
+	}
+
+# Thin-layer mobility model uses the acoustic phonon mobility from IAL mob
+# after considering the stress effect.
+# And, then the thin-layer mobility multiplied by the stress factor.
+# 'a_ph2d' should be set to 0 so that the stress factor is not double counted.
+IALMob "100":{ a_ph2d  = 0.0 ,   0.0 }
+IALMob "110":{ a_ph2d  = 0.0 ,   0.0 }
+IALMob "111":{ a_ph2d  = 0.0 ,   0.0 }
+
+
+######################################
+# For the mobility calibration #######
+ # Use the default parameters for the initial setup
+BalMob:
+	{
+        	k       = 20 ,  20      # [cm^2/(V s nm)]
+	}
+
+HighFieldDependence:
+       {
+        beta0   = 1.109 ,       1.213   # [1]
+        vsat0   = 1.0700e+07 ,  8.3700e+06      # [1]
+       }
+
+# For the mobility calibration #######
+######################################
+
+#if @[ lsearch {mn_Extraction} @toolname@  ]@ < 0
+QuantumPotentialParameters 
+	{
+		alpha[1] = @alpha1_Fin@ @alpha1_Fin@
+		alpha[2] = @alpha2_Fin@ @alpha2_Fin@
+		alpha[3] = @alpha3_Fin@ @alpha3_Fin@
+		gamma = 1.0  1.0
+	}
+#endif
+
+### Synchronized to Garand 'effective DOS'
+eDOSMass {
+        Formula         =       2
+!(
+ set nc300 [expr (@dosFin@/pow((double(@<Temperature+273>@)/300.0),1.5))]
+puts "        Nc300           =       $nc300 " 
+)!   
+}
+hDOSMass {
+        Formula         =       2  
+!(
+ set nv300 [expr (@dosFin@/pow((double(@<Temperature+273>@)/300.0),1.5))]
+puts "        Nv300           =       $nv300 " 
+)!               
+}
+
+### Synchronized to Garand default parameters
+LatticeParameters
+  {
+        S[1][1] = 0.7672  # [1e-12 cm^2/din]
+        S[1][2] = -0.2180   # [1e-12 cm^2/din]
+        S[4][4] = 1.2516  # [1e-12 cm^2/din]
+        CrystalSystem   = 0     # [1]
+
+  * Deformation potentials of 2 k.p model for electron delta-valleys
+        xis     = 7     # [eV]
+        dbs     = 0.53  # [eV]
+        xiu     = 9.16  # [eV]
+        xid     = 0.77  # [eV]
+        Mkp     = 1.2   # [1]
+
+  * Deformation potentials of 6 k.p model for hole bands
+        adp     = 2.1   # [eV]
+        bdp     = -2.2   # [eV]
+        ddp     = -5.3   # [eV]
+        dso     = 0.044 # [eV]
+
+  * Luttinger parameters
+        gamma_1 = 4.27  # [1]
+        gamma_2 = 0.315 # [1]
+        gamma_3 = 1.387        # [1]
+
+  * Deformation potentials and energy (in reference to delta-valley) for L-valleys
+        xiu_l   = 11.5  # [eV]
+        xid_l   = -6.58   # [eV]
+        e_l     = 0.96534   # [eV]
+
+  * Deformation potentials and energy (in reference to delta-valley) for Gamma-valley
+        xid_gamma       = -7.0   # [eV]
+        e_gamma = 2.8954   # [eV]
+  *
+    Xmax(0) = 0.0
+    Xmax(1) = 1.0
+  *
+        S[1][1](1)      = 0.9224  # [1e-12 cm^2/din]
+        S[1][2](1)      = -0.2404   # [1e-12 cm^2/din]
+        S[4][4](1)      = 1.5022  # [1e-12 cm^2/din]
+  *
+        xis(1)  = 8.07  # [eV]
+        dbs(1)  = 0.9   # [eV]
+        xiu(1)  = 9.42  # [eV]
+        xid(1)  = -0.59   # [eV]
+        Mkp(1)  = 1     # [1]
+
+  *
+        adp(1)  = 2     # [eV]
+        bdp(1)  = -2.2   # [eV]
+        ddp(1)  = -4.400   # [eV]
+        dso(1)  = 0.296 # [eV]
+
+  *
+        gamma_1(1)      = 12.927  # [1]
+        gamma_2(1)      = 4.413  # [1]
+        gamma_3(1)      = 5.35  # [1]
+
+  *
+        xiu_l(1)        = 16.7  # [eV]
+        xid_l(1)        = -6.58   # [eV]
+        e_l(1)  = -0.19953   # [eV]
+
+  *
+        xid_gamma(1)    = -7.0   # [eV]
+        e_gamma(1)      = -0.04806   # [eV]
+}
+
+}
+
+Material = "InterfacialOxide" {
+Epsilon
+       {
+		##epsilon = 3.9
+		epsilon = @iOxide_perm@
+       }
+
+eDOSMass
+	{
+        	Formula         =       1
+		mm	= @ox_opt@	# [1]
+	}
+hDOSMass
+	{
+        	Formula         =       1
+		mm	= @ox_opt@	# [1]
+	}
+}
+
+Material = "Oxide" {
+Epsilon
+       {
+		epsilon = 3.9
+       }
+
+eDOSMass
+	{
+		mm	= @ox_opt@	# [1]
+	}
+hDOSMass
+	{
+		mm	= @ox_opt@	# [1]
+	}
+}
+
+Material = "HfO2" {
+Epsilon
+       {
+*        epsilon         =       22.0            #consenus value, large spreading from 16 to 26
+         epsilon = @HfO2_perm@
+       }
+}
+
+
+Material = "LowK" {
+
+#include "LowK.par"
+
+Epsilon
+      { 
+	epsilon	= @SiOCN_perm@	# [1]
+      }	
+}

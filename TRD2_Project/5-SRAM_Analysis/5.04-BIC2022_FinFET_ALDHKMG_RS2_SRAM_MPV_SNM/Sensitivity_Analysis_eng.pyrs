@@ -1,0 +1,178 @@
+#setdep @node|CalcSNM@
+from netparse_helpers import RS2NetAdjust
+from rstool_helpers import parallelise_randomspice
+from mako.template import Template
+import copy
+from SRAM_FoM import calcSNM
+
+pd.set_option("mode.chained_assignment",None)
+
+#########################################################################
+# setup the extracted netlists						#
+#########################################################################
+
+cell_subckt="@pwd@/BITCELLS/mpv_@gds@.sp"
+
+
+# setting up the basics for the randomspice app
+randomspice.wait		= False
+randomspice._app.executable     = "export RS_PATCH_DIR=@pwd@/RS_PATCHES/;$STROOT/bin/RandomSpice2"
+randomspice.clear_data		= True
+
+# for net manupulation
+base_inputfile_name		= "@pwd@/@nodedir@/pp@node@_eng.rs2"
+base_netlist_name		= "@pwd@/@nodedir@/pp@node@_eng.sp"
+
+#########################################################################
+# Pick up the RandomSpice device names					#
+#########################################################################
+
+# access some variables saved to the DB
+buildLibrary_db_node = dbi.get_project("@node|BuildLibrary@")
+midpoints            = buildLibrary_db_node.metadata["midpoint_metadata"]
+remap_names          = buildLibrary_db_node.metadata["remap_names"]
+
+ndevname = remap_names['nMOS']+":nMOS"
+pdevname = remap_names['pMOS']+":pMOS"
+
+# Load in extracted corners
+RS2_Corner_Project = "@RS2_Corner_Project@"
+
+dburl = open(f"{RS2_Corner_Project}/enigma/mongodb.conf").read()
+dbi.connect(dburl) 
+corners_project=dbi.get_project(swb__tool_label="ExtractCorners", swb__sim_temp=@sim_temp@, swb__gv="True", swb__lv="False").name
+corner_df = pd.DataFrame.from_dict(dbi.get_data(project=corners_project, 
+                                                dataset=f"{corners_project}-Corners").data, orient='index')
+
+print(f"DOE: RS2_Corner_Project {RS2_Corner_Project}")
+
+axes_list = list(corner_df.columns)
+
+## get 1-sigma LV Vts
+#set nmos_sigma tbc
+#set pmos_sigma tbc
+corners_project_lv=dbi.get_project(swb__tool_label="ExtractCorners", swb__sim_temp=@sim_temp@, swb__gv="False", swb__lv="True")
+nmos_sigma = (corners_project_lv.metadata["std"]["n"]["VT_sat-n"] + corners_project_lv.metadata["std"]["n"]["VT_lin-n"])/2
+pmos_sigma = (corners_project_lv.metadata["std"]["p"]["VT_sat-p"] + corners_project_lv.metadata["std"]["p"]["VT_lin-p"])/2
+print(f"DOE: nmos_sigma {nmos_sigma}")
+print(f"DOE: pmos_sigma {pmos_sigma}")
+
+dburl = open(f"@pwd@/enigma/mongodb.conf").read()
+dbi.connect(dburl) 
+
+corner_df.index.name=["type","corner"]
+corners = corner_df.to_dict("index")
+circuits={"@SNM@":{}}
+
+for corner_data in corners.items():
+    dtype=corner_data[0][0]
+    corner=corner_data[0][1]
+    geom=corner_data[1]
+    try:
+        circuits[corner][dtype]=geom
+    except KeyError: 
+        pass
+
+# load in VT mode info
+vt_modes = dbi.get_project("@node|SetupSplits@").metadata["vt_modes"]["@vt_mode@"]
+
+# Get the VT deltas Dict
+PEX_db_node = dbi.get_project("@node|GetPEXPath@")
+mpv_deltas = PEX_db_node.metadata["mpv_deltas"]
+nmos_sigma = nmos_sigma
+pmos_sigma = pmos_sigma
+
+# device info
+dev_param_dict={}
+ndevname				=remap_names['nMOS']+":nMOS"
+pdevname				=remap_names['pMOS']+":pMOS"
+dev_param_dict["P_DEV_NAME"]		=pdevname
+dev_param_dict["N_DEV_NAME"]		=ndevname
+
+final_df = pd.DataFrame()
+
+# apply a (+/0/-)*1sigma offset for each device
+for corner,geoms in circuits.items():
+    for pol,deltas in mpv_deltas.items():
+        if pol.lower() == "nmos":
+            sigma = nmos_sigma
+        elif pol.lower() == "pmos":
+            sigma = pmos_sigma
+
+        for dev in deltas.keys():
+            dev_delta=1
+            dev_snm=1
+            for sign in [-1,0,1]:
+                delta = sign*sigma
+                local_deltas = copy.deepcopy(mpv_deltas)
+                local_deltas[pol][dev]=delta
+                print(f"Skewing {dev} to {delta}")
+
+                mpv_params=""
+                for k,deltas in local_deltas.items():
+                    mpv_params += "\n".join([f".param {k}={v}" for k,v in deltas.items()])+"\n"
+
+                dev_param_dict["MPV_params"]		=mpv_params
+
+                # handle the RC extract
+                selected_cell=RS2NetAdjust(cell_subckt)
+                selected_cell.model_call_mapping={"nmos1":ndevname, "pmos1":pdevname}
+                selected_cell.convert_Minst_to_Xmacro()
+                for k,v in geoms['n'].items():
+                    selected_cell.add_instance_param(ndevname, k,float(f"{v:.12f}"))
+                    selected_cell.add_instance_param(ndevname, "vtmode_adjust",float(f"{vt_modes['nmos']:.15f}"))
+                for k,v in geoms['p'].items():
+                    selected_cell.add_instance_param(pdevname, k,float(f"{v:.12f}"))
+                    selected_cell.add_instance_param(pdevname, "vtmode_adjust",float(f"{vt_modes['pmos']:.15f}")) 
+                selected_cell.convert_models()
+                dev_param_dict["INC_FILE"]	=selected_cell.net_str()
+    
+                # setup new intput file names
+                new_netlist_name=base_netlist_name+str(corner)
+                new_inputfile_name=base_inputfile_name+str(corner)
+                dev_param_dict["CORNER"]=corner
+                dev_param_dict["SIM_NETLIST"]=new_netlist_name
+    
+                # use mako to render these files
+                new_netlist=Template(open(base_netlist_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+                new_inputfile=Template(open(base_inputfile_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+    
+                # write these files back to disk
+                with open(new_netlist_name,'w') as outfile: 
+                    outfile.write(new_netlist)
+                with open(new_inputfile_name,'w') as outfile: 
+                    outfile.write(new_inputfile)
+    
+                # parallelise runs for speedup
+                randomspice.inputfile = new_inputfile_name
+                dbi, randomspice, numProc = parallelise_randomspice(randomspice, dbi, num=1, per_job=1, dataset_name=f"@node@_{dev}_{sign}")
+                randomspice.Wait()
+
+                # pull SNM curves from DB
+                sweep0     = Data.from_db(project=node_prj.name, dataset=f"@node@_{dev}_{sign}-1", Type="iv0")[0]
+                sweep1     = Data.from_db(project=node_prj.name, dataset=f"@node@_{dev}_{sign}-1", Type="iv1")[0]
+
+                # calculate SNM
+                snm = calcSNM(sweep0, sweep1)[0]
+                if snm < dev_snm:
+                    dev_delta = delta
+                    dev_snm = snm
+                    final_df.loc[dev,"sigmaVT"]=delta
+                    final_df.loc[dev,"1sigma"]=snm
+                if sign == 0:
+                    final_df.loc[dev,"nom_snm"]=snm
+                print(snm)
+                print(f"Skewing {dev} to {delta}, snm={snm}")
+                #import sys; sys.exit()
+
+
+final_df["sensitivity"] = 1-(final_df["1sigma"]/final_df["nom_snm"])
+final_df["mpv_factor"] = np.sqrt(final_df["sensitivity"]/np.sum(final_df["sensitivity"]))
+final_df.index.rename("dev")
+final_df.reset_index(inplace=True)
+print(final_df)
+
+node_prj.metadata["mpv_df"] = final_df
+node_prj.save()
+
+

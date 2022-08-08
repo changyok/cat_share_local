@@ -1,0 +1,9 @@
+.subckt SRAM WL BL BLB VSS VDD VBP VBN
+XMP1 Q  QB  VDD VBP pmos1 l=0.021u w=0.005u m=1 nfin=1
+XMP2 QB Q   VDD VBP pmos1 l=0.021u w=0.005u m=1 nfin=1
+
+XMN1 BL  WL Q   VBN nmos1 l=0.021u w=0.005u m=1 nfin=2
+XMN2 Q   QB VSS VBN nmos1 l=0.021u w=0.005u m=1 nfin=2
+XMN3 QB  Q  VSS VBN nmos1 l=0.021u w=0.005u m=1 nfin=2
+XMN4 BLB WL QB  VBN nmos1 l=0.021u w=0.005u m=1 nfin=2
+.ends SRAM

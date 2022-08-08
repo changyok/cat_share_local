@@ -1,0 +1,7 @@
+DOE: horiz_semi_opt 1.5278
+DOE: vert_semi_opt 0.1040
+DOE: ox_opt 0.1801
+DOE: WF_opt 4.7450
+DOE: DG_error 0.0601047084571
+DOE: Ninv_error 0.00483725827501
+DOE: genopt_RMSDCost 0.042637864899242678

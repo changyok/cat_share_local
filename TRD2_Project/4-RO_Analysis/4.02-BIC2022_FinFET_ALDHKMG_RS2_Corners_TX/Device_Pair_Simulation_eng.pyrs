@@ -1,0 +1,180 @@
+#setdep @node|BuildLibrary:all@
+
+# generic python imports
+from mako.template import Template
+
+# helper imports
+from rstool_helpers import parallelise_randomspice
+
+pd.set_option("mode.chained_assignment",None)
+
+#########################################################################################################
+#########################################################################################################
+# Parameter setup: randomspice app and fom calculation settings						#
+#########################################################################################################
+#########################################################################################################
+
+# setting up the basics for the randomspice app
+randomspice.wait		= False
+randomspice.clear_data		= True
+randomspice._app.executable     = "export RS_PATCH_DIR=@pwd@/RS_PATCH/; $STROOT/bin/RandomSpice2 -rel $STRELEASE"
+
+# for net manupulation
+base_inputfile_name		= "@pwd@/@nodedir@/pp@node@_eng.rs2"
+base_netlist_name		= "@pwd@/@nodedir@/pp@node@_eng.sp"
+
+
+# fom calculation parameters
+cv_off	 			= 0
+Vdd_lin				= abs(@Vdd_lin@)
+Vdd_nom				= abs(@Vdd_nom@)
+cv_on  				= Vdd_nom
+vt_cc				= abs(@vti@)
+
+#########################################################################################################
+#########################################################################################################
+# DB interactions:											#
+#   - pulling out DoE midpoint nodes									#
+#   - pulling out remapped names from the "BuildLibrary stage						#
+#   - pull out all the DoE axes and calculate min/max ranges from the "UploadData" stage		#
+#########################################################################################################
+#########################################################################################################
+# setup metadata for simulations
+midpoints = dbi.get_project("@node|BuildLibrary@").metadata["midpoint_metadata"]
+remap_names = dbi.get_project("@node|BuildLibrary@").metadata["remap_names"]
+
+doe_pts = {"l":midpoints["nMOS"]["swb"]["lgate"], "tfin":midpoints["nMOS"]["swb"]["tfin"]}
+
+nmos_doe_str=" ".join([f"{k}={v}" for k,v in doe_pts.items()])
+pmos_doe_str=" ".join([f"{k}={v}" for k,v in doe_pts.items()])
+axes_list = list(doe_pts.keys())
+
+#########################################################################################################
+#########################################################################################################
+# Setup "dev_param_dict" - a dictionary of parameters that can be used to manipulate the randomspice 	#
+# input/netlist files. Each simulation creates a copy of the template/netlist for a RandomSpice run,	#
+# eventually we will move to having no explicit RandomSpice input files					#
+#########################################################################################################
+#########################################################################################################
+# simulation parameters
+dev_param_dict={}
+dev_param_dict["VDD_LIN"]		=Vdd_lin
+dev_param_dict["VDD_NOM"]		=Vdd_nom
+
+# device info
+dev_param_dict["P_DEV_NAME"]		=remap_names['pMOS']+":pMOS"
+dev_param_dict["N_DEV_NAME"]		=remap_names['nMOS']+":nMOS"
+dev_param_dict["N_DOE_STR"]		=nmos_doe_str + " phigvar=0"
+dev_param_dict["P_DOE_STR"]		=pmos_doe_str + " phigvar=0"
+
+# setup new intput file names
+new_netlist_name=base_netlist_name+str(0)
+new_inputfile_name=base_inputfile_name+str(0)
+dev_param_dict["SIM_NETLIST"]=new_netlist_name
+# use mako to render these files
+new_netlist=Template(open(base_netlist_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+new_inputfile=Template(open(base_inputfile_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+
+# write these files back to disc
+with open(new_netlist_name,'w') as outfile:
+    outfile.write(new_netlist)
+with open(new_inputfile_name,'w') as outfile:
+    outfile.write(new_inputfile)
+
+randomspice.inputfile = new_inputfile_name
+
+#if "@run_pairs@" == True
+# parallelise runs for speedup
+num = @dev_pair_ensemble@
+dbi, randomspice, numProc = parallelise_randomspice(randomspice, dbi, num=@dev_pair_ensemble@, per_job=@per_simulation@, dataset_name="@node@_dev_pair_MC")
+randomspice.Wait()
+#endif
+
+#####################################################
+######           Plotting Section	#############
+#####################################################
+
+### pull the data out db in chunks of 5000
+d_chunk=100
+chunks=int(@dev_pair_ensemble@/d_chunk)
+if @dev_pair_ensemble@%d_chunk != 0: chunks+=1
+# setup results containers
+cgg_n, cgg_p, iv_ld_n, iv_ld_p, iv_hd_n, iv_hd_p=[],[],[],[],[],[]
+for x in range(0,chunks):
+    istart=d_chunk*(x)+1
+    iend=d_chunk*(x+1)
+    cgg_n.extend(Data.from_db(project=node_prj.name, ivar="vg", dvar="cgg", bias__drain=0.0,     Type='nMOS', circuit__gte=istart, circuit__lte=iend))
+    cgg_p.extend(Data.from_db(project=node_prj.name, ivar="vg", dvar="cgg", bias__drain=0.0,     Type='pMOS', circuit__gte=istart, circuit__lte=iend))
+    iv_ld_n.extend(Data.from_db(project=node_prj.name, ivar="vg", dvar="id",  bias__drain=Vdd_lin, Type='nMOS', circuit__gte=istart, circuit__lte=iend))
+    iv_ld_p.extend(Data.from_db(project=node_prj.name, ivar="vg", dvar="id",  bias__drain=Vdd_lin, Type='pMOS', circuit__gte=istart, circuit__lte=iend))
+    iv_hd_n.extend(Data.from_db(project=node_prj.name, ivar="vg", dvar="id",  bias__drain=Vdd_nom, Type='nMOS', circuit__gte=istart, circuit__lte=iend))
+    iv_hd_p.extend(Data.from_db(project=node_prj.name, ivar="vg", dvar="id",  bias__drain=Vdd_nom, Type='pMOS', circuit__gte=istart, circuit__lte=iend))
+
+
+# sort the data - data is not guaranteed to come back in the "correct" order
+# here we're sortgin the data based on the "circuit" identifier in the metadata
+cgg_n_sorted	=sorted(cgg_n, 	 key=lambda x:x.metadata['circuit'], reverse=True)
+cgg_p_sorted	=sorted(cgg_p, 	 key=lambda x:x.metadata['circuit'], reverse=True)
+iv_ld_n_sorted	=sorted(iv_ld_n, key=lambda x:x.metadata['circuit'], reverse=True)
+iv_ld_p_sorted	=sorted(iv_ld_p, key=lambda x:x.metadata['circuit'], reverse=True)
+iv_hd_n_sorted	=sorted(iv_hd_n, key=lambda x:x.metadata['circuit'], reverse=True)
+iv_hd_p_sorted	=sorted(iv_hd_p, key=lambda x:x.metadata['circuit'], reverse=True)
+
+
+#########################################################################################################
+# setup the result dataframe										#
+foms=["VT_lin", "VT_sat", "DIBL", "Ion_lin", "Ion_sat", "Ioff_lin", "Ioff_sat", "Cgg_on", "Cgg_off"]	#
+columns=["devtype",'circuit_id']+foms
+													#
+# create the blank DF with NA in all columns								#
+df=pd.DataFrame(index=None, columns=columns)								#
+#########################################################################################################
+ctr=0
+
+
+for circuit in range(0,len(cgg_n_sorted)):
+
+    if len(cgg_n_sorted[circuit]) == 0: continue
+
+    for d_type in ["nMOS","pMOS"]:
+
+       if d_type=="nMOS":
+           fac=1
+           cgg     = cgg_n_sorted[circuit]
+           cgg._interpolate(log=True)
+           iv_ld   = iv_ld_n_sorted[circuit]
+           iv_ld._interpolate(log=True)
+           iv_hd   = iv_hd_n_sorted[circuit]
+           iv_hd._interpolate(log=True)
+       elif d_type=="pMOS":
+           fac=-1
+           cgg     = cgg_p_sorted[circuit]
+           cgg._interpolate(log=True)
+           iv_ld   = iv_ld_p_sorted[circuit]
+           iv_ld._interpolate(log=True)
+           iv_hd   = iv_hd_p_sorted[circuit]
+           iv_hd._interpolate(log=True)
+ 
+       try:
+           df.loc[ctr, "devtype"]=d_type
+           df.loc[ctr, "circuit_id"]=circuit
+           df.loc[ctr, "VT_lin"]	=fac*(iv_ld.Vt(ic=vt_cc))
+           df.loc[ctr, "VT_sat"]	=fac*(iv_hd.Vt(ic=vt_cc))
+           df.loc[ctr, "DIBL"]		=abs((df.loc[ctr, "VT_lin"] - df.loc[ctr, "VT_sat"])/(abs(-0.8)-abs(-0.05)))
+           df.loc[ctr, "Ion_lin"]	=abs(iv_ld.Ion(v=Vdd_nom*fac))
+           df.loc[ctr, "Ion_sat"]	=abs(iv_hd.Ion(v=Vdd_nom*fac))
+           df.loc[ctr, "Ioff_lin"]	=np.log10(abs(iv_ld.Ioff(v=0.0)))
+           df.loc[ctr, "Ioff_sat"]	=np.log10(abs(iv_hd.Ioff(v=0.0)))
+           df.loc[ctr, "Cgg_on"]	=cgg.Ion(v=Vdd_nom*fac)
+           df.loc[ctr, "Cgg_off"]	=cgg.Ioff(v=0.0)
+           ctr+=1
+       except:
+           pass
+
+
+print(df)
+
+# save the DF for future use
+ds   = dbi.create_dataset(node_prj.name, "DevPair", clean=True)
+dbi.create_data(ds, df)
+

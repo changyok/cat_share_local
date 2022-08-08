@@ -1,0 +1,49 @@
+###########################################
+# Sentaurus Visual R-2020.09.
+# Tcl log file.
+#------------------------------------------
+# Date: Nov 04, 2020. 10:13:06.
+# Version: 31.2.6534263 (2.6534263)
+# Mode: Interactive (GUI).
+# Mesa: enabled.
+# Hostname: tcadbw30.
+# Machine: Linux, x86_64, x86_64.
+# Kernel: 2.6.32-754.11.1.el6.x86_64.
+###########################################
+
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+create_plot -1d
+select_plots {Plot_1}
+#-> Plot_1
+#-> Plot_1
+#-> n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/n219_GarandMCnew_IdVg_Vd=0.05V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n219_GarandMCnew_IdVg_Vd=0.05V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/n227_GarandMCnew_IdVg_Vd=0.65V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n227_GarandMCnew_IdVg_Vd=0.65V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_0/n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C_2
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_0/n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C_2
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_0/n219_GarandMCnew_IdVg_Vd=0.05V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n219_GarandMCnew_IdVg_Vd=0.05V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C_2
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_0/n227_GarandMCnew_IdVg_Vd=0.65V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n227_GarandMCnew_IdVg_Vd=0.65V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C_2
+create_curve -axisX {pgate OuterVoltage} -axisY {pdrain TotalCurrent} -dataset {n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C_2 n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C_2} -plot Plot_1
+#-> Curve_1 Curve_2 Curve_3 Curve_4
+set_legend_prop -plot Plot_1 -position {0.0310078 0.544236}
+#-> 0
+create_curve -axisX {ngate OuterVoltage} -axisY {ndrain TotalCurrent} -dataset {n219_GarandMCnew_IdVg_Vd=0.05V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C n227_GarandMCnew_IdVg_Vd=0.65V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C n219_GarandMCnew_IdVg_Vd=0.05V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C_2 n227_GarandMCnew_IdVg_Vd=0.65V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C_2} -plot Plot_1
+#-> Curve_5 Curve_6 Curve_7 Curve_8
+set_legend_prop -plot Plot_1 -position {-1.11111 0.855228}
+#-> 0
+set_legend_prop -plot Plot_1 -position {-1.85271 0.855228}
+#-> 0
+set_axis_prop -plot Plot_1 -axis y -type log
+#-> 0
+zoom_plot -plot Plot_1 -window {-0.397222 1.44515e-09 0.279337 1.38683e-07}
+zoom_plot -plot Plot_1 -window {-0.213349 2.16361e-09 0.206259 1.28689e-08}
+exit 0
+ 

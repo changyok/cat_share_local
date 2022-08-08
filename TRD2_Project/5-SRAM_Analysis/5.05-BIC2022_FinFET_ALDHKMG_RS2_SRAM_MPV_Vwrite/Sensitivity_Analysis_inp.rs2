@@ -1,0 +1,29 @@
+[Circuit]
+netlist     = ${SIM_NETLIST}
+number      = 10
+seed        = 12345678
+startnum    = 1
+
+[Simulation]
+spice       = hspice
+
+[Variability]
+process     = False
+statistical = False
+process_resp_only = True
+
+[Output]
+dir         = @pwd@/@nodedir@/n@node@_/icrit_results
+prefix      = icrit
+savenets    = True
+processor   = @pwd@/@nodedir@/pp@node@_eng.py
+
+[Models]
+library     = @pwd@/@nodedir|BuildLibrary@/n@node|BuildLibrary@_library.rsl
+rsm_method  = quad_rsm
+extrapolate = False
+
+[Database]
+enabled     = True
+project     = @node@
+dataset     = @node@-icrit-${CORNER}

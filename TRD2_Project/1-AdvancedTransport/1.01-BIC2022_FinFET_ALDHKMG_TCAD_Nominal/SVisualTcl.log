@@ -1,0 +1,33 @@
+###########################################
+# Sentaurus Visual R-2020.09.
+# Tcl log file.
+#------------------------------------------
+# Date: Jan 12, 2021. 09:15:22.
+# Version: 31.2.6534263 (2.6534263)
+# Mode: Interactive (GUI).
+# Mesa: enabled.
+# Hostname: plxchh054.
+# Machine: Linux, x86_64, x86_64.
+# Kernel: 4.12.14-122.37-default.
+###########################################
+
+load_script_file /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/tmp/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal.vis.cmd
+cd /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/tmp
+# ext::ExtractExtremum> Extracting maxima
+# ext::ExtractExtremum> Extracting minima
+# ext::ExtractValue: WARNING: No intersection found!
+# ext::ExtractValue: WARNING: No intersection found!
+# ext::ExtractValue: WARNING: No intersection found!
+#-> 0
+set_legend_prop -plot Plot_FullIdVg -position {0.0323914 0.831787}
+#-> 0
+select_plots {Plot_Analysis}
+#-> Plot_Analysis
+set_legend_prop -plot Plot_Analysis -position {0.0871208 0.869986}
+#-> 0
+select_plots {Plot_FullIdVg}
+#-> Plot_FullIdVg
+set_legend_prop -plot Plot_FullIdVg -position {0.0954491 0.878172}
+#-> 0
+exit 0
+ 

@@ -1,0 +1,44 @@
+<toolname>
+rcnet
+</toolname>
+
+
+<comment>
+Do not use hierarchical layout here. The pins will not be reliably found.
+
+Also be sure to re-run this tool with any layout changesl this tool creates intermediate GDS files that are used by Process Explorer, so re-running the tool is required to capture any changes to the input files.
+</comment>
+
+
+<toolname>
+spx
+</toolname>
+
+
+<comment>
+Wns - nominal fin width
+Wss - fin width sigma
+
+Pbn - nominal gate mandrel bias
+Pbs - gate mandrel bias sigma
+
+Psn - PC SADP spacer nominal thickness
+Pss - PC SADP spacer thickness sigma
+
+Ps2n - PC spacer 2 nominal thickness
+Ps2s - PC spacer 2 thickness sigma
+
+Grn - Gate recess nominal depth
+Grs - Gate recess sigma
+
+SDCrn - Source/drain recess nominal depth
+SDCrs - Source/drain recess sigma
+
+selectivehighK - 0 is ALD, 1 is selective deposition of HfO2 on thermal oxide
+
+saveRoute - 0 is off, 1 saves the route to the PE DB.
+
+isplit is the LHS sample index which applies variations from the sigma to the nominal
+</comment>
+
+

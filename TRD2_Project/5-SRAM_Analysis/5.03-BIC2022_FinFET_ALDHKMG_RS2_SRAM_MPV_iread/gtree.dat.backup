@@ -1,0 +1,151 @@
+# Copyright (C) 1994-2019 Synopsys Inc.
+# swbtree vcurrent
+
+# --- simulation flow
+SetupSplits enigma "" {}
+BuildLibrary enigma "" {}
+BuildLibrary axis1 "lgate" {l}
+BuildLibrary axis1_midpoint "26e-9" {tba 1.8e-08}
+BuildLibrary axis2 "hfin" {tfin}
+BuildLibrary axis2_midpoint "40e-9" {tba 5e-09}
+BuildLibrary axis3 "phigvar" {phigvar}
+BuildLibrary axis3_midpoint "0.0" {0.0}
+BuildLibrary lg_sigma "0.0" {0.64e-9}
+BuildLibrary tfin_sigma "0.0" {0.64e-9}
+BuildLibrary phigvar_sigma "0.01" {0.01}
+BuildLibrary gv_ratio_lg "0.3" {0.3}
+BuildLibrary gv_ratio_tfin "0.3" {0.3}
+BuildLibrary gv_ratio_phig "0.3" {0.3}
+GetPEXPath enigma "" {}
+GetPEXPath gds "sram_hd_array.oasis" {sram_hc_wide_cdiff_array_pr.oasis sram_hd_wide_cdiff_array_27_pr.oasis}
+GetPEXPath cell "sram_hd" {array_flat array}
+GetPEXPath bbox_layer "1:1" {1:2}
+GetPEXPath selectivehighK "0" {0}
+iread_sim enigma_randomspice "" {}
+iread_sim vt_mode "svt" {svt}
+iread_sim sim_temp "tbc" {tbc -40}
+iread_sim Vdd_nom "0.8" {0.65 0.9}
+iread_sim vddp "0.5" {0.65}
+iread_sim vddc "0.85" {0.65}
+CalcIread enigma "" {}
+Sensitivity_Analysis enigma_randomspice "" {}
+FinalSims enigma_randomspice "" {}
+FinalSims targetSigma "6" {6.0}
+iread_surface enigma "" {}
+SaveWeakCell enigma "" {}
+# --- variables
+# --- scenarios and parameter specs
+scenario default axis1 ""
+scenario default axis1_midpoint ""
+scenario default axis2 ""
+scenario default axis2_midpoint ""
+scenario default axis3 ""
+scenario default axis3_midpoint ""
+scenario default lg_sigma ""
+scenario default tfin_sigma ""
+scenario default phigvar_sigma ""
+scenario default gv_ratio_lg ""
+scenario default gv_ratio_tfin ""
+scenario default gv_ratio_phig ""
+scenario default gds ""
+scenario default cell ""
+scenario default bbox_layer ""
+scenario default selectivehighK ""
+scenario default vt_mode ""
+scenario default sim_temp ""
+scenario default Vdd_nom ""
+scenario default vddp ""
+scenario default vddc ""
+scenario default targetSigma ""
+# --- simulation tree
+0 1 0 {} {default} 0
+1 2 1 {} {default} 0
+2 3 2 {l} {default} 0
+3 4 3 {tba} {default} 0
+4 5 4 {tfin} {default} 0
+5 6 5 {tba} {default} 0
+6 7 6 {phigvar} {default} 0
+7 8 7 {0.0} {default} 0
+8 9 8 {0.64e-9} {default} 0
+9 10 9 {0.64e-9} {default} 0
+10 11 10 {0.01} {default} 0
+11 12 11 {0.3} {default} 0
+12 13 12 {0.3} {default} 0
+13 14 13 {0.3} {*default} 0
+14 15 14 {} {*default} 0
+15 16 15 {sram_hc_wide_cdiff_array_pr.oasis} {*default} 0
+16 18 16 {array} {*default} 0
+17 20 18 {1:2} {*default} 0
+18 22 20 {0} {*default} 0
+19 24 22 {} {*default} 0
+20 26 24 {svt} {*default} 0
+21 28 26 {tbc} {*default} 0
+22 30 28 {0.65} {*default} 0
+23 32 30 {0.65} {*default} 0
+24 34 32 {0.65} {*default} 0
+25 36 34 {} {*default} 0
+26 38 36 {} {*default} 0
+27 40 38 {} {*default} 0
+28 42 40 {6.0} {*default} 0
+29 44 42 {} {*default} 0
+30 46 44 {} {*default} 0
+15 17 15 {sram_hd_wide_cdiff_array_27_pr.oasis} {*default} 0
+16 19 17 {array_flat} {*default} 0
+17 21 19 {1:2} {*default} 0
+18 23 21 {0} {*default} 0
+19 25 23 {} {*default} 0
+20 27 25 {svt} {*default} 0
+21 29 27 {tbc} {*default} 0
+22 31 29 {0.65} {*default} 0
+23 33 31 {0.65} {*default} 0
+24 35 33 {0.65} {*default} 0
+25 37 35 {} {*default} 0
+26 39 37 {} {*default} 0
+27 41 39 {} {*default} 0
+28 43 41 {6.0} {*default} 0
+29 45 43 {} {*default} 0
+30 47 45 {} {*default} 0
+3 48 3 {1.8e-08} {default} 0
+4 49 48 {tfin} {default} 0
+5 50 49 {5e-09} {default} 0
+6 51 50 {phigvar} {default} 0
+7 52 51 {0.0} {default} 0
+8 53 52 {0.64e-9} {default} 0
+9 54 53 {0.64e-9} {default} 0
+10 55 54 {0.01} {default} 0
+11 56 55 {0.3} {default} 0
+12 57 56 {0.3} {default} 0
+13 58 57 {0.3} {default} 0
+14 59 58 {} {default} 0
+15 60 59 {sram_hc_wide_cdiff_array_pr.oasis} {default} 0
+16 61 60 {array} {default} 0
+17 62 61 {1:2} {default} 0
+18 63 62 {0} {default} 0
+19 64 63 {} {default} 0
+20 65 64 {svt} {default} 0
+21 66 65 {-40} {default} 0
+22 67 66 {0.9} {default} 0
+23 68 67 {0.65} {default} 0
+24 69 68 {0.65} {default} 0
+25 70 69 {} {default} 0
+26 71 70 {} {default} 0
+27 72 71 {} {default} 0
+28 73 72 {6.0} {default} 0
+29 74 73 {} {default} 0
+30 75 74 {} {default} 0
+15 76 59 {sram_hd_wide_cdiff_array_27_pr.oasis} {default} 0
+16 77 76 {array_flat} {default} 0
+17 78 77 {1:2} {default} 0
+18 79 78 {0} {default} 0
+19 80 79 {} {default} 0
+20 81 80 {svt} {default} 0
+21 82 81 {-40} {default} 0
+22 83 82 {0.9} {default} 0
+23 84 83 {0.65} {default} 0
+24 85 84 {0.65} {default} 0
+25 86 85 {} {default} 0
+26 87 86 {} {default} 0
+27 88 87 {} {default} 0
+28 89 88 {6.0} {default} 0
+29 90 89 {} {default} 0
+30 91 90 {} {default} 0

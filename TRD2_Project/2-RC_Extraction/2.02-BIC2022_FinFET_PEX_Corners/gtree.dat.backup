@@ -1,0 +1,1396 @@
+# Copyright (C) 1994-2019 Synopsys Inc.
+# swbtree vR-2020.09-SP1
+
+# --- simulation flow
+rcnet raphaelfx "" {}
+rcnet host "us01odcvde01038" {localhost}
+rcnet port "37166" {27017}
+rcnet flow "flow" {recess_power_rail_gate_cut_late_r7}
+rcnet gds "16ff" {invx2d_bic2022.oasis invx1d_bic2022.oasis invx2t_bic2022.oasis invx1t_bic2022.oasis invx2s_bic2022.oasis invx1s_bic2022.oasis nand2x1d_optimized.oasis nand2x1t_optimized.oasis nand2x1s_optimized.oasis sram_hd_wide_cdiff_array_pr.oasis sram_hc_wide_cdiff_array_pr.oasis sram_hd_wide_cdiff_array_23_pr.oasis sram_hd_wide_cdiff_array_25_pr.oasis sram_hd_wide_cdiff_array_27_pr.oasis}
+rcnet cell "1" {invx2d invx1s nand2x1d invx2s invx1t invx2t invx1d nand2x1t nand2x1s array array_flat}
+rcnet bbox_layer "1:0" {1:0 1:2}
+rcnet lvs "inv1.lvs" {invx2d.lvs invx1s.lvs nand2x1d.lvs invx2s.lvs invx1t.lvs invx2t.lvs invx1d.lvs nand2x1t.lvs nand2x1s.lvs sram_hc_wide.lvs sram_hd_wide.lvs}
+rcnet xp1s "vss" {vdd}
+rcnet xn1s "vss" {vss}
+rcnet xp2d "vss" {vdd}
+rcnet xn2d "vss" {vss}
+rcnet parmodel "mos_tt" {mos_tt}
+spx spx "-nodisplay -exitOnError -log n@node@_spx.log -numthreads 8 -run" {}
+spx Wns "0.030" {0.005}
+spx Wss "0.01" {0.0011}
+spx Pbn "0.00" {0.00}
+spx Pbs "0.001" {0.0011}
+spx Psn "0.018" {0.018}
+spx Pss "0.001" {0.0007}
+spx Ps2n "0.002" {0.002}
+spx Ps2s "0.001" {0.0007}
+spx Grn "0.01" {0.03}
+spx Grs "0.005" {0.0005}
+spx SDCrn "0.07" {0.065}
+spx SDCrs "0.01" {0.002}
+spx selectivehighK "0" {0}
+spx saveRoute "0" {0}
+spx method "lhs5000" {lhs20x10000}
+spx isplit "0" {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79}
+Pin_check gtclsh "" {}
+Pin_check checkpins "1" {1}
+rcfx raphaelfx "-n" {}
+rcfx processes "2" {5}
+rcfx threads "4" {4}
+rcfx excludeC "1" {1}
+rcfx cnt_size "0.015" {0.01}
+spfgen raphaelfx "-n" {}
+enigma enigma "" {}
+# --- variables
+# --- scenarios and parameter specs
+scenario default host ""
+scenario default port ""
+scenario default flow ""
+scenario default gds ""
+scenario default cell ""
+scenario default bbox_layer ""
+scenario default lvs ""
+scenario default xp1s ""
+scenario default xn1s ""
+scenario default xp2d ""
+scenario default xn2d ""
+scenario default parmodel ""
+scenario default Wns ""
+scenario default Wss ""
+scenario default Pbn ""
+scenario default Pbs ""
+scenario default Psn ""
+scenario default Pss ""
+scenario default Ps2n ""
+scenario default Ps2s ""
+scenario default Grn ""
+scenario default Grs ""
+scenario default SDCrn ""
+scenario default SDCrs ""
+scenario default selectivehighK ""
+scenario default saveRoute ""
+scenario default method ""
+scenario default isplit ""
+scenario default checkpins ""
+scenario default processes ""
+scenario default threads ""
+scenario default excludeC ""
+scenario default cnt_size ""
+scenario invx1d host ""
+scenario invx1d port ""
+scenario invx1d flow ""
+scenario invx1d gds ""
+scenario invx1d cell ""
+scenario invx1d bbox_layer ""
+scenario invx1d lvs ""
+scenario invx1d xp1s ""
+scenario invx1d xn1s ""
+scenario invx1d xp2d ""
+scenario invx1d xn2d ""
+scenario invx1d parmodel ""
+scenario invx1d Wns ""
+scenario invx1d Wss ""
+scenario invx1d Pbn ""
+scenario invx1d Pbs ""
+scenario invx1d Psn ""
+scenario invx1d Pss ""
+scenario invx1d Ps2n ""
+scenario invx1d Ps2s ""
+scenario invx1d Grn ""
+scenario invx1d Grs ""
+scenario invx1d SDCrn ""
+scenario invx1d SDCrs ""
+scenario invx1d selectivehighK ""
+scenario invx1d saveRoute ""
+scenario invx1d method ""
+scenario invx1d isplit ""
+scenario invx1d checkpins ""
+scenario invx1d processes ""
+scenario invx1d threads ""
+scenario invx1d excludeC ""
+scenario invx1d cnt_size ""
+# --- simulation tree
+0 1 0 {} {default invx1d} 0
+1 2 1 {localhost} {default invx1d} 0
+2 3 2 {27017} {default invx1d} 0
+3 4 3 {recess_power_rail_gate_cut_late_r7} {default invx1d} 0
+4 5 4 {invx2d_bic2022.oasis} {default} 0
+5 19 5 {invx2d} {default} 0
+6 33 19 {1:0} {default} 0
+7 47 33 {invx2d.lvs} {default} 0
+8 61 47 {vdd} {default} 0
+9 75 61 {vss} {default} 0
+10 89 75 {vdd} {default} 0
+11 103 89 {vss} {default} 0
+12 117 103 {mos_tt} {default} 0
+13 131 117 {} {default} 0
+14 145 131 {0.005} {default} 0
+15 159 145 {0.0011} {default} 0
+16 173 159 {0.00} {default} 0
+17 187 173 {0.0011} {default} 0
+18 201 187 {0.018} {default} 0
+19 215 201 {0.0007} {default} 0
+20 229 215 {0.002} {default} 0
+21 243 229 {0.0007} {default} 0
+22 257 243 {0.03} {default} 0
+23 271 257 {0.0005} {default} 0
+24 285 271 {0.065} {default} 0
+25 299 285 {0.002} {default} 0
+26 313 299 {0} {default} 0
+27 327 313 {0} {default} 0
+28 341 327 {lhs20x10000} {default} 0
+29 355 341 {0} {default} 0
+30 448 355 {} {default} 0
+31 541 448 {1} {default} 0
+32 634 541 {} {default} 0
+33 727 634 {5} {default} 0
+34 820 727 {4} {default} 0
+35 913 820 {1} {default} 0
+36 1006 913 {0.01} {default} 0
+37 1099 1006 {} {default} 0
+38 1192 1099 {} {default} 0
+4 6 4 {invx1d_bic2022.oasis} {default invx1d} 0
+5 20 6 {invx1d} {default invx1d} 0
+6 34 20 {1:0} {default invx1d} 0
+7 48 34 {invx1d.lvs} {default invx1d} 0
+8 62 48 {vdd} {default invx1d} 0
+9 76 62 {vss} {default invx1d} 0
+10 90 76 {vdd} {default invx1d} 0
+11 104 90 {vss} {default invx1d} 0
+12 118 104 {mos_tt} {default invx1d} 0
+13 132 118 {} {default invx1d} 0
+14 146 132 {0.005} {default invx1d} 0
+15 160 146 {0.0011} {default invx1d} 0
+16 174 160 {0.00} {default invx1d} 0
+17 188 174 {0.0011} {default invx1d} 0
+18 202 188 {0.018} {default invx1d} 0
+19 216 202 {0.0007} {default invx1d} 0
+20 230 216 {0.002} {default invx1d} 0
+21 244 230 {0.0007} {default invx1d} 0
+22 258 244 {0.03} {default invx1d} 0
+23 272 258 {0.0005} {default invx1d} 0
+24 286 272 {0.065} {default invx1d} 0
+25 300 286 {0.002} {default invx1d} 0
+26 314 300 {0} {default invx1d} 0
+27 328 314 {0} {default invx1d} 0
+28 342 328 {lhs20x10000} {default invx1d} 0
+29 356 342 {0} {default invx1d} 0
+30 449 356 {} {default invx1d} 0
+31 542 449 {1} {default invx1d} 0
+32 635 542 {} {default invx1d} 0
+33 728 635 {5} {default invx1d} 0
+34 821 728 {4} {default invx1d} 0
+35 914 821 {1} {default invx1d} 0
+36 1007 914 {0.01} {default invx1d} 0
+37 1100 1007 {} {default invx1d} 0
+38 1193 1100 {} {default invx1d} 0
+29 357 342 {1} {invx1d} 0
+30 450 357 {} {invx1d} 0
+31 543 450 {1} {invx1d} 0
+32 636 543 {} {invx1d} 0
+33 729 636 {5} {invx1d} 0
+34 822 729 {4} {invx1d} 0
+35 915 822 {1} {invx1d} 0
+36 1008 915 {0.01} {invx1d} 0
+37 1101 1008 {} {invx1d} 0
+38 1194 1101 {} {invx1d} 0
+29 358 342 {2} {invx1d} 0
+30 451 358 {} {invx1d} 0
+31 544 451 {1} {invx1d} 0
+32 637 544 {} {invx1d} 0
+33 730 637 {5} {invx1d} 0
+34 823 730 {4} {invx1d} 0
+35 916 823 {1} {invx1d} 0
+36 1009 916 {0.01} {invx1d} 0
+37 1102 1009 {} {invx1d} 0
+38 1195 1102 {} {invx1d} 0
+29 359 342 {3} {invx1d} 0
+30 452 359 {} {invx1d} 0
+31 545 452 {1} {invx1d} 0
+32 638 545 {} {invx1d} 0
+33 731 638 {5} {invx1d} 0
+34 824 731 {4} {invx1d} 0
+35 917 824 {1} {invx1d} 0
+36 1010 917 {0.01} {invx1d} 0
+37 1103 1010 {} {invx1d} 0
+38 1196 1103 {} {invx1d} 0
+29 360 342 {4} {invx1d} 0
+30 453 360 {} {invx1d} 0
+31 546 453 {1} {invx1d} 0
+32 639 546 {} {invx1d} 0
+33 732 639 {5} {invx1d} 0
+34 825 732 {4} {invx1d} 0
+35 918 825 {1} {invx1d} 0
+36 1011 918 {0.01} {invx1d} 0
+37 1104 1011 {} {invx1d} 0
+38 1197 1104 {} {invx1d} 0
+29 361 342 {5} {invx1d} 0
+30 454 361 {} {invx1d} 0
+31 547 454 {1} {invx1d} 0
+32 640 547 {} {invx1d} 0
+33 733 640 {5} {invx1d} 0
+34 826 733 {4} {invx1d} 0
+35 919 826 {1} {invx1d} 0
+36 1012 919 {0.01} {invx1d} 0
+37 1105 1012 {} {invx1d} 0
+38 1198 1105 {} {invx1d} 0
+29 362 342 {6} {invx1d} 0
+30 455 362 {} {invx1d} 0
+31 548 455 {1} {invx1d} 0
+32 641 548 {} {invx1d} 0
+33 734 641 {5} {invx1d} 0
+34 827 734 {4} {invx1d} 0
+35 920 827 {1} {invx1d} 0
+36 1013 920 {0.01} {invx1d} 0
+37 1106 1013 {} {invx1d} 0
+38 1199 1106 {} {invx1d} 0
+29 363 342 {7} {invx1d} 0
+30 456 363 {} {invx1d} 0
+31 549 456 {1} {invx1d} 0
+32 642 549 {} {invx1d} 0
+33 735 642 {5} {invx1d} 0
+34 828 735 {4} {invx1d} 0
+35 921 828 {1} {invx1d} 0
+36 1014 921 {0.01} {invx1d} 0
+37 1107 1014 {} {invx1d} 0
+38 1200 1107 {} {invx1d} 0
+29 364 342 {8} {invx1d} 0
+30 457 364 {} {invx1d} 0
+31 550 457 {1} {invx1d} 0
+32 643 550 {} {invx1d} 0
+33 736 643 {5} {invx1d} 0
+34 829 736 {4} {invx1d} 0
+35 922 829 {1} {invx1d} 0
+36 1015 922 {0.01} {invx1d} 0
+37 1108 1015 {} {invx1d} 0
+38 1201 1108 {} {invx1d} 0
+29 365 342 {9} {invx1d} 0
+30 458 365 {} {invx1d} 0
+31 551 458 {1} {invx1d} 0
+32 644 551 {} {invx1d} 0
+33 737 644 {5} {invx1d} 0
+34 830 737 {4} {invx1d} 0
+35 923 830 {1} {invx1d} 0
+36 1016 923 {0.01} {invx1d} 0
+37 1109 1016 {} {invx1d} 0
+38 1202 1109 {} {invx1d} 0
+29 366 342 {10} {invx1d} 0
+30 459 366 {} {invx1d} 0
+31 552 459 {1} {invx1d} 0
+32 645 552 {} {invx1d} 0
+33 738 645 {5} {invx1d} 0
+34 831 738 {4} {invx1d} 0
+35 924 831 {1} {invx1d} 0
+36 1017 924 {0.01} {invx1d} 0
+37 1110 1017 {} {invx1d} 0
+38 1203 1110 {} {invx1d} 0
+29 367 342 {11} {invx1d} 0
+30 460 367 {} {invx1d} 0
+31 553 460 {1} {invx1d} 0
+32 646 553 {} {invx1d} 0
+33 739 646 {5} {invx1d} 0
+34 832 739 {4} {invx1d} 0
+35 925 832 {1} {invx1d} 0
+36 1018 925 {0.01} {invx1d} 0
+37 1111 1018 {} {invx1d} 0
+38 1204 1111 {} {invx1d} 0
+29 368 342 {12} {invx1d} 0
+30 461 368 {} {invx1d} 0
+31 554 461 {1} {invx1d} 0
+32 647 554 {} {invx1d} 0
+33 740 647 {5} {invx1d} 0
+34 833 740 {4} {invx1d} 0
+35 926 833 {1} {invx1d} 0
+36 1019 926 {0.01} {invx1d} 0
+37 1112 1019 {} {invx1d} 0
+38 1205 1112 {} {invx1d} 0
+29 369 342 {13} {invx1d} 0
+30 462 369 {} {invx1d} 0
+31 555 462 {1} {invx1d} 0
+32 648 555 {} {invx1d} 0
+33 741 648 {5} {invx1d} 0
+34 834 741 {4} {invx1d} 0
+35 927 834 {1} {invx1d} 0
+36 1020 927 {0.01} {invx1d} 0
+37 1113 1020 {} {invx1d} 0
+38 1206 1113 {} {invx1d} 0
+29 370 342 {14} {invx1d} 0
+30 463 370 {} {invx1d} 0
+31 556 463 {1} {invx1d} 0
+32 649 556 {} {invx1d} 0
+33 742 649 {5} {invx1d} 0
+34 835 742 {4} {invx1d} 0
+35 928 835 {1} {invx1d} 0
+36 1021 928 {0.01} {invx1d} 0
+37 1114 1021 {} {invx1d} 0
+38 1207 1114 {} {invx1d} 0
+29 371 342 {15} {invx1d} 0
+30 464 371 {} {invx1d} 0
+31 557 464 {1} {invx1d} 0
+32 650 557 {} {invx1d} 0
+33 743 650 {5} {invx1d} 0
+34 836 743 {4} {invx1d} 0
+35 929 836 {1} {invx1d} 0
+36 1022 929 {0.01} {invx1d} 0
+37 1115 1022 {} {invx1d} 0
+38 1208 1115 {} {invx1d} 0
+29 372 342 {16} {invx1d} 0
+30 465 372 {} {invx1d} 0
+31 558 465 {1} {invx1d} 0
+32 651 558 {} {invx1d} 0
+33 744 651 {5} {invx1d} 0
+34 837 744 {4} {invx1d} 0
+35 930 837 {1} {invx1d} 0
+36 1023 930 {0.01} {invx1d} 0
+37 1116 1023 {} {invx1d} 0
+38 1209 1116 {} {invx1d} 0
+29 373 342 {17} {invx1d} 0
+30 466 373 {} {invx1d} 0
+31 559 466 {1} {invx1d} 0
+32 652 559 {} {invx1d} 0
+33 745 652 {5} {invx1d} 0
+34 838 745 {4} {invx1d} 0
+35 931 838 {1} {invx1d} 0
+36 1024 931 {0.01} {invx1d} 0
+37 1117 1024 {} {invx1d} 0
+38 1210 1117 {} {invx1d} 0
+29 374 342 {18} {invx1d} 0
+30 467 374 {} {invx1d} 0
+31 560 467 {1} {invx1d} 0
+32 653 560 {} {invx1d} 0
+33 746 653 {5} {invx1d} 0
+34 839 746 {4} {invx1d} 0
+35 932 839 {1} {invx1d} 0
+36 1025 932 {0.01} {invx1d} 0
+37 1118 1025 {} {invx1d} 0
+38 1211 1118 {} {invx1d} 0
+29 375 342 {19} {invx1d} 0
+30 468 375 {} {invx1d} 0
+31 561 468 {1} {invx1d} 0
+32 654 561 {} {invx1d} 0
+33 747 654 {5} {invx1d} 0
+34 840 747 {4} {invx1d} 0
+35 933 840 {1} {invx1d} 0
+36 1026 933 {0.01} {invx1d} 0
+37 1119 1026 {} {invx1d} 0
+38 1212 1119 {} {invx1d} 0
+29 376 342 {20} {invx1d} 0
+30 469 376 {} {invx1d} 0
+31 562 469 {1} {invx1d} 0
+32 655 562 {} {invx1d} 0
+33 748 655 {5} {invx1d} 0
+34 841 748 {4} {invx1d} 0
+35 934 841 {1} {invx1d} 0
+36 1027 934 {0.01} {invx1d} 0
+37 1120 1027 {} {invx1d} 0
+38 1213 1120 {} {invx1d} 0
+29 377 342 {21} {invx1d} 0
+30 470 377 {} {invx1d} 0
+31 563 470 {1} {invx1d} 0
+32 656 563 {} {invx1d} 0
+33 749 656 {5} {invx1d} 0
+34 842 749 {4} {invx1d} 0
+35 935 842 {1} {invx1d} 0
+36 1028 935 {0.01} {invx1d} 0
+37 1121 1028 {} {invx1d} 0
+38 1214 1121 {} {invx1d} 0
+29 378 342 {22} {invx1d} 0
+30 471 378 {} {invx1d} 0
+31 564 471 {1} {invx1d} 0
+32 657 564 {} {invx1d} 0
+33 750 657 {5} {invx1d} 0
+34 843 750 {4} {invx1d} 0
+35 936 843 {1} {invx1d} 0
+36 1029 936 {0.01} {invx1d} 0
+37 1122 1029 {} {invx1d} 0
+38 1215 1122 {} {invx1d} 0
+29 379 342 {23} {invx1d} 0
+30 472 379 {} {invx1d} 0
+31 565 472 {1} {invx1d} 0
+32 658 565 {} {invx1d} 0
+33 751 658 {5} {invx1d} 0
+34 844 751 {4} {invx1d} 0
+35 937 844 {1} {invx1d} 0
+36 1030 937 {0.01} {invx1d} 0
+37 1123 1030 {} {invx1d} 0
+38 1216 1123 {} {invx1d} 0
+29 380 342 {24} {invx1d} 0
+30 473 380 {} {invx1d} 0
+31 566 473 {1} {invx1d} 0
+32 659 566 {} {invx1d} 0
+33 752 659 {5} {invx1d} 0
+34 845 752 {4} {invx1d} 0
+35 938 845 {1} {invx1d} 0
+36 1031 938 {0.01} {invx1d} 0
+37 1124 1031 {} {invx1d} 0
+38 1217 1124 {} {invx1d} 0
+29 381 342 {25} {invx1d} 0
+30 474 381 {} {invx1d} 0
+31 567 474 {1} {invx1d} 0
+32 660 567 {} {invx1d} 0
+33 753 660 {5} {invx1d} 0
+34 846 753 {4} {invx1d} 0
+35 939 846 {1} {invx1d} 0
+36 1032 939 {0.01} {invx1d} 0
+37 1125 1032 {} {invx1d} 0
+38 1218 1125 {} {invx1d} 0
+29 382 342 {26} {invx1d} 0
+30 475 382 {} {invx1d} 0
+31 568 475 {1} {invx1d} 0
+32 661 568 {} {invx1d} 0
+33 754 661 {5} {invx1d} 0
+34 847 754 {4} {invx1d} 0
+35 940 847 {1} {invx1d} 0
+36 1033 940 {0.01} {invx1d} 0
+37 1126 1033 {} {invx1d} 0
+38 1219 1126 {} {invx1d} 0
+29 383 342 {27} {invx1d} 0
+30 476 383 {} {invx1d} 0
+31 569 476 {1} {invx1d} 0
+32 662 569 {} {invx1d} 0
+33 755 662 {5} {invx1d} 0
+34 848 755 {4} {invx1d} 0
+35 941 848 {1} {invx1d} 0
+36 1034 941 {0.01} {invx1d} 0
+37 1127 1034 {} {invx1d} 0
+38 1220 1127 {} {invx1d} 0
+29 384 342 {28} {invx1d} 0
+30 477 384 {} {invx1d} 0
+31 570 477 {1} {invx1d} 0
+32 663 570 {} {invx1d} 0
+33 756 663 {5} {invx1d} 0
+34 849 756 {4} {invx1d} 0
+35 942 849 {1} {invx1d} 0
+36 1035 942 {0.01} {invx1d} 0
+37 1128 1035 {} {invx1d} 0
+38 1221 1128 {} {invx1d} 0
+29 385 342 {29} {invx1d} 0
+30 478 385 {} {invx1d} 0
+31 571 478 {1} {invx1d} 0
+32 664 571 {} {invx1d} 0
+33 757 664 {5} {invx1d} 0
+34 850 757 {4} {invx1d} 0
+35 943 850 {1} {invx1d} 0
+36 1036 943 {0.01} {invx1d} 0
+37 1129 1036 {} {invx1d} 0
+38 1222 1129 {} {invx1d} 0
+29 386 342 {30} {invx1d} 0
+30 479 386 {} {invx1d} 0
+31 572 479 {1} {invx1d} 0
+32 665 572 {} {invx1d} 0
+33 758 665 {5} {invx1d} 0
+34 851 758 {4} {invx1d} 0
+35 944 851 {1} {invx1d} 0
+36 1037 944 {0.01} {invx1d} 0
+37 1130 1037 {} {invx1d} 0
+38 1223 1130 {} {invx1d} 0
+29 387 342 {31} {invx1d} 0
+30 480 387 {} {invx1d} 0
+31 573 480 {1} {invx1d} 0
+32 666 573 {} {invx1d} 0
+33 759 666 {5} {invx1d} 0
+34 852 759 {4} {invx1d} 0
+35 945 852 {1} {invx1d} 0
+36 1038 945 {0.01} {invx1d} 0
+37 1131 1038 {} {invx1d} 0
+38 1224 1131 {} {invx1d} 0
+29 388 342 {32} {invx1d} 0
+30 481 388 {} {invx1d} 0
+31 574 481 {1} {invx1d} 0
+32 667 574 {} {invx1d} 0
+33 760 667 {5} {invx1d} 0
+34 853 760 {4} {invx1d} 0
+35 946 853 {1} {invx1d} 0
+36 1039 946 {0.01} {invx1d} 0
+37 1132 1039 {} {invx1d} 0
+38 1225 1132 {} {invx1d} 0
+29 389 342 {33} {invx1d} 0
+30 482 389 {} {invx1d} 0
+31 575 482 {1} {invx1d} 0
+32 668 575 {} {invx1d} 0
+33 761 668 {5} {invx1d} 0
+34 854 761 {4} {invx1d} 0
+35 947 854 {1} {invx1d} 0
+36 1040 947 {0.01} {invx1d} 0
+37 1133 1040 {} {invx1d} 0
+38 1226 1133 {} {invx1d} 0
+29 390 342 {34} {invx1d} 0
+30 483 390 {} {invx1d} 0
+31 576 483 {1} {invx1d} 0
+32 669 576 {} {invx1d} 0
+33 762 669 {5} {invx1d} 0
+34 855 762 {4} {invx1d} 0
+35 948 855 {1} {invx1d} 0
+36 1041 948 {0.01} {invx1d} 0
+37 1134 1041 {} {invx1d} 0
+38 1227 1134 {} {invx1d} 0
+29 391 342 {35} {invx1d} 0
+30 484 391 {} {invx1d} 0
+31 577 484 {1} {invx1d} 0
+32 670 577 {} {invx1d} 0
+33 763 670 {5} {invx1d} 0
+34 856 763 {4} {invx1d} 0
+35 949 856 {1} {invx1d} 0
+36 1042 949 {0.01} {invx1d} 0
+37 1135 1042 {} {invx1d} 0
+38 1228 1135 {} {invx1d} 0
+29 392 342 {36} {invx1d} 0
+30 485 392 {} {invx1d} 0
+31 578 485 {1} {invx1d} 0
+32 671 578 {} {invx1d} 0
+33 764 671 {5} {invx1d} 0
+34 857 764 {4} {invx1d} 0
+35 950 857 {1} {invx1d} 0
+36 1043 950 {0.01} {invx1d} 0
+37 1136 1043 {} {invx1d} 0
+38 1229 1136 {} {invx1d} 0
+29 393 342 {37} {invx1d} 0
+30 486 393 {} {invx1d} 0
+31 579 486 {1} {invx1d} 0
+32 672 579 {} {invx1d} 0
+33 765 672 {5} {invx1d} 0
+34 858 765 {4} {invx1d} 0
+35 951 858 {1} {invx1d} 0
+36 1044 951 {0.01} {invx1d} 0
+37 1137 1044 {} {invx1d} 0
+38 1230 1137 {} {invx1d} 0
+29 394 342 {38} {invx1d} 0
+30 487 394 {} {invx1d} 0
+31 580 487 {1} {invx1d} 0
+32 673 580 {} {invx1d} 0
+33 766 673 {5} {invx1d} 0
+34 859 766 {4} {invx1d} 0
+35 952 859 {1} {invx1d} 0
+36 1045 952 {0.01} {invx1d} 0
+37 1138 1045 {} {invx1d} 0
+38 1231 1138 {} {invx1d} 0
+29 395 342 {39} {invx1d} 0
+30 488 395 {} {invx1d} 0
+31 581 488 {1} {invx1d} 0
+32 674 581 {} {invx1d} 0
+33 767 674 {5} {invx1d} 0
+34 860 767 {4} {invx1d} 0
+35 953 860 {1} {invx1d} 0
+36 1046 953 {0.01} {invx1d} 0
+37 1139 1046 {} {invx1d} 0
+38 1232 1139 {} {invx1d} 0
+29 396 342 {40} {invx1d} 0
+30 489 396 {} {invx1d} 0
+31 582 489 {1} {invx1d} 0
+32 675 582 {} {invx1d} 0
+33 768 675 {5} {invx1d} 0
+34 861 768 {4} {invx1d} 0
+35 954 861 {1} {invx1d} 0
+36 1047 954 {0.01} {invx1d} 0
+37 1140 1047 {} {invx1d} 0
+38 1233 1140 {} {invx1d} 0
+29 397 342 {41} {invx1d} 0
+30 490 397 {} {invx1d} 0
+31 583 490 {1} {invx1d} 0
+32 676 583 {} {invx1d} 0
+33 769 676 {5} {invx1d} 0
+34 862 769 {4} {invx1d} 0
+35 955 862 {1} {invx1d} 0
+36 1048 955 {0.01} {invx1d} 0
+37 1141 1048 {} {invx1d} 0
+38 1234 1141 {} {invx1d} 0
+29 398 342 {42} {invx1d} 0
+30 491 398 {} {invx1d} 0
+31 584 491 {1} {invx1d} 0
+32 677 584 {} {invx1d} 0
+33 770 677 {5} {invx1d} 0
+34 863 770 {4} {invx1d} 0
+35 956 863 {1} {invx1d} 0
+36 1049 956 {0.01} {invx1d} 0
+37 1142 1049 {} {invx1d} 0
+38 1235 1142 {} {invx1d} 0
+29 399 342 {43} {invx1d} 0
+30 492 399 {} {invx1d} 0
+31 585 492 {1} {invx1d} 0
+32 678 585 {} {invx1d} 0
+33 771 678 {5} {invx1d} 0
+34 864 771 {4} {invx1d} 0
+35 957 864 {1} {invx1d} 0
+36 1050 957 {0.01} {invx1d} 0
+37 1143 1050 {} {invx1d} 0
+38 1236 1143 {} {invx1d} 0
+29 400 342 {44} {invx1d} 0
+30 493 400 {} {invx1d} 0
+31 586 493 {1} {invx1d} 0
+32 679 586 {} {invx1d} 0
+33 772 679 {5} {invx1d} 0
+34 865 772 {4} {invx1d} 0
+35 958 865 {1} {invx1d} 0
+36 1051 958 {0.01} {invx1d} 0
+37 1144 1051 {} {invx1d} 0
+38 1237 1144 {} {invx1d} 0
+29 401 342 {45} {invx1d} 0
+30 494 401 {} {invx1d} 0
+31 587 494 {1} {invx1d} 0
+32 680 587 {} {invx1d} 0
+33 773 680 {5} {invx1d} 0
+34 866 773 {4} {invx1d} 0
+35 959 866 {1} {invx1d} 0
+36 1052 959 {0.01} {invx1d} 0
+37 1145 1052 {} {invx1d} 0
+38 1238 1145 {} {invx1d} 0
+29 402 342 {46} {invx1d} 0
+30 495 402 {} {invx1d} 0
+31 588 495 {1} {invx1d} 0
+32 681 588 {} {invx1d} 0
+33 774 681 {5} {invx1d} 0
+34 867 774 {4} {invx1d} 0
+35 960 867 {1} {invx1d} 0
+36 1053 960 {0.01} {invx1d} 0
+37 1146 1053 {} {invx1d} 0
+38 1239 1146 {} {invx1d} 0
+29 403 342 {47} {invx1d} 0
+30 496 403 {} {invx1d} 0
+31 589 496 {1} {invx1d} 0
+32 682 589 {} {invx1d} 0
+33 775 682 {5} {invx1d} 0
+34 868 775 {4} {invx1d} 0
+35 961 868 {1} {invx1d} 0
+36 1054 961 {0.01} {invx1d} 0
+37 1147 1054 {} {invx1d} 0
+38 1240 1147 {} {invx1d} 0
+29 404 342 {48} {invx1d} 0
+30 497 404 {} {invx1d} 0
+31 590 497 {1} {invx1d} 0
+32 683 590 {} {invx1d} 0
+33 776 683 {5} {invx1d} 0
+34 869 776 {4} {invx1d} 0
+35 962 869 {1} {invx1d} 0
+36 1055 962 {0.01} {invx1d} 0
+37 1148 1055 {} {invx1d} 0
+38 1241 1148 {} {invx1d} 0
+29 405 342 {49} {invx1d} 0
+30 498 405 {} {invx1d} 0
+31 591 498 {1} {invx1d} 0
+32 684 591 {} {invx1d} 0
+33 777 684 {5} {invx1d} 0
+34 870 777 {4} {invx1d} 0
+35 963 870 {1} {invx1d} 0
+36 1056 963 {0.01} {invx1d} 0
+37 1149 1056 {} {invx1d} 0
+38 1242 1149 {} {invx1d} 0
+29 406 342 {50} {invx1d} 0
+30 499 406 {} {invx1d} 0
+31 592 499 {1} {invx1d} 0
+32 685 592 {} {invx1d} 0
+33 778 685 {5} {invx1d} 0
+34 871 778 {4} {invx1d} 0
+35 964 871 {1} {invx1d} 0
+36 1057 964 {0.01} {invx1d} 0
+37 1150 1057 {} {invx1d} 0
+38 1243 1150 {} {invx1d} 0
+29 407 342 {51} {invx1d} 0
+30 500 407 {} {invx1d} 0
+31 593 500 {1} {invx1d} 0
+32 686 593 {} {invx1d} 0
+33 779 686 {5} {invx1d} 0
+34 872 779 {4} {invx1d} 0
+35 965 872 {1} {invx1d} 0
+36 1058 965 {0.01} {invx1d} 0
+37 1151 1058 {} {invx1d} 0
+38 1244 1151 {} {invx1d} 0
+29 408 342 {52} {invx1d} 0
+30 501 408 {} {invx1d} 0
+31 594 501 {1} {invx1d} 0
+32 687 594 {} {invx1d} 0
+33 780 687 {5} {invx1d} 0
+34 873 780 {4} {invx1d} 0
+35 966 873 {1} {invx1d} 0
+36 1059 966 {0.01} {invx1d} 0
+37 1152 1059 {} {invx1d} 0
+38 1245 1152 {} {invx1d} 0
+29 409 342 {53} {invx1d} 0
+30 502 409 {} {invx1d} 0
+31 595 502 {1} {invx1d} 0
+32 688 595 {} {invx1d} 0
+33 781 688 {5} {invx1d} 0
+34 874 781 {4} {invx1d} 0
+35 967 874 {1} {invx1d} 0
+36 1060 967 {0.01} {invx1d} 0
+37 1153 1060 {} {invx1d} 0
+38 1246 1153 {} {invx1d} 0
+29 410 342 {54} {invx1d} 0
+30 503 410 {} {invx1d} 0
+31 596 503 {1} {invx1d} 0
+32 689 596 {} {invx1d} 0
+33 782 689 {5} {invx1d} 0
+34 875 782 {4} {invx1d} 0
+35 968 875 {1} {invx1d} 0
+36 1061 968 {0.01} {invx1d} 0
+37 1154 1061 {} {invx1d} 0
+38 1247 1154 {} {invx1d} 0
+29 411 342 {55} {invx1d} 0
+30 504 411 {} {invx1d} 0
+31 597 504 {1} {invx1d} 0
+32 690 597 {} {invx1d} 0
+33 783 690 {5} {invx1d} 0
+34 876 783 {4} {invx1d} 0
+35 969 876 {1} {invx1d} 0
+36 1062 969 {0.01} {invx1d} 0
+37 1155 1062 {} {invx1d} 0
+38 1248 1155 {} {invx1d} 0
+29 412 342 {56} {invx1d} 0
+30 505 412 {} {invx1d} 0
+31 598 505 {1} {invx1d} 0
+32 691 598 {} {invx1d} 0
+33 784 691 {5} {invx1d} 0
+34 877 784 {4} {invx1d} 0
+35 970 877 {1} {invx1d} 0
+36 1063 970 {0.01} {invx1d} 0
+37 1156 1063 {} {invx1d} 0
+38 1249 1156 {} {invx1d} 0
+29 413 342 {57} {invx1d} 0
+30 506 413 {} {invx1d} 0
+31 599 506 {1} {invx1d} 0
+32 692 599 {} {invx1d} 0
+33 785 692 {5} {invx1d} 0
+34 878 785 {4} {invx1d} 0
+35 971 878 {1} {invx1d} 0
+36 1064 971 {0.01} {invx1d} 0
+37 1157 1064 {} {invx1d} 0
+38 1250 1157 {} {invx1d} 0
+29 414 342 {58} {invx1d} 0
+30 507 414 {} {invx1d} 0
+31 600 507 {1} {invx1d} 0
+32 693 600 {} {invx1d} 0
+33 786 693 {5} {invx1d} 0
+34 879 786 {4} {invx1d} 0
+35 972 879 {1} {invx1d} 0
+36 1065 972 {0.01} {invx1d} 0
+37 1158 1065 {} {invx1d} 0
+38 1251 1158 {} {invx1d} 0
+29 415 342 {59} {invx1d} 0
+30 508 415 {} {invx1d} 0
+31 601 508 {1} {invx1d} 0
+32 694 601 {} {invx1d} 0
+33 787 694 {5} {invx1d} 0
+34 880 787 {4} {invx1d} 0
+35 973 880 {1} {invx1d} 0
+36 1066 973 {0.01} {invx1d} 0
+37 1159 1066 {} {invx1d} 0
+38 1252 1159 {} {invx1d} 0
+29 416 342 {60} {invx1d} 0
+30 509 416 {} {invx1d} 0
+31 602 509 {1} {invx1d} 0
+32 695 602 {} {invx1d} 0
+33 788 695 {5} {invx1d} 0
+34 881 788 {4} {invx1d} 0
+35 974 881 {1} {invx1d} 0
+36 1067 974 {0.01} {invx1d} 0
+37 1160 1067 {} {invx1d} 0
+38 1253 1160 {} {invx1d} 0
+29 417 342 {61} {invx1d} 0
+30 510 417 {} {invx1d} 0
+31 603 510 {1} {invx1d} 0
+32 696 603 {} {invx1d} 0
+33 789 696 {5} {invx1d} 0
+34 882 789 {4} {invx1d} 0
+35 975 882 {1} {invx1d} 0
+36 1068 975 {0.01} {invx1d} 0
+37 1161 1068 {} {invx1d} 0
+38 1254 1161 {} {invx1d} 0
+29 418 342 {62} {invx1d} 0
+30 511 418 {} {invx1d} 0
+31 604 511 {1} {invx1d} 0
+32 697 604 {} {invx1d} 0
+33 790 697 {5} {invx1d} 0
+34 883 790 {4} {invx1d} 0
+35 976 883 {1} {invx1d} 0
+36 1069 976 {0.01} {invx1d} 0
+37 1162 1069 {} {invx1d} 0
+38 1255 1162 {} {invx1d} 0
+29 419 342 {63} {invx1d} 0
+30 512 419 {} {invx1d} 0
+31 605 512 {1} {invx1d} 0
+32 698 605 {} {invx1d} 0
+33 791 698 {5} {invx1d} 0
+34 884 791 {4} {invx1d} 0
+35 977 884 {1} {invx1d} 0
+36 1070 977 {0.01} {invx1d} 0
+37 1163 1070 {} {invx1d} 0
+38 1256 1163 {} {invx1d} 0
+29 420 342 {64} {invx1d} 0
+30 513 420 {} {invx1d} 0
+31 606 513 {1} {invx1d} 0
+32 699 606 {} {invx1d} 0
+33 792 699 {5} {invx1d} 0
+34 885 792 {4} {invx1d} 0
+35 978 885 {1} {invx1d} 0
+36 1071 978 {0.01} {invx1d} 0
+37 1164 1071 {} {invx1d} 0
+38 1257 1164 {} {invx1d} 0
+29 421 342 {65} {invx1d} 0
+30 514 421 {} {invx1d} 0
+31 607 514 {1} {invx1d} 0
+32 700 607 {} {invx1d} 0
+33 793 700 {5} {invx1d} 0
+34 886 793 {4} {invx1d} 0
+35 979 886 {1} {invx1d} 0
+36 1072 979 {0.01} {invx1d} 0
+37 1165 1072 {} {invx1d} 0
+38 1258 1165 {} {invx1d} 0
+29 422 342 {66} {invx1d} 0
+30 515 422 {} {invx1d} 0
+31 608 515 {1} {invx1d} 0
+32 701 608 {} {invx1d} 0
+33 794 701 {5} {invx1d} 0
+34 887 794 {4} {invx1d} 0
+35 980 887 {1} {invx1d} 0
+36 1073 980 {0.01} {invx1d} 0
+37 1166 1073 {} {invx1d} 0
+38 1259 1166 {} {invx1d} 0
+29 423 342 {67} {invx1d} 0
+30 516 423 {} {invx1d} 0
+31 609 516 {1} {invx1d} 0
+32 702 609 {} {invx1d} 0
+33 795 702 {5} {invx1d} 0
+34 888 795 {4} {invx1d} 0
+35 981 888 {1} {invx1d} 0
+36 1074 981 {0.01} {invx1d} 0
+37 1167 1074 {} {invx1d} 0
+38 1260 1167 {} {invx1d} 0
+29 424 342 {68} {invx1d} 0
+30 517 424 {} {invx1d} 0
+31 610 517 {1} {invx1d} 0
+32 703 610 {} {invx1d} 0
+33 796 703 {5} {invx1d} 0
+34 889 796 {4} {invx1d} 0
+35 982 889 {1} {invx1d} 0
+36 1075 982 {0.01} {invx1d} 0
+37 1168 1075 {} {invx1d} 0
+38 1261 1168 {} {invx1d} 0
+29 425 342 {69} {invx1d} 0
+30 518 425 {} {invx1d} 0
+31 611 518 {1} {invx1d} 0
+32 704 611 {} {invx1d} 0
+33 797 704 {5} {invx1d} 0
+34 890 797 {4} {invx1d} 0
+35 983 890 {1} {invx1d} 0
+36 1076 983 {0.01} {invx1d} 0
+37 1169 1076 {} {invx1d} 0
+38 1262 1169 {} {invx1d} 0
+29 426 342 {70} {invx1d} 0
+30 519 426 {} {invx1d} 0
+31 612 519 {1} {invx1d} 0
+32 705 612 {} {invx1d} 0
+33 798 705 {5} {invx1d} 0
+34 891 798 {4} {invx1d} 0
+35 984 891 {1} {invx1d} 0
+36 1077 984 {0.01} {invx1d} 0
+37 1170 1077 {} {invx1d} 0
+38 1263 1170 {} {invx1d} 0
+29 427 342 {71} {invx1d} 0
+30 520 427 {} {invx1d} 0
+31 613 520 {1} {invx1d} 0
+32 706 613 {} {invx1d} 0
+33 799 706 {5} {invx1d} 0
+34 892 799 {4} {invx1d} 0
+35 985 892 {1} {invx1d} 0
+36 1078 985 {0.01} {invx1d} 0
+37 1171 1078 {} {invx1d} 0
+38 1264 1171 {} {invx1d} 0
+29 428 342 {72} {invx1d} 0
+30 521 428 {} {invx1d} 0
+31 614 521 {1} {invx1d} 0
+32 707 614 {} {invx1d} 0
+33 800 707 {5} {invx1d} 0
+34 893 800 {4} {invx1d} 0
+35 986 893 {1} {invx1d} 0
+36 1079 986 {0.01} {invx1d} 0
+37 1172 1079 {} {invx1d} 0
+38 1265 1172 {} {invx1d} 0
+29 429 342 {73} {invx1d} 0
+30 522 429 {} {invx1d} 0
+31 615 522 {1} {invx1d} 0
+32 708 615 {} {invx1d} 0
+33 801 708 {5} {invx1d} 0
+34 894 801 {4} {invx1d} 0
+35 987 894 {1} {invx1d} 0
+36 1080 987 {0.01} {invx1d} 0
+37 1173 1080 {} {invx1d} 0
+38 1266 1173 {} {invx1d} 0
+29 430 342 {74} {invx1d} 0
+30 523 430 {} {invx1d} 0
+31 616 523 {1} {invx1d} 0
+32 709 616 {} {invx1d} 0
+33 802 709 {5} {invx1d} 0
+34 895 802 {4} {invx1d} 0
+35 988 895 {1} {invx1d} 0
+36 1081 988 {0.01} {invx1d} 0
+37 1174 1081 {} {invx1d} 0
+38 1267 1174 {} {invx1d} 0
+29 431 342 {75} {invx1d} 0
+30 524 431 {} {invx1d} 0
+31 617 524 {1} {invx1d} 0
+32 710 617 {} {invx1d} 0
+33 803 710 {5} {invx1d} 0
+34 896 803 {4} {invx1d} 0
+35 989 896 {1} {invx1d} 0
+36 1082 989 {0.01} {invx1d} 0
+37 1175 1082 {} {invx1d} 0
+38 1268 1175 {} {invx1d} 0
+29 432 342 {76} {invx1d} 0
+30 525 432 {} {invx1d} 0
+31 618 525 {1} {invx1d} 0
+32 711 618 {} {invx1d} 0
+33 804 711 {5} {invx1d} 0
+34 897 804 {4} {invx1d} 0
+35 990 897 {1} {invx1d} 0
+36 1083 990 {0.01} {invx1d} 0
+37 1176 1083 {} {invx1d} 0
+38 1269 1176 {} {invx1d} 0
+29 433 342 {77} {invx1d} 0
+30 526 433 {} {invx1d} 0
+31 619 526 {1} {invx1d} 0
+32 712 619 {} {invx1d} 0
+33 805 712 {5} {invx1d} 0
+34 898 805 {4} {invx1d} 0
+35 991 898 {1} {invx1d} 0
+36 1084 991 {0.01} {invx1d} 0
+37 1177 1084 {} {invx1d} 0
+38 1270 1177 {} {invx1d} 0
+29 434 342 {78} {default invx1d} 0
+30 527 434 {} {default invx1d} 0
+31 620 527 {1} {default invx1d} 0
+32 713 620 {} {default invx1d} 0
+33 806 713 {5} {default invx1d} 0
+34 899 806 {4} {default invx1d} 0
+35 992 899 {1} {default invx1d} 0
+36 1085 992 {0.01} {default invx1d} 0
+37 1178 1085 {} {default invx1d} 0
+38 1271 1178 {} {default invx1d} 0
+29 435 342 {79} {default invx1d} 0
+30 528 435 {} {default invx1d} 0
+31 621 528 {1} {default invx1d} 0
+32 714 621 {} {default invx1d} 0
+33 807 714 {5} {default invx1d} 0
+34 900 807 {4} {default invx1d} 0
+35 993 900 {1} {default invx1d} 0
+36 1086 993 {0.01} {default invx1d} 0
+37 1179 1086 {} {default invx1d} 0
+38 1272 1179 {} {default invx1d} 0
+4 7 4 {invx2t_bic2022.oasis} {default} 0
+5 21 7 {invx2t} {default} 0
+6 35 21 {1:0} {default} 0
+7 49 35 {invx2t.lvs} {default} 0
+8 63 49 {vdd} {default} 0
+9 77 63 {vss} {default} 0
+10 91 77 {vdd} {default} 0
+11 105 91 {vss} {default} 0
+12 119 105 {mos_tt} {default} 0
+13 133 119 {} {default} 0
+14 147 133 {0.005} {default} 0
+15 161 147 {0.0011} {default} 0
+16 175 161 {0.00} {default} 0
+17 189 175 {0.0011} {default} 0
+18 203 189 {0.018} {default} 0
+19 217 203 {0.0007} {default} 0
+20 231 217 {0.002} {default} 0
+21 245 231 {0.0007} {default} 0
+22 259 245 {0.03} {default} 0
+23 273 259 {0.0005} {default} 0
+24 287 273 {0.065} {default} 0
+25 301 287 {0.002} {default} 0
+26 315 301 {0} {default} 0
+27 329 315 {0} {default} 0
+28 343 329 {lhs20x10000} {default} 0
+29 436 343 {0} {default} 0
+30 529 436 {} {default} 0
+31 622 529 {1} {default} 0
+32 715 622 {} {default} 0
+33 808 715 {5} {default} 0
+34 901 808 {4} {default} 0
+35 994 901 {1} {default} 0
+36 1087 994 {0.01} {default} 0
+37 1180 1087 {} {default} 0
+38 1273 1180 {} {default} 0
+4 8 4 {invx1t_bic2022.oasis} {default} 0
+5 22 8 {invx1t} {default} 0
+6 36 22 {1:0} {default} 0
+7 50 36 {invx1t.lvs} {default} 0
+8 64 50 {vdd} {default} 0
+9 78 64 {vss} {default} 0
+10 92 78 {vdd} {default} 0
+11 106 92 {vss} {default} 0
+12 120 106 {mos_tt} {default} 0
+13 134 120 {} {default} 0
+14 148 134 {0.005} {default} 0
+15 162 148 {0.0011} {default} 0
+16 176 162 {0.00} {default} 0
+17 190 176 {0.0011} {default} 0
+18 204 190 {0.018} {default} 0
+19 218 204 {0.0007} {default} 0
+20 232 218 {0.002} {default} 0
+21 246 232 {0.0007} {default} 0
+22 260 246 {0.03} {default} 0
+23 274 260 {0.0005} {default} 0
+24 288 274 {0.065} {default} 0
+25 302 288 {0.002} {default} 0
+26 316 302 {0} {default} 0
+27 330 316 {0} {default} 0
+28 344 330 {lhs20x10000} {default} 0
+29 437 344 {0} {default} 0
+30 530 437 {} {default} 0
+31 623 530 {1} {default} 0
+32 716 623 {} {default} 0
+33 809 716 {5} {default} 0
+34 902 809 {4} {default} 0
+35 995 902 {1} {default} 0
+36 1088 995 {0.01} {default} 0
+37 1181 1088 {} {default} 0
+38 1274 1181 {} {default} 0
+4 9 4 {invx2s_bic2022.oasis} {default} 0
+5 23 9 {invx2s} {default} 0
+6 37 23 {1:0} {default} 0
+7 51 37 {invx2s.lvs} {default} 0
+8 65 51 {vdd} {default} 0
+9 79 65 {vss} {default} 0
+10 93 79 {vdd} {default} 0
+11 107 93 {vss} {default} 0
+12 121 107 {mos_tt} {default} 0
+13 135 121 {} {default} 0
+14 149 135 {0.005} {default} 0
+15 163 149 {0.0011} {default} 0
+16 177 163 {0.00} {default} 0
+17 191 177 {0.0011} {default} 0
+18 205 191 {0.018} {default} 0
+19 219 205 {0.0007} {default} 0
+20 233 219 {0.002} {default} 0
+21 247 233 {0.0007} {default} 0
+22 261 247 {0.03} {default} 0
+23 275 261 {0.0005} {default} 0
+24 289 275 {0.065} {default} 0
+25 303 289 {0.002} {default} 0
+26 317 303 {0} {default} 0
+27 331 317 {0} {default} 0
+28 345 331 {lhs20x10000} {default} 0
+29 438 345 {0} {default} 0
+30 531 438 {} {default} 0
+31 624 531 {1} {default} 0
+32 717 624 {} {default} 0
+33 810 717 {5} {default} 0
+34 903 810 {4} {default} 0
+35 996 903 {1} {default} 0
+36 1089 996 {0.01} {default} 0
+37 1182 1089 {} {default} 0
+38 1275 1182 {} {default} 0
+4 10 4 {invx1s_bic2022.oasis} {default} 0
+5 24 10 {invx1s} {default} 0
+6 38 24 {1:0} {default} 0
+7 52 38 {invx1s.lvs} {default} 0
+8 66 52 {vdd} {default} 0
+9 80 66 {vss} {default} 0
+10 94 80 {vdd} {default} 0
+11 108 94 {vss} {default} 0
+12 122 108 {mos_tt} {default} 0
+13 136 122 {} {default} 0
+14 150 136 {0.005} {default} 0
+15 164 150 {0.0011} {default} 0
+16 178 164 {0.00} {default} 0
+17 192 178 {0.0011} {default} 0
+18 206 192 {0.018} {default} 0
+19 220 206 {0.0007} {default} 0
+20 234 220 {0.002} {default} 0
+21 248 234 {0.0007} {default} 0
+22 262 248 {0.03} {default} 0
+23 276 262 {0.0005} {default} 0
+24 290 276 {0.065} {default} 0
+25 304 290 {0.002} {default} 0
+26 318 304 {0} {default} 0
+27 332 318 {0} {default} 0
+28 346 332 {lhs20x10000} {default} 0
+29 439 346 {0} {default} 0
+30 532 439 {} {default} 0
+31 625 532 {1} {default} 0
+32 718 625 {} {default} 0
+33 811 718 {5} {default} 0
+34 904 811 {4} {default} 0
+35 997 904 {1} {default} 0
+36 1090 997 {0.01} {default} 0
+37 1183 1090 {} {default} 0
+38 1276 1183 {} {default} 0
+4 11 4 {nand2x1d_optimized.oasis} {default} 0
+5 25 11 {nand2x1d} {default} 0
+6 39 25 {1:0} {default} 0
+7 53 39 {nand2x1d.lvs} {default} 0
+8 67 53 {vdd} {default} 0
+9 81 67 {vss} {default} 0
+10 95 81 {vdd} {default} 0
+11 109 95 {vss} {default} 0
+12 123 109 {mos_tt} {default} 0
+13 137 123 {} {default} 0
+14 151 137 {0.005} {default} 0
+15 165 151 {0.0011} {default} 0
+16 179 165 {0.00} {default} 0
+17 193 179 {0.0011} {default} 0
+18 207 193 {0.018} {default} 0
+19 221 207 {0.0007} {default} 0
+20 235 221 {0.002} {default} 0
+21 249 235 {0.0007} {default} 0
+22 263 249 {0.03} {default} 0
+23 277 263 {0.0005} {default} 0
+24 291 277 {0.065} {default} 0
+25 305 291 {0.002} {default} 0
+26 319 305 {0} {default} 0
+27 333 319 {0} {default} 0
+28 347 333 {lhs20x10000} {default} 0
+29 440 347 {0} {default} 0
+30 533 440 {} {default} 0
+31 626 533 {1} {default} 0
+32 719 626 {} {default} 0
+33 812 719 {5} {default} 0
+34 905 812 {4} {default} 0
+35 998 905 {1} {default} 0
+36 1091 998 {0.01} {default} 0
+37 1184 1091 {} {default} 0
+38 1277 1184 {} {default} 0
+4 12 4 {nand2x1t_optimized.oasis} {default} 0
+5 26 12 {nand2x1t} {default} 0
+6 40 26 {1:0} {default} 0
+7 54 40 {nand2x1t.lvs} {default} 0
+8 68 54 {vdd} {default} 0
+9 82 68 {vss} {default} 0
+10 96 82 {vdd} {default} 0
+11 110 96 {vss} {default} 0
+12 124 110 {mos_tt} {default} 0
+13 138 124 {} {default} 0
+14 152 138 {0.005} {default} 0
+15 166 152 {0.0011} {default} 0
+16 180 166 {0.00} {default} 0
+17 194 180 {0.0011} {default} 0
+18 208 194 {0.018} {default} 0
+19 222 208 {0.0007} {default} 0
+20 236 222 {0.002} {default} 0
+21 250 236 {0.0007} {default} 0
+22 264 250 {0.03} {default} 0
+23 278 264 {0.0005} {default} 0
+24 292 278 {0.065} {default} 0
+25 306 292 {0.002} {default} 0
+26 320 306 {0} {default} 0
+27 334 320 {0} {default} 0
+28 348 334 {lhs20x10000} {default} 0
+29 441 348 {0} {default} 0
+30 534 441 {} {default} 0
+31 627 534 {1} {default} 0
+32 720 627 {} {default} 0
+33 813 720 {5} {default} 0
+34 906 813 {4} {default} 0
+35 999 906 {1} {default} 0
+36 1092 999 {0.01} {default} 0
+37 1185 1092 {} {default} 0
+38 1278 1185 {} {default} 0
+4 13 4 {nand2x1s_optimized.oasis} {default} 0
+5 27 13 {nand2x1s} {default} 0
+6 41 27 {1:0} {default} 0
+7 55 41 {nand2x1s.lvs} {default} 0
+8 69 55 {vdd} {default} 0
+9 83 69 {vss} {default} 0
+10 97 83 {vdd} {default} 0
+11 111 97 {vss} {default} 0
+12 125 111 {mos_tt} {default} 0
+13 139 125 {} {default} 0
+14 153 139 {0.005} {default} 0
+15 167 153 {0.0011} {default} 0
+16 181 167 {0.00} {default} 0
+17 195 181 {0.0011} {default} 0
+18 209 195 {0.018} {default} 0
+19 223 209 {0.0007} {default} 0
+20 237 223 {0.002} {default} 0
+21 251 237 {0.0007} {default} 0
+22 265 251 {0.03} {default} 0
+23 279 265 {0.0005} {default} 0
+24 293 279 {0.065} {default} 0
+25 307 293 {0.002} {default} 0
+26 321 307 {0} {default} 0
+27 335 321 {0} {default} 0
+28 349 335 {lhs20x10000} {default} 0
+29 442 349 {0} {default} 0
+30 535 442 {} {default} 0
+31 628 535 {1} {default} 0
+32 721 628 {} {default} 0
+33 814 721 {5} {default} 0
+34 907 814 {4} {default} 0
+35 1000 907 {1} {default} 0
+36 1093 1000 {0.01} {default} 0
+37 1186 1093 {} {default} 0
+38 1279 1186 {} {default} 0
+4 14 4 {sram_hd_wide_cdiff_array_pr.oasis} {default} 0
+5 28 14 {array_flat} {default} 0
+6 42 28 {1:2} {default} 0
+7 56 42 {sram_hd_wide.lvs} {default} 0
+8 70 56 {vdd} {default} 0
+9 84 70 {vss} {default} 0
+10 98 84 {vdd} {default} 0
+11 112 98 {vss} {default} 0
+12 126 112 {mos_tt} {default} 0
+13 140 126 {} {default} 0
+14 154 140 {0.005} {default} 0
+15 168 154 {0.0011} {default} 0
+16 182 168 {0.00} {default} 0
+17 196 182 {0.0011} {default} 0
+18 210 196 {0.018} {default} 0
+19 224 210 {0.0007} {default} 0
+20 238 224 {0.002} {default} 0
+21 252 238 {0.0007} {default} 0
+22 266 252 {0.03} {default} 0
+23 280 266 {0.0005} {default} 0
+24 294 280 {0.065} {default} 0
+25 308 294 {0.002} {default} 0
+26 322 308 {0} {default} 0
+27 336 322 {0} {default} 0
+28 350 336 {lhs20x10000} {default} 0
+29 443 350 {0} {default} 0
+30 536 443 {} {default} 0
+31 629 536 {1} {default} 0
+32 722 629 {} {default} 0
+33 815 722 {5} {default} 0
+34 908 815 {4} {default} 0
+35 1001 908 {1} {default} 0
+36 1094 1001 {0.01} {default} 0
+37 1187 1094 {} {default} 0
+38 1280 1187 {} {default} 0
+4 15 4 {sram_hc_wide_cdiff_array_pr.oasis} {default} 0
+5 29 15 {array} {default} 0
+6 43 29 {1:2} {default} 0
+7 57 43 {sram_hc_wide.lvs} {default} 0
+8 71 57 {vdd} {default} 0
+9 85 71 {vss} {default} 0
+10 99 85 {vdd} {default} 0
+11 113 99 {vss} {default} 0
+12 127 113 {mos_tt} {default} 0
+13 141 127 {} {default} 0
+14 155 141 {0.005} {default} 0
+15 169 155 {0.0011} {default} 0
+16 183 169 {0.00} {default} 0
+17 197 183 {0.0011} {default} 0
+18 211 197 {0.018} {default} 0
+19 225 211 {0.0007} {default} 0
+20 239 225 {0.002} {default} 0
+21 253 239 {0.0007} {default} 0
+22 267 253 {0.03} {default} 0
+23 281 267 {0.0005} {default} 0
+24 295 281 {0.065} {default} 0
+25 309 295 {0.002} {default} 0
+26 323 309 {0} {default} 0
+27 337 323 {0} {default} 0
+28 351 337 {lhs20x10000} {default} 0
+29 444 351 {0} {default} 0
+30 537 444 {} {default} 0
+31 630 537 {1} {default} 0
+32 723 630 {} {default} 0
+33 816 723 {5} {default} 0
+34 909 816 {4} {default} 0
+35 1002 909 {1} {default} 0
+36 1095 1002 {0.01} {default} 0
+37 1188 1095 {} {default} 0
+38 1281 1188 {} {default} 0
+4 16 4 {sram_hd_wide_cdiff_array_23_pr.oasis} {default} 0
+5 30 16 {array_flat} {default} 0
+6 44 30 {1:2} {default} 0
+7 58 44 {sram_hd_wide.lvs} {default} 0
+8 72 58 {vdd} {default} 0
+9 86 72 {vss} {default} 0
+10 100 86 {vdd} {default} 0
+11 114 100 {vss} {default} 0
+12 128 114 {mos_tt} {default} 0
+13 142 128 {} {default} 0
+14 156 142 {0.005} {default} 0
+15 170 156 {0.0011} {default} 0
+16 184 170 {0.00} {default} 0
+17 198 184 {0.0011} {default} 0
+18 212 198 {0.018} {default} 0
+19 226 212 {0.0007} {default} 0
+20 240 226 {0.002} {default} 0
+21 254 240 {0.0007} {default} 0
+22 268 254 {0.03} {default} 0
+23 282 268 {0.0005} {default} 0
+24 296 282 {0.065} {default} 0
+25 310 296 {0.002} {default} 0
+26 324 310 {0} {default} 0
+27 338 324 {0} {default} 0
+28 352 338 {lhs20x10000} {default} 0
+29 445 352 {0} {default} 0
+30 538 445 {} {default} 0
+31 631 538 {1} {default} 0
+32 724 631 {} {default} 0
+33 817 724 {5} {default} 0
+34 910 817 {4} {default} 0
+35 1003 910 {1} {default} 0
+36 1096 1003 {0.01} {default} 0
+37 1189 1096 {} {default} 0
+38 1282 1189 {} {default} 0
+4 17 4 {sram_hd_wide_cdiff_array_25_pr.oasis} {default} 0
+5 31 17 {array_flat} {default} 0
+6 45 31 {1:2} {default} 0
+7 59 45 {sram_hd_wide.lvs} {default} 0
+8 73 59 {vdd} {default} 0
+9 87 73 {vss} {default} 0
+10 101 87 {vdd} {default} 0
+11 115 101 {vss} {default} 0
+12 129 115 {mos_tt} {default} 0
+13 143 129 {} {default} 0
+14 157 143 {0.005} {default} 0
+15 171 157 {0.0011} {default} 0
+16 185 171 {0.00} {default} 0
+17 199 185 {0.0011} {default} 0
+18 213 199 {0.018} {default} 0
+19 227 213 {0.0007} {default} 0
+20 241 227 {0.002} {default} 0
+21 255 241 {0.0007} {default} 0
+22 269 255 {0.03} {default} 0
+23 283 269 {0.0005} {default} 0
+24 297 283 {0.065} {default} 0
+25 311 297 {0.002} {default} 0
+26 325 311 {0} {default} 0
+27 339 325 {0} {default} 0
+28 353 339 {lhs20x10000} {default} 0
+29 446 353 {0} {default} 0
+30 539 446 {} {default} 0
+31 632 539 {1} {default} 0
+32 725 632 {} {default} 0
+33 818 725 {5} {default} 0
+34 911 818 {4} {default} 0
+35 1004 911 {1} {default} 0
+36 1097 1004 {0.01} {default} 0
+37 1190 1097 {} {default} 0
+38 1283 1190 {} {default} 0
+4 18 4 {sram_hd_wide_cdiff_array_27_pr.oasis} {default} 0
+5 32 18 {array_flat} {default} 0
+6 46 32 {1:2} {default} 0
+7 60 46 {sram_hd_wide.lvs} {default} 0
+8 74 60 {vdd} {default} 0
+9 88 74 {vss} {default} 0
+10 102 88 {vdd} {default} 0
+11 116 102 {vss} {default} 0
+12 130 116 {mos_tt} {default} 0
+13 144 130 {} {default} 0
+14 158 144 {0.005} {default} 0
+15 172 158 {0.0011} {default} 0
+16 186 172 {0.00} {default} 0
+17 200 186 {0.0011} {default} 0
+18 214 200 {0.018} {default} 0
+19 228 214 {0.0007} {default} 0
+20 242 228 {0.002} {default} 0
+21 256 242 {0.0007} {default} 0
+22 270 256 {0.03} {default} 0
+23 284 270 {0.0005} {default} 0
+24 298 284 {0.065} {default} 0
+25 312 298 {0.002} {default} 0
+26 326 312 {0} {default} 0
+27 340 326 {0} {default} 0
+28 354 340 {lhs20x10000} {default} 0
+29 447 354 {0} {default} 0
+30 540 447 {} {default} 0
+31 633 540 {1} {default} 0
+32 726 633 {} {default} 0
+33 819 726 {5} {default} 0
+34 912 819 {4} {default} 0
+35 1005 912 {1} {default} 0
+36 1098 1005 {0.01} {default} 0
+37 1191 1098 {} {default} 0
+38 1284 1191 {} {default} 0

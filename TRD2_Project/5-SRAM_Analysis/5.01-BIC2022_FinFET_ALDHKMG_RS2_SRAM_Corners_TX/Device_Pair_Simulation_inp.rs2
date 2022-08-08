@@ -1,0 +1,32 @@
+[Circuit]
+netlist     = ${SIM_NETLIST}
+number      = @dev_pair_ensemble@
+seed        = 12345678
+startnum    = 1
+
+[Simulation]
+spice       = hspice
+## spiceargs   = -CC
+
+[Variability]
+statistical = @lv@
+process = @gv@
+process_resp_only = True
+
+[Output]
+dir         = @pwd@/@nodedir@/dev_pair_MC
+prefix      = ro_test
+savenets    = False
+processor   = @pwd@/@nodedir@/pp@node@_eng.py
+
+[Models]
+library     = @pwd@/@nodedir|BuildLibrary@/n@node|BuildLibrary@_library.rsl
+rsm_method  = quad_rsm
+## extrapolate = True
+extrapolate = False
+
+[Database]
+enabled     = True
+project     = @node@
+dataset     = @node@_dev_pair_MC
+config      = @pwd@/enigma/mongodb.conf

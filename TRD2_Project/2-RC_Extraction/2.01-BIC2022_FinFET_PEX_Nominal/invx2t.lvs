@@ -1,0 +1,5 @@
+.subckt invx2t a z vdd vss VBP VBN
+XMP1 z a vdd VBP pmos l= 0.016u w= 0.005u m= 2 nfin= 3
+XMN1 z a vss VBN nmos l= 0.016u w= 0.005u m= 2 nfin= 3
+.ends invx2t
+

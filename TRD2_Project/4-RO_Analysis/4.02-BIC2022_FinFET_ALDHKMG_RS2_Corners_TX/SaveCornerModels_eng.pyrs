@@ -1,0 +1,173 @@
+#setdep @node|ExtractCorners@
+
+# do not save corner models if LV is on
+#if "@lv@" == "True"
+#noexec
+#endif
+
+
+# generic python imports
+from itertools import product
+from mako.template import Template
+# helper imports
+from plt3d_helpers import multiDimSurfaceMatrix
+
+pd.set_option("mode.chained_assignment",None)
+
+#########################################################################################################
+#########################################################################################################
+# Parameter setup: randomspice app and fom calculation settings						#
+#########################################################################################################
+#########################################################################################################
+
+# setting up the basics for the randomspice app
+randomspice.wait		= False
+randomspice.clear_data          = True
+randomspice._app.executable     = "$STROOT/bin/RandomSpice2 -rel $STRELEASE"
+
+# for net manupulation
+base_inputfile_name		= "@pwd@/@nodedir@/pp@node@_eng.rs2"
+base_netlist_name		= "@pwd@/@nodedir@/pp@node@_eng.sp"
+
+# simulation parameters
+sampling			= 7
+
+# fom calculation parameters
+cv_off	 			= 0
+Vdd_lin				= abs(@Vdd_lin@)
+Vdd_nom				= abs(@Vdd_nom@)
+cv_on  				= Vdd_nom
+vt_cc				= abs(@vti@)
+
+#########################################################################################################
+#########################################################################################################
+# DB interactions:											#
+#   - pulling out DoE midpoint nodes									#
+#   - pulling out remapped names from the "BuildLibrary stage						#
+#   - pull out all the DoE axes and calculate min/max ranges from the "UploadData" stage		#
+#########################################################################################################
+#########################################################################################################
+
+# setup metadata for simulations
+remap_names = dbi.get_project("@node|BuildLibrary@").metadata["remap_names"]
+
+axes_df=pd.DataFrame()
+axes_sweeps={}
+# setup a doe parameter sweep
+axes_df = pd.DataFrame(dbi.get_project("@node|BuildLibrary@").metadata["axes_df"])
+
+print(axes_df)
+
+#########################################################################
+# Handle process corners						#
+#########################################################################
+
+# load in VT mode info
+vt_modes = dbi.get_project("@node|SetupSplits@").metadata["vt_modes"]["@vt_mode@"]
+
+midpoints = dbi.get_project("@node|BuildLibrary@").metadata["midpoint_metadata"]
+ndevname = remap_names['nMOS']+":nMOS"
+pdevname = remap_names['pMOS']+":pMOS"
+
+# Load in extracted coorners
+corner_df = pd.DataFrame.from_dict(dbi.get_data(project="@node|ExtractCorners@").data, orient='index')
+corner_df.index.name=["type","corner"]
+
+corners = corner_df.to_dict("index")
+doe_mid = {"l":midpoints["nMOS"]["swb"]["lgate"], "tfin":midpoints["nMOS"]["swb"]["tfin"], "phigvar":0.0}
+corners.update({("n","tt"):doe_mid,("p","tt"):doe_mid})
+
+print(corners)
+
+geoms = {}
+
+for key,doe_point in corners.items():
+    print(key, doe_point)
+    dtype,corner = key
+    if corner not in geoms.keys(): geoms[corner]={}
+    geoms[corner][dtype]=doe_point
+
+print(geoms)
+
+
+#########################################################################################################
+#########################################################################################################
+# Setup "dev_param_dict" - a dictionary of parameters that can be used to manipulate the randomspice 	#
+# input/netlist files. Each simulation creates a copy of the template/netlist for a RandomSpice run,	#
+# eventually we will move to having no explicit RandomSpice input files					#
+#########################################################################################################
+#########################################################################################################
+# simulation parameters
+dev_param_dict={}
+dev_param_dict["VDD_LIN"]		=Vdd_lin
+dev_param_dict["VDD_NOM"]		=Vdd_nom
+
+# device info
+dev_param_dict["P_DEV_NAME"]		=remap_names['pMOS']+":pMOS"
+dev_param_dict["N_DEV_NAME"]		=remap_names['nMOS']+":nMOS"
+
+#########################################################################################################
+#########################################################################################################
+# actual SPICE simulation launching step, 								#
+#   - pulling out DoE midpoint nodes									#
+#   - pulling out remapped names from the "BuildLibrary stage						#
+#   - pull out all the DoE axes and calculate min/max ranges from the "UploadData" stage		#
+#########################################################################################################
+#########################################################################################################
+for corner,mos in geoms.items():
+
+    # setup new intput file names
+    new_netlist_name=base_netlist_name+str(corner)
+    new_inputfile_name=base_inputfile_name+str(corner)
+
+    # adjust the doe point we're simulating
+    dev_param_dict["N_DOE_STR"]	= " ".join([f"{k}={v}" for k,v in mos['n'].items()])+f" vtmode_adjust={vt_modes['nmos']:.15f}" 
+    dev_param_dict["P_DOE_STR"]	= " ".join([f"{k}={v}" for k,v in mos['n'].items()])+f" vtmode_adjust={vt_modes['pmos']:.15f}" 
+    dev_param_dict["CTR"]	= corner
+    dev_param_dict["SIM_NETLIST"]=new_netlist_name
+
+    # use mako to render these files
+    new_netlist=Template(open(base_netlist_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+    new_inputfile=Template(open(base_inputfile_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+  
+    # write these files back to disc
+    with open(new_netlist_name,'w') as outfile:
+        outfile.write(new_netlist)
+    with open(new_inputfile_name,'w') as outfile:
+        outfile.write(new_inputfile)
+
+    # add new inputfile and simulate
+    randomspice.inputfile=new_inputfile_name
+    print(f"Launching: {corner}")
+    randomspice.simulate()
+
+
+randomspice.Wait()
+
+
+# save corner models explicitly
+import os 
+from common.CompactModels import parse_netlist
+
+model_dir="@pwd@/CORNER_MODELS"
+os.makedirs(model_dir, exist_ok=True)
+
+for corner in geoms.keys():
+
+
+   Net = parse_netlist(f"@pwd@/@nodedir@/dev_sweep_{corner}/dev_sweep-1.net")
+
+   nmos_iparams = Net.get_component("xmn").instance_params
+   nmos_basemod = Net.get_component("mos3n")
+   nmos_basemod.set_instance_params(**nmos_iparams)
+
+   with open(f"{model_dir}/@vt_mode@_{corner}_nmos_@sim_temp@.sp", 'w') as f:
+       f.write(str(nmos_basemod).replace("l=l", f"l='l_{corner}'").replace("b l=",f"b l_{corner}=").replace("\n\n","\n"))
+
+   pmos_iparams = Net.get_component("xmp").instance_params
+   pmos_basemod = Net.get_component("mos3p")
+   pmos_basemod.set_instance_params(**pmos_iparams)
+
+   with open(f"{model_dir}/@vt_mode@_{corner}_pmos_@sim_temp@.sp", 'w') as f:
+       f.write(str(pmos_basemod).replace("l=l", f"l='l_{corner}'").replace("b l=",f"b l_{corner}=").replace("\n\n","\n"))
+

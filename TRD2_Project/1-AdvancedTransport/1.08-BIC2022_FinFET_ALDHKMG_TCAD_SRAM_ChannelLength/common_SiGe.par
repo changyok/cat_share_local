@@ -1,0 +1,46 @@
+
+### Silicon default parameters used for Scharfetter, Auger, and DopingDependence models ###
+Scharfetter * relation and trap level for SRH recombination:
+{ * tau = taumin + ( taumax - taumin ) / ( 1 + ( N/Nref )^gamma)
+  * tau(T) = tau * ( (T/300)^Talpha )          (TempDep)
+  * tau(T) = tau * exp( Tcoeff * ((T/300)-1) ) (ExpTempDep)
+        taumin  = 0.0000e+00 ,  0.0000e+00      # [s]
+        taumax  = 1.0000e-05 ,  3.0000e-06      # [s]
+        Nref    = 1.0000e+16 ,  1.0000e+16      # [cm^(-3)]
+        gamma   = 1 ,   1       # [1]
+        Talpha  = -1.5000e+00 , -1.5000e+00     # [1]
+        Tcoeff  = 2.55 ,        2.55    # [1]
+        Etrap   = 0.0000e+00    # [eV]
+}
+
+Auger * coefficients:
+{ * R_Auger = ( C_n n + C_p p ) ( n p - ni_eff^2)
+  * with C_n,p = (A + B (T/T0) + C (T/T0)^2) (1 + H exp(-{n,p}/N0))
+        A       = 6.7000e-32 ,  7.2000e-32      # [cm^6/s]
+        B       = 2.4500e-31 ,  4.5000e-33      # [cm^6/s]
+        C       = -2.2000e-32 , 2.6300e-32      # [cm^6/s]
+        H       = 3.46667 ,     8.25688 # [1]
+        N0      = 1.0000e+18 ,  1.0000e+18      # [cm^(-3)]
+}
+
+DopingDependence:
+{
+  * For doping dependent mobility model three formulas
+  * can be used. Formula1 is based on Masetti et al. approximation.
+  * Formula2 uses approximation, suggested by Arora.
+        formula = 1 ,   1       # [1]
+  * If formula=1, model suggested by Masetti et al. is used:
+  * mu_dop = mumin1 exp(-Pc/N) + (mu_const - mumin2)/(1+(N/Cr)^alpha)
+  *                             - mu1/(1+(Cs/N)^beta)
+  * with mu_const from ConstantMobility
+        mumin1  = 52.2 ,        44.9    # [cm^2/Vs]
+        mumin2  = 52.2 ,        0.0000e+00      # [cm^2/Vs]
+        mu1     = 43.4 ,        29      # [cm^2/Vs]
+        Pc      = 0.0000e+00 ,  9.2300e+16      # [cm^3]
+        Cr      = 9.6800e+16 ,  2.2300e+17      # [cm^3]
+        Cs      = 3.4300e+20 ,  6.1000e+20      # [cm^3]
+        alpha   = 0.68 ,        0.719   # [1]
+        beta    = 2 ,   2       # [1]
+}
+
+###-------------------------------------------------------------------------------------###

@@ -1,0 +1,78 @@
+# Copyright (C) 1994-2019 Synopsys Inc.
+# swbtree vcurrent
+
+# --- simulation flow
+GetPEXPath enigma "" {}
+GetPEXPath gds "hc_hd.oas" {sram_hc_wide_cdiff_array_pr.oasis sram_hd_wide_cdiff_array_27_pr.oasis}
+GetPEXPath lvs "sram_hd_array.oasis" {sram_hd_wide.lvs sram_hc_wide.lvs}
+GetPEXPath cell "array_flat" {array_flat array}
+GetPEXPath bbox_layer "1:1" {1:2}
+GetPEXPath selectivehighK "0" {0}
+GetModelsPath enigma "" {}
+GetModelsPath corner "tt" {tt}
+GetModelsPath vt_mode "hvt" {svt}
+GetModelsPath sim_temp "27" {27.0}
+ArrayTiling python "" {}
+ArrayTiling nrows "128" {128}
+ArrayTiling ncolumns "128" {128}
+ppwl cshell "" {}
+ppwl activeWL "0" {0}
+ArrayRead enigma_hspice "" {}
+ArrayRead nfin_wldrv "10" {40}
+ArrayWrite enigma_hspice "" {}
+RowData enigma "" {}
+AllData enigma "" {}
+# --- variables
+# --- scenarios and parameter specs
+scenario default gds ""
+scenario default lvs ""
+scenario default cell ""
+scenario default bbox_layer ""
+scenario default selectivehighK ""
+scenario default corner ""
+scenario default vt_mode ""
+scenario default sim_temp ""
+scenario default nrows ""
+scenario default ncolumns ""
+scenario default activeWL ""
+scenario default nfin_wldrv ""
+# --- simulation tree
+0 1 0 {} {default} 0
+1 2 1 {sram_hc_wide_cdiff_array_pr.oasis} {default} 0
+2 4 2 {sram_hc_wide.lvs} {default} 0
+3 6 4 {array} {default} 0
+4 8 6 {1:2} {default} 0
+5 10 8 {0} {default} 0
+6 12 10 {} {default} 0
+7 14 12 {tt} {default} 0
+8 16 14 {svt} {default} 0
+9 18 16 {27.0} {default} 0
+10 20 18 {} {default} 0
+11 22 20 {128} {default} 0
+12 24 22 {128} {default} 0
+13 26 24 {} {default} 0
+14 28 26 {0} {default} 0
+15 30 28 {} {default} 0
+16 32 30 {40} {default} 0
+17 34 32 {} {default} 0
+18 36 34 {} {default} 0
+19 38 36 {} {default} 0
+1 3 1 {sram_hd_wide_cdiff_array_27_pr.oasis} {default} 0
+2 5 3 {sram_hd_wide.lvs} {default} 0
+3 7 5 {array_flat} {default} 0
+4 9 7 {1:2} {default} 0
+5 11 9 {0} {default} 0
+6 13 11 {} {default} 0
+7 15 13 {tt} {default} 0
+8 17 15 {svt} {default} 0
+9 19 17 {27.0} {default} 0
+10 21 19 {} {default} 0
+11 23 21 {128} {default} 0
+12 25 23 {128} {default} 0
+13 27 25 {} {default} 0
+14 29 27 {0} {default} 0
+15 31 29 {} {default} 0
+16 33 31 {40} {default} 0
+17 35 33 {} {default} 0
+18 37 35 {} {default} 0
+19 39 37 {} {default} 0

@@ -1,0 +1,4 @@
+# --- scenarios properties
+scenario default static expression ""
+scenario nMOS static expression ""
+scenario pMOS static expression ""

@@ -1,0 +1,7 @@
+.subckt nand2x1d a b z vdd vss VBP VBN
+XMP1 z a vdd VBP pmos l= 0.016u w= 0.005u m= 1 nfin= 2
+XMP2 z b vdd VBP pmos l= 0.016u w= 0.005u m= 1 nfin= 2
+XMN1 iT1 a vss VBN nmos l= 0.016u w= 0.005u m= 1 nfin= 2
+XMN2 z b iT1 VBN nmos l= 0.016u w= 0.005u m= 1 nfin= 2
+.ends nand2x1d
+

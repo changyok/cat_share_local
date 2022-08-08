@@ -1,0 +1,25 @@
+###########################################
+# Sentaurus Visual R-2020.09.
+# Tcl log file.
+#------------------------------------------
+# Date: Nov 13, 2020. 11:45:31.
+# Version: 31.2.6534263 (2.6534263)
+# Mode: Interactive (GUI).
+# Mesa: enabled.
+# Hostname: tcadbw30.
+# Machine: Linux, x86_64, x86_64.
+# Kernel: 2.6.32-754.11.1.el6.x86_64.
+###########################################
+
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/1.06-BIC2022_FinFET_ALDHKMG_TCAD_Nominal_SRAM/CggVg_pMOS_n89_ac_des.plt
+create_plot -1d
+select_plots {Plot_1}
+#-> Plot_1
+#-> Plot_1
+#-> CggVg_pMOS_n89_ac_des
+create_curve -axisX v(g) -axisY c(g,g) -dataset {CggVg_pMOS_n89_ac_des} -plot Plot_1
+#-> Curve_1
+set_legend_prop -plot Plot_1 -position {0.204134 0.965147}
+#-> 0
+exit 0
+ 

@@ -1,0 +1,31 @@
+###########################################
+# Sentaurus Visual R-2020.09.
+# Tcl log file.
+#------------------------------------------
+# Date: Nov 04, 2020. 10:12:29.
+# Version: 31.2.6534263 (2.6534263)
+# Mode: Interactive (GUI).
+# Mesa: enabled.
+# Hostname: tcadbw30.
+# Machine: Linux, x86_64, x86_64.
+# Kernel: 2.6.32-754.11.1.el6.x86_64.
+###########################################
+
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+create_plot -1d
+select_plots {Plot_1}
+#-> Plot_1
+#-> Plot_1
+#-> n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/n219_GarandMCnew_IdVg_Vd=0.05V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n219_GarandMCnew_IdVg_Vd=0.05V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C
+load_file /slowfs/ntg2/munkangc/DB/SOW/DIR/Intel/swbOpt_1/sent/swbOpt_0/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal/n227_GarandMCnew_IdVg_Vd=0.65V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C.plt
+#-> n227_GarandMCnew_IdVg_Vd=0.65V_BulkFinFET_nMOS_Lg13.0nm_Wfin5.0nm_27C
+create_curve -axisX {pgate OuterVoltage} -axisY {pdrain TotalCurrent} -dataset {n197_GarandMCnew_IdVg_Vd=-0.05V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C n205_GarandMCnew_IdVg_Vd=-0.65V_BulkFinFET_pMOS_Lg13.0nm_Wfin5.0nm_27C} -plot Plot_1
+#-> Curve_1 Curve_2
+set_legend_prop -plot Plot_1 -position {0.175711 0.731903}
+#-> 0
+exit 0
+ 

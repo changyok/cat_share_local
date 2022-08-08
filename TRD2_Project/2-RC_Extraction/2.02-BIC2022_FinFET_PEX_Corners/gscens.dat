@@ -1,0 +1,3 @@
+# --- scenarios properties
+scenario default static expression ""
+scenario invx1d dynamic filter "all:{ $gds == \"invx1d_bic2022.oasis\" }"

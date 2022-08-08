@@ -1,0 +1,3 @@
+set WB_tool(cshell,exec_mode) skip_cshrc
+set WB_tool(cshell,exec_dependency) strict
+set WB_tool(cshell,parallel,activate) 0

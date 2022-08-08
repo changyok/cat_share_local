@@ -1,0 +1,75 @@
+###########################################
+# Sentaurus Visual R-2020.09.
+# Tcl log file.
+#------------------------------------------
+# Date: Jan 12, 2021. 09:10:47.
+# Version: 31.2.6534263 (2.6534263)
+# Mode: Interactive (GUI).
+# Mesa: enabled.
+# Hostname: plxchh054.
+# Machine: Linux, x86_64, x86_64.
+# Kernel: 4.12.14-122.37-default.
+###########################################
+
+load_script_file /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/tmp/1.01-BIC2022_FinFET_ALDHKMG_TCAD_Nominal.vis.cmd
+cd /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/tmp
+# ext::ExtractExtremum> Extracting maxima
+# ext::ExtractExtremum> Extracting minima
+# ext::ExtractValue: WARNING: No intersection found!
+# ext::ExtractValue: WARNING: No intersection found!
+# ext::ExtractValue: WARNING: No intersection found!
+#-> 0
+set_legend_prop -plot Plot_FullIdVg -position {0.138281 0.876808}
+#-> 0
+select_plots {Plot_Analysis}
+#-> Plot_Analysis
+set_legend_prop -plot Plot_Analysis -position {0.123409 0.874079}
+#-> 0
+select_plots {Plot_FullIdVg}
+#-> Plot_FullIdVg
+select_plots {Plot_DD}
+#-> Plot_DD
+select_plots {Plot_MC}
+#-> Plot_MC
+select_plots {Plot_MCerror}
+#-> Plot_MCerror
+select_plots {Plot_MC}
+#-> Plot_MC
+select_plots {Plot_DD}
+#-> Plot_DD
+select_plots {Plot_FullIdVg}
+#-> Plot_FullIdVg
+select_plots {Plot_DD}
+#-> Plot_DD
+set_legend_prop -plot Plot_DD -position {0.105562 0.872715}
+#-> 0
+select_plots {Plot_MC}
+#-> Plot_MC
+select_plots {Plot_MCerror}
+#-> Plot_MCerror
+select_plots {Plot_MC}
+#-> Plot_MC
+set_legend_prop -plot Plot_MC -position {0.0799822 0.884993}
+#-> 0
+select_plots {Plot_DD}
+#-> Plot_DD
+select_plots {Plot_FullIdVg}
+#-> Plot_FullIdVg
+select_plots {Plot_Analysis}
+#-> Plot_Analysis
+select_plots {Plot_FullIdVg}
+#-> Plot_FullIdVg
+select_plots {Plot_DD}
+#-> Plot_DD
+select_plots {Plot_MC}
+#-> Plot_MC
+select_plots {Plot_MCerror}
+#-> Plot_MCerror
+select_plots {Plot_MC}
+#-> Plot_MC
+select_plots {Plot_DD}
+#-> Plot_DD
+select_plots {Plot_FullIdVg}
+#-> Plot_FullIdVg
+exit 0
+ 

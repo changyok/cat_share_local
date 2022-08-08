@@ -1,0 +1,3 @@
+set WB_tool(enigma_randomspice,parallel,activate) 1
+set WB_tool(enigma_randomspice,parallel,max_threads) "4"
+set WB_tool(enigma_randomspice,parallel,threads) "4"

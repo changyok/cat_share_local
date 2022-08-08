@@ -1,0 +1,335 @@
+
+
+## X or Z
+#define _ChanDir_     @Channel_UCS@
+
+#if "_ChanDir_" == "z"
+#define _TopSurfDir_  x
+#elif "_ChanDir_" == "x"
+#define _TopSurfDir_  z
+#else
+puts "Channel direction should be \"x\" or \"z\" in UCS"
+exit
+#endif
+
+
+#define _TechType_  @TechType@
+#if "_TechType_" == "CFET"
+#define _TechType_  GAA
+#elif "_TechType_" == "VFET"
+#define _TechType_  FinFET
+#elif "_TechType_" == "SRAM"
+#define _TechType_  GAA
+#endif
+ 
+
+/* Define channel/horizontal/vertical direction [z/y/x] & stress components */
+#if "_ChanDir_" == "z"
+#define _chan_dir_   z 
+#define _DGchanDir_  dgz 
+ #if "_TopSurfDir_" == "x"
+#define _horiz_dir_  y 
+#define _vert_dir_   x 
+#define _DGhorizDir_ dgy 
+#define _DGvertDir_  dgx  
+#define _StressTensor_  @Sh_GPa@, @Sw_GPa@, @Sl_GPa@, 0.0, 0.0, 0.0
+ #elif "_TopSurfDir_" == "y"
+#define _horiz_dir_  x 
+#define _vert_dir_   y 
+#define _DGhorizDir_ dgx 
+#define _DGvertDir_  dgy 
+#define _StressTensor_  @Sw_GPa@, @Sh_GPa@, @Sl_GPa@, 0.0, 0.0, 0.0
+ #endif
+
+#elif "_ChanDir_" == "x"
+#define _chan_dir_   x 
+#define _DGchanDir_  dgx 
+ #if "_TopSurfDir_" == "z"
+#define _horiz_dir_  y 
+#define _vert_dir_   z 
+#define _DGhorizDir_ dgy 
+#define _DGvertDir_  dgz
+#define _StressTensor_  @Sl_GPa@, @Sw_GPa@, @Sh_GPa@, 0.0, 0.0, 0.0
+ #elif "_TopSurfDir_" == "y"
+#define _horiz_dir_  z 
+#define _vert_dir_   y 
+#define _DGhorizDir_ dgz 
+#define _DGvertDir_  dgy 
+#define _StressTensor_  @Sl_GPa@, @Sh_GPa@, @Sw_GPa@, 0.0, 0.0, 0.0
+ #endif
+
+#elif "_ChanDir_" == "y"
+#define _chan_dir_   y 
+#define _DGchanDir_  dgy 
+ #if "_TopSurfDir_" == "x"
+#define _horiz_dir_  z 
+#define _vert_dir_   x 
+#define _DGhorizDir_ dgz 
+#define _DGvertDir_  dgx  
+#define _StressTensor_  @Sh_GPa@, @Sl_GPa@, @Sw_GPa@, 0.0, 0.0, 0.0
+ #elif "_TopSurfDir_" == "z"
+#define _horiz_dir_  x 
+#define _vert_dir_   z 
+#define _DGhorizDir_ dgx 
+#define _DGvertDir_  dgz 
+#define _StressTensor_  @Sw_GPa@, @Sl_GPa@, @Sh_GPa@, 0.0, 0.0, 0.0
+ #endif
+
+#endif
+
+#if "@Type@" == "nMOS"
+ /* Set band for parameter modification */
+#define _band_       conduction
+ /* Set n/pMOS simulation */
+#define _n_or_p_     n
+
+#elif "@Type@" == "pMOS"
+ /* Set band for parameter modification */
+#define _band_      valence
+ /* Set n/pMOS simulation */
+#define _n_or_p_    p
+
+#else
+puts "Type is incorrect... @Type@"
+#endif
+
+/* Below this bias relax convergence criteria [V] for monte-carlo sim. */
+#define _vcontrol_  0.3
+
+#if @[ lsearch {Garand_xNinvVg Garand_xNinvVg_Check} @toolname@  ]@ >= 0
+#define _viz_ on
+
+#else
+
+ #if [expr abs(@Vg@) == abs(_vcontrol_)] || [expr abs(@Vg@) == abs(@VDD@)]
+/* Enable output of TDR */
+#define _viz_ on  
+ #else
+/* Disable output of TDR */
+#define _viz_ off 
+ #endif
+###define _viz_ off 
+
+#endif
+
+# ------------------------------ SIMULATION OUTPUT -----------------------------
+# Output concentrations, not log(conc)
+OUTPUT	conc_scale			= linear
+# Output dimensions
+OUTPUT	units				= um
+# Output DD results to tdr file 
+OUTPUT	tdr				= _viz_
+	
+# ------------------------------- SIMULATION TYPE ------------------------------
+# Perform solution / simulation mode [IdVg, IdVd, Vt] / 
+# n- or p-type simulation / Simulation temperature [K]
+SIMULATION	solve			= on
+SIMULATION	sim_type		= IdVg
+SIMULATION	n_or_p			= _n_or_p_
+SIMULATION	T			= @<Temperature+273>@
+SIMULATION threads	    		= @Threads@
+
+# ------------------------------- SIMULATION MODEL -----------------------------
+# Density gradient solution (majority carriers)
+MODEL	density_gradient		= on
+# Density gradient solution (minority carriers)
+MODEL	minority_dg			= off
+# Density above which gradient boundary conditions cannot be used for DG [/cm3]
+MODEL	dg_doping_limit			= 5e20
+# Fermi-Dirac statistics
+MODEL	fermi_dirac status		= off
+
+# Threhsold voltage current criterion [A]
+SIMULATION	threshold_current	= 2.5e-7	
+# Gummel loop/Poisson/Current continuity/Density gradient  accuracy
+SIMULATION	gummel_acc		= 1e-5	
+SIMULATION	epspois			= 1e-7	
+SIMULATION	epscurr			= 1e-9	
+SIMULATION	epsdg			= 1e-7
+
+SIMULATION	pos_dep 	= on	
+
+# -------------------------- Ge Mole Fraction DEFINITION -----------------------
+STRUCTURE xMoleFraction = on
+
+# -------------------------- STRESS DEFINITION ---------------------------------
+STRAIN import=off transfer_average= on additive=off 
+STRAIN @semi_name@.device_stress_tensor _StressTensor_ 
+STRAIN Silicon.device_stress_tensor 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 
+
+#------------------------------- MESH DEFINITION -------------------------------
+MESH	IMPORT 
+
+#------------------------------ CONTACT DEFINITION -----------------------------
+# Gate/Source/Drain/Substrate      contact bounding box
+CONTACT	metal_gate  import		= 'gate'	filter=direct	
+CONTACT	source      import		= 'source'	filter=direct	
+CONTACT	drain       import		= 'drain'	filter=direct		
+#if "_TechType_" == "BulkFinFET"
+CONTACT	substrate   filter		= xmax		
+#endif
+
+# Apply DG at contact interfaces	
+CONTACT	confined_boundary		= on	
+
+# Workfunction	
+#if @[ lsearch {Garand_xNinvVg} @toolname@  ]@ >= 0
+CONTACT	work_function			= @WF@	
+#else
+CONTACT	work_function			= @WF_opt@	
+#endif
+
+# Applied resistance - must be zero for MC simulation			
+CONTACT	resistance_lumped		= 0.0	
+
+# ---------------------------- MATERIAL REDEFINITION ---------------------------
+# Density gradient mass in channel direction [me]
+# Density gradient mass in vertical direction [me]
+# Density gradient mass in horizontal direction [me]
+#
+# Silicon and SiliconGermanium density gradient model
+# calibrated to sband carrier profiles
+!(
+ set matList [list Silicon SiliconGermanium]
+
+ foreach mat $matList {
+  puts "MATERIAL	${mat}._band_._DGchanDir_	5.0 "
+#if @[ lsearch {Garand_xNinvVg} @toolname@  ]@ >= 0
+  puts "MATERIAL	${mat}._band_._DGvertDir_	@vert_semi@ "
+  puts "MATERIAL	${mat}._band_._DGhorizDir_	@horiz_semi@ "
+#else
+  puts "MATERIAL	${mat}._band_._DGvertDir_	@vert_semi_opt@ "
+  puts "MATERIAL	${mat}._band_._DGhorizDir_	@horiz_semi_opt@ "
+#endif
+ }
+)!
+
+# Oxide density gradient model calibrated to sband carrier profiles
+#if @[ lsearch {Garand_xNinvVg} @toolname@  ]@ >= 0
+MATERIAL	interfacialoxide._band_._DGvertDir_  @ox@ 
+MATERIAL	interfacialoxide._band_._DGhorizDir_ @ox@ 
+#else
+MATERIAL	interfacialoxide._band_._DGvertDir_  @ox_opt@ 
+MATERIAL	interfacialoxide._band_._DGhorizDir_ @ox_opt@ 
+#endif
+MATERIAL	interfacialoxide._band_._DGchanDir_  5.0	
+MATERIAL	Hafnia._band_._DGchanDir_            5.0
+
+# HfO2 permittivity calibrated to sband Ninv-Vg (inversion carrier density)
+MATERIAL	HfO2.permittivity			@HfO2_perm@  
+# InterfacialOxide permittivity assuming SiON
+##MATERIAL	InterfacialOxide.permittivity           3.9
+MATERIAL	InterfacialOxide.permittivity           @iOxide_perm@	
+# Spacer LowK permittivity
+MATERIAL	LowK.permittivity                       @SiOCN_perm@
+
+# Specify the mobility models
+!(
+ set matList [list Silicon SiliconGermanium]
+
+ foreach mat $matList {
+  puts "MATERIAL	${mat}._band_.mobility.bulk		Masetti "		
+  puts "MATERIAL 	${mat}._band_.mobility.eprp		Yamaguchi "
+  puts "MATERIAL	${mat}._band_.mobility.elat		Caughey "
+  puts "MATERIAL	${mat}._band_.mobility.strain	SSE "
+ }
+)!
+
+# Remove higher conduction valleys, generally unoccupied
+!(
+ set matList    [list Silicon SiliconGermanium]
+ ##set valIndList [list C1 C2]
+ ##set valList    [list [list L1 L2 L3 L4 L5 L6 L7 L8] [list G]]
+ set valIndList [list C1]
+ set valList    [list [list L1 L2 L3 L4 L5 L6 L7 L8]]
+
+ foreach mat $matList {
+  foreach vals $valList vali $valIndList {
+   foreach val $vals {
+    puts "MATERIAL	${mat}.conduction.${vali}.${val}     REMOVE "
+   }
+  }
+ }
+)!
+
+# ---------------------------- MATERIAL ORIENTATION ----------------------------
+# Specify device orientation based on WaferDir and ChannelDir
+# wafer orientation (100)
+#       channel direction <100> <110>
+# wafer orientation (110)
+#       channel direction <100> <110> <111> <112>
+# wafer orientation (111)
+#       channel direction <110> <112>
+# wafer orientation (112)
+#       channel direction <110> <111>
+
+# Channel orientation   [hkl]
+# Substrate orientation (hkl)
+
+!(
+ set xUCS @Xucs_Crystal@
+ set zUCS @Zucs_Crystal@
+ set XucsAxis   [split @Xucs_Crystal@ ":"]
+ set ZucsAxis   [split @Zucs_Crystal@ ":"]
+
+ set scalarProduct 0.0
+ foreach x $XucsAxis y $ZucsAxis {
+  set scalarProduct [expr ($scalarProduct + $x*$y)]
+ }
+ if { $scalarProduct > 1.0e-10 } {
+  puts "xDirection (XucsAxis)    = { $XucsAxis } "
+  puts "zDirection (ZucsAxis)    = { $ZucsAxis } "
+  return -code error "Xucs_Crystal and Zucs_Crystal should be orthogonal!!"
+ }
+
+ set matList [list Silicon SiliconGermanium]
+ foreach mat $matList {
+#if "_ChanDir_" == "z"
+  puts "MATERIAL    ${mat}.crystal._chan_dir_     ${ZucsAxis} "
+  puts "MATERIAL    ${mat}.crystal._vert_dir_     ${XucsAxis} "
+#elif "_ChanDir_" == "x"
+  puts "MATERIAL    ${mat}.crystal._chan_dir_     ${XucsAxis} "
+  puts "MATERIAL    ${mat}.crystal._vert_dir_     ${ZucsAxis} "
+#elif "_ChanDir_" == "y"
+  puts "MATERIAL    ${mat}.crystal._horiz_dir_    ${ZucsAxis} "
+  puts "MATERIAL    ${mat}.crystal._vert_dir_     ${XucsAxis} "
+#endif
+ }
+)!
+
+
+# ------------------------ OUTPUT PARAMETERS -----------------------
+# Not allow Garand to write results in hierarchical output directories
+OUTPUT	hierarchical		= off
+
+# Output file header
+OUTPUT	experiment		= n@node@
+
+# Write initial simulation domain/material discretisation/
+#       diagnostic contact definitions/DD & MC simulation resulst 
+#       to TDR file for vizualisation
+OUTPUT	domain				= _viz_       
+OUTPUT	material			= on           
+OUTPUT	contacts			= on           
+         
+# Write donor/acceptor doping concentration, Potential/Quantum potential to TDR
+# Write fermi-levels, electron/hole distribution throughout domain
+# Write carrier velocity/current density throughout domain
+OUTPUT	donors				= on
+OUTPUT	acceptors			= on
+OUTPUT	potential			= on
+OUTPUT	quantum_potential		= on
+OUTPUT	fermi				= on
+OUTPUT	electrons			= on
+OUTPUT	holes				= on
+OUTPUT	mobility			= on
+OUTPUT	velocity			= on
+OUTPUT	current_density			= on
+OUTPUT	permittivity			= on
+
+
+MATERIAL SiliconGermanium.valence.HH.vhh.av       0.0
+MATERIAL SiliconGermanium.valence.LH.vlh.av       0.0
+MATERIAL SiliconGermanium.valence.SSO.vsso.av     0.0
+
+

@@ -1,0 +1,3 @@
+set WB_tool(garandmc,exec_mode) PRE
+set WB_tool(garandmc,input,base_garand_input_file,common) 1
+set WB_tool(garandmc,parallel,activate) 1

@@ -1,0 +1,1282 @@
+# Copyright (C) 1994-2019 Synopsys Inc.
+# swbtree vR-2020.09
+
+# --- simulation flow
+bridge bridge "" {}
+bridge SplitID "Nominal" {Nominal}
+bridge Threads "4" {4}
+bridge VDD "0.65" {0.65}
+bridge TechType "BulkFinFET" {BulkFinFET}
+bridge Channel_UCS "z" {z}
+bridge SelectiveGate "0" {0}
+bridge Type "nMOS" {nMOS}
+bridge Xucs_Crystal "0:0:1" {0:0:1}
+bridge Zucs_Crystal "1:1:0" {1:1:0}
+bridge Sl_GPa "0" {0}
+bridge Sw_GPa "0" {0}
+bridge Sh_GPa "0" {0}
+bridge GeMoleCh "0.00" {0.00}
+bridge GeMoleSD "0.00" {0.00}
+bridge Nstop "3e18" {3e18}
+bridge Nsde "3.0e20" {3.0e20}
+bridge Nch "0" {0}
+bridge Tiox "0.9" {0.9}
+bridge Thfo2 "1.5" {1.5}
+bridge Tspacer "7.5" {7.5}
+bridge W "5.0" {5.0}
+bridge H "50.0" {50.0}
+bridge Lg "13.0" {13.0}
+bridge Temperature "27" {27}
+bridge SiOCN_perm "4.5" {4.5}
+bridge iOxide_perm "5.8" {5.8}
+bridge HfO2_perm "20.0" {20.0}
+bridge WF_init "4.408" {4.408}
+bridge deltaVGATE "0.05" {0.05}
+Garand_xNinvVg garandmc "" {}
+Garand_xNinvVg semi_name "SiliconGermanium" {SiliconGermanium}
+Garand_xNinvVg vert_semi "0.5" {0.5 0.50115261903894981 0.23688765916921811 0.23743374162131953 0.27845007816973943 0.27909197189273044 0.24206445124852763 0.2426224674388516 0.1582050459202379 0.15856974621620909 0.1289785149553451 0.12927584113925111 0.12550746838842236 0.12579679298361215 0.11253260145051294 0.11279201588838177 0.10445679937423999 0.10469759716565301 0.12108857792833867 0.1213677159289778 0.12052829659536586 0.12080614301414189 0.12072330750200036 0.12100160346734397 0.12451912916051193 0.12480617539847964 0.16039035591568432 0.16076009387146906 0.30828076201963278 0.30899142257092438 0.20949132457069025 0.20997425194908023 0.20350483504495603 0.20397396213973834 0.20738318165753669 0.20786124926460961 0.20611517442023239 0.20659031896873883 0.20514405097721841 0.20561695685498568 0.20130509717198281 0.20176915334725895 0.20463121263304096 0.20510293629632942 0.23994080035192625 0.24049392102133924 0.20926641628311157 0.20974882519435301 0.25024501707913083 0.25082189142130629 0.22481829068156892 0.22533655036585637 0.22268441695711877 0.22319775755444318 0.22443508274186005 0.22495245904061315 0.22198327946951743 0.2224950037780076 0.22423276231852921 0.22474967222053852 0.22440597348372432 0.22492328267870715 0.22443036926844523 0.22494773470151994 0.22443427303308788 0.22495164746526947 0.22443492794533706 0.22495230388724732 0.22443505541923212 0.22495243165500003 0.2244350783159568 0.22495245460450713 0.2244350756631214 0.22495245194555633 0.22443506554117654 0.22495244180027796 0.22443507494694456 0.22495245122772853 0.22443507432154694 0.22495245060088923}
+Garand_xNinvVg horiz_semi "0.5" {0.5 0.50115261903894981 0.18550939272743583 0.18593703604335918 0.23034748038992525 0.23087848617286835 0.19218443848403086 0.19262746936960401 0.11047608175224614 0.11073075542259858 0.089661836505713952 0.089868528385361315 0.089770384278989993 0.089977326387097586 0.090205891081501038 0.090413837136472969 0.13008083462772907 0.13038070192091789 0.15439318135617461 0.15474909439680493 0.15502007183776953 0.15537743001020868 0.15798625623449558 0.15835045216815216 0.16220141419327511 0.16257532706956263 0.16101614785637414 0.16138732841156939 0.12664989222581424 0.12694185037993508 0.14596615690106032 0.14630264364403334 0.11457619733067938 0.11484032274358701 0.1341428805367347 0.13445211181282715 0.10614400482557917 0.10638869202724387 0.097730109356766334 0.097955400526212821 0.070236044500551292 0.070397955304775009 0.093544627716716039 0.093760270354511538 0.069151210231513022 0.069310620234471529 0.08965094984396943 0.089857616627269599 0.089690515337194077 0.089897273328375799 0.089666807436957013 0.089873510775784357 0.093742503787877407 0.093958602577126848 0.090382634892727715 0.090590988384263313 0.089058636350438508 0.08926393771011934 0.090273190922156743 0.090481292119283976 0.090366886333410307 0.090575203520767297 0.090380084783032541 0.090588432395958166 0.090382196818259847 0.090590549299929504 0.090382551143556741 0.090590904442030565 0.090382620110434048 0.090590973567892946 0.090382632498192186 0.090590985984207811 0.090382631062935218 0.090590984545642225 0.090382625586684445 0.090590979056767398 0.090382630675463857 0.090590984157277649 0.090382630337106515 0.090590983818140319}
+Garand_xNinvVg ox "0.5" {0.5 0.50115261903894981 0.33566135837549738 0.33643513772010408 0.36580754391560577 0.36665081739502298 0.33893074819300634 0.33971206425951189 0.26901703627305912 0.26963718458867952 0.23018894485847921 0.23071958517927851 0.22050188676405644 0.22101019610967365 0.18566228916428107 0.18609028494289259 0.12365980882314008 0.12394487412314498 0.13488556110380595 0.13519650443542131 0.13304550476055432 0.13335220632422176 0.1287013627184056 0.12899805000042164 0.10682048818768632 0.10706673484455641 0.044696415358333234 0.04479945123696287 0.0059904492464238242 0.0060042586581304045 0.019657024996127658 0.019702339118646953 0.017167439178207018 0.017207014212700645 0.018749987581153441 0.018793210766485657 0.018800480646431268 0.018843820230300234 0.027499998998764007 0.027563393043598155 0.12588894105642723 0.12617914503693697 0.033641035478480831 0.033718586074445785 0.055399591184301676 0.055527300431399786 0.036087149255085188 0.036170338725670846 0.02753125482516032 0.027594720922115634 0.032377436641175539 0.032452074340985557 0.032592835049935369 0.032667969294359174 0.032415862745780011 0.032490589026909537 0.031786865061853922 0.031860141353571562 0.032363753521269065 0.032438359678230048 0.032408363157465848 0.032483072150258835 0.032414648334336514 0.03248937181595854 0.03241565412546632 0.032490379925676362 0.032415822862630388 0.032490549051819764 0.032415855706134152 0.032490581971035624 0.032415861605450721 0.032490587883951524 0.032415860921950493 0.032490587198875667 0.032415858314042215 0.032490584584955538 0.032415860737428297 0.032490587013928096 0.032415860576295273 0.032490586852423634}
+Garand_xNinvVg WF "4.408" {4.408 4.4090000000000007 4.4580000000000002 4.4569999999999999 4.4351760231454262 4.4361760231454266 4.4200287668122566 4.421028766812257 4.4034497898262774 4.4044497898262778 4.4014505833013464 4.4024505833013468 4.4003841689662515 4.4013841689662518 4.3961185116258719 4.3971185116258722 4.396183031454755 4.3971830314547553 4.4053224139917742 4.4063224139917745 4.4054117679566165 4.4064117679566168 4.4056647293324911 4.4066647293324914 4.4056330265991326 4.4066330265991329 4.4039654296054005 4.4049654296054008 4.3994055930311715 4.4004055930311718 4.4021016357581075 4.4031016357581079 4.3961409413546333 4.3971409413546336 4.4000222328959762 4.4010222328959765 4.391144912080021 4.3921449120800213 4.3898755076359439 4.3908755076359443 4.3847978898596356 4.3857978898596359 4.3892027240304916 4.3902027240304919 4.3808099706524484 4.3818099706524487 4.3880217719652492 4.3890217719652496 4.3878323468363876 4.3888323468363879 4.3879458415660482 4.3889458415660485 4.38829599800148 4.3892959980014803 4.3880084782892244 4.3890084782892247 4.3868582380514507 4.387858238051451 4.38791403840903 4.3889140384090304 4.3879948958058819 4.3889948958058822 4.3880062790853067 4.389006279085307 4.3880081005000529 4.3890081005000532 4.3880084060652758 4.3890084060652761 4.3880084655412146 4.3890084655412149 4.3880084762242157 4.3890084762242161 4.3880084749864743 4.3890084749864746 4.3880084702638449 4.3890084702638452 4.3880084746523247 4.389008474652325 4.3880084743605314 4.3890084743605318}
+DG_profiles svisual "" {}
+DG_profiles dg_coeff "0.5" {0.5}
+# --- variables
+# --- scenarios and parameter specs
+scenario default SplitID ""
+scenario default Threads ""
+scenario default VDD ""
+scenario default TechType ""
+scenario default Channel_UCS ""
+scenario default SelectiveGate ""
+scenario default Type ""
+scenario default Xucs_Crystal ""
+scenario default Zucs_Crystal ""
+scenario default Sl_GPa ""
+scenario default Sw_GPa ""
+scenario default Sh_GPa ""
+scenario default GeMoleCh ""
+scenario default GeMoleSD ""
+scenario default Nstop ""
+scenario default Nsde ""
+scenario default Nch ""
+scenario default Tiox ""
+scenario default Thfo2 ""
+scenario default Tspacer ""
+scenario default W ""
+scenario default H ""
+scenario default Lg ""
+scenario default Temperature ""
+scenario default SiOCN_perm ""
+scenario default iOxide_perm ""
+scenario default HfO2_perm ""
+scenario default WF_init ""
+scenario default deltaVGATE ""
+scenario default semi_name ""
+scenario default vert_semi ""
+scenario default horiz_semi ""
+scenario default ox ""
+scenario default WF ""
+scenario default dg_coeff ""
+scenario initial SplitID ""
+scenario initial Threads ""
+scenario initial VDD ""
+scenario initial TechType ""
+scenario initial Channel_UCS ""
+scenario initial SelectiveGate ""
+scenario initial Type ""
+scenario initial Xucs_Crystal ""
+scenario initial Zucs_Crystal ""
+scenario initial Sl_GPa ""
+scenario initial Sw_GPa ""
+scenario initial Sh_GPa ""
+scenario initial GeMoleCh ""
+scenario initial GeMoleSD ""
+scenario initial Nstop ""
+scenario initial Nsde ""
+scenario initial Nch ""
+scenario initial Tiox ""
+scenario initial Thfo2 ""
+scenario initial Tspacer ""
+scenario initial W ""
+scenario initial H ""
+scenario initial Lg ""
+scenario initial Temperature ""
+scenario initial SiOCN_perm ""
+scenario initial iOxide_perm ""
+scenario initial HfO2_perm ""
+scenario initial WF_init ""
+scenario initial deltaVGATE ""
+scenario initial semi_name ""
+scenario initial vert_semi ""
+scenario initial horiz_semi ""
+scenario initial ox ""
+scenario initial WF ""
+scenario initial dg_coeff ""
+scenario objective_evaluation SplitID ""
+scenario objective_evaluation Threads ""
+scenario objective_evaluation VDD ""
+scenario objective_evaluation TechType ""
+scenario objective_evaluation Channel_UCS ""
+scenario objective_evaluation SelectiveGate ""
+scenario objective_evaluation Type ""
+scenario objective_evaluation Xucs_Crystal ""
+scenario objective_evaluation Zucs_Crystal ""
+scenario objective_evaluation Sl_GPa ""
+scenario objective_evaluation Sw_GPa ""
+scenario objective_evaluation Sh_GPa ""
+scenario objective_evaluation GeMoleCh ""
+scenario objective_evaluation GeMoleSD ""
+scenario objective_evaluation Nstop ""
+scenario objective_evaluation Nsde ""
+scenario objective_evaluation Nch ""
+scenario objective_evaluation Tiox ""
+scenario objective_evaluation Thfo2 ""
+scenario objective_evaluation Tspacer ""
+scenario objective_evaluation W ""
+scenario objective_evaluation H ""
+scenario objective_evaluation Lg ""
+scenario objective_evaluation Temperature ""
+scenario objective_evaluation SiOCN_perm ""
+scenario objective_evaluation iOxide_perm ""
+scenario objective_evaluation HfO2_perm ""
+scenario objective_evaluation WF_init ""
+scenario objective_evaluation deltaVGATE ""
+scenario objective_evaluation semi_name ""
+scenario objective_evaluation vert_semi ""
+scenario objective_evaluation horiz_semi ""
+scenario objective_evaluation ox ""
+scenario objective_evaluation WF ""
+scenario objective_evaluation dg_coeff ""
+scenario stage_1 SplitID ""
+scenario stage_1 Threads ""
+scenario stage_1 VDD ""
+scenario stage_1 TechType ""
+scenario stage_1 Channel_UCS ""
+scenario stage_1 SelectiveGate ""
+scenario stage_1 Type ""
+scenario stage_1 Xucs_Crystal ""
+scenario stage_1 Zucs_Crystal ""
+scenario stage_1 Sl_GPa ""
+scenario stage_1 Sw_GPa ""
+scenario stage_1 Sh_GPa ""
+scenario stage_1 GeMoleCh ""
+scenario stage_1 GeMoleSD ""
+scenario stage_1 Nstop ""
+scenario stage_1 Nsde ""
+scenario stage_1 Nch ""
+scenario stage_1 Tiox ""
+scenario stage_1 Thfo2 ""
+scenario stage_1 Tspacer ""
+scenario stage_1 W ""
+scenario stage_1 H ""
+scenario stage_1 Lg ""
+scenario stage_1 Temperature ""
+scenario stage_1 SiOCN_perm ""
+scenario stage_1 iOxide_perm ""
+scenario stage_1 HfO2_perm ""
+scenario stage_1 WF_init ""
+scenario stage_1 deltaVGATE ""
+scenario stage_1 semi_name ""
+scenario stage_1 vert_semi ""
+scenario stage_1 horiz_semi ""
+scenario stage_1 ox ""
+scenario stage_1 WF ""
+scenario stage_1 dg_coeff ""
+scenario jacobian_evaluation SplitID ""
+scenario jacobian_evaluation Threads ""
+scenario jacobian_evaluation VDD ""
+scenario jacobian_evaluation TechType ""
+scenario jacobian_evaluation Channel_UCS ""
+scenario jacobian_evaluation SelectiveGate ""
+scenario jacobian_evaluation Type ""
+scenario jacobian_evaluation Xucs_Crystal ""
+scenario jacobian_evaluation Zucs_Crystal ""
+scenario jacobian_evaluation Sl_GPa ""
+scenario jacobian_evaluation Sw_GPa ""
+scenario jacobian_evaluation Sh_GPa ""
+scenario jacobian_evaluation GeMoleCh ""
+scenario jacobian_evaluation GeMoleSD ""
+scenario jacobian_evaluation Nstop ""
+scenario jacobian_evaluation Nsde ""
+scenario jacobian_evaluation Nch ""
+scenario jacobian_evaluation Tiox ""
+scenario jacobian_evaluation Thfo2 ""
+scenario jacobian_evaluation Tspacer ""
+scenario jacobian_evaluation W ""
+scenario jacobian_evaluation H ""
+scenario jacobian_evaluation Lg ""
+scenario jacobian_evaluation Temperature ""
+scenario jacobian_evaluation SiOCN_perm ""
+scenario jacobian_evaluation iOxide_perm ""
+scenario jacobian_evaluation HfO2_perm ""
+scenario jacobian_evaluation WF_init ""
+scenario jacobian_evaluation deltaVGATE ""
+scenario jacobian_evaluation semi_name ""
+scenario jacobian_evaluation vert_semi ""
+scenario jacobian_evaluation horiz_semi ""
+scenario jacobian_evaluation ox ""
+scenario jacobian_evaluation WF ""
+scenario jacobian_evaluation dg_coeff ""
+scenario optimal_1 SplitID ""
+scenario optimal_1 Threads ""
+scenario optimal_1 VDD ""
+scenario optimal_1 TechType ""
+scenario optimal_1 Channel_UCS ""
+scenario optimal_1 SelectiveGate ""
+scenario optimal_1 Type ""
+scenario optimal_1 Xucs_Crystal ""
+scenario optimal_1 Zucs_Crystal ""
+scenario optimal_1 Sl_GPa ""
+scenario optimal_1 Sw_GPa ""
+scenario optimal_1 Sh_GPa ""
+scenario optimal_1 GeMoleCh ""
+scenario optimal_1 GeMoleSD ""
+scenario optimal_1 Nstop ""
+scenario optimal_1 Nsde ""
+scenario optimal_1 Nch ""
+scenario optimal_1 Tiox ""
+scenario optimal_1 Thfo2 ""
+scenario optimal_1 Tspacer ""
+scenario optimal_1 W ""
+scenario optimal_1 H ""
+scenario optimal_1 Lg ""
+scenario optimal_1 Temperature ""
+scenario optimal_1 SiOCN_perm ""
+scenario optimal_1 iOxide_perm ""
+scenario optimal_1 HfO2_perm ""
+scenario optimal_1 WF_init ""
+scenario optimal_1 deltaVGATE ""
+scenario optimal_1 semi_name ""
+scenario optimal_1 vert_semi ""
+scenario optimal_1 horiz_semi ""
+scenario optimal_1 ox ""
+scenario optimal_1 WF ""
+scenario optimal_1 dg_coeff ""
+scenario restart_1 SplitID ""
+scenario restart_1 Threads ""
+scenario restart_1 VDD ""
+scenario restart_1 TechType ""
+scenario restart_1 Channel_UCS ""
+scenario restart_1 SelectiveGate ""
+scenario restart_1 Type ""
+scenario restart_1 Xucs_Crystal ""
+scenario restart_1 Zucs_Crystal ""
+scenario restart_1 Sl_GPa ""
+scenario restart_1 Sw_GPa ""
+scenario restart_1 Sh_GPa ""
+scenario restart_1 GeMoleCh ""
+scenario restart_1 GeMoleSD ""
+scenario restart_1 Nstop ""
+scenario restart_1 Nsde ""
+scenario restart_1 Nch ""
+scenario restart_1 Tiox ""
+scenario restart_1 Thfo2 ""
+scenario restart_1 Tspacer ""
+scenario restart_1 W ""
+scenario restart_1 H ""
+scenario restart_1 Lg ""
+scenario restart_1 Temperature ""
+scenario restart_1 SiOCN_perm ""
+scenario restart_1 iOxide_perm ""
+scenario restart_1 HfO2_perm ""
+scenario restart_1 WF_init ""
+scenario restart_1 deltaVGATE ""
+scenario restart_1 semi_name ""
+scenario restart_1 vert_semi ""
+scenario restart_1 horiz_semi ""
+scenario restart_1 ox ""
+scenario restart_1 WF ""
+scenario restart_1 dg_coeff ""
+# --- simulation tree
+0 1 0 {} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+1 2 1 {Nominal} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+2 3 2 {4} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+3 4 3 {0.65} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+4 5 4 {BulkFinFET} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+5 6 5 {z} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+6 7 6 {0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+7 8 7 {nMOS} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+8 9 8 {0:0:1} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+9 10 9 {1:1:0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+10 11 10 {0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+11 12 11 {0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+12 13 12 {0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+13 14 13 {0.00} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+14 15 14 {0.00} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+15 16 15 {3e18} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+16 17 16 {3.0e20} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+17 18 17 {0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+18 19 18 {0.9} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+19 20 19 {1.5} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+20 21 20 {7.5} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+21 22 21 {5.0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+22 23 22 {50.0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+23 24 23 {13.0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+24 25 24 {27} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+25 26 25 {4.5} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+26 27 26 {5.8} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+27 28 27 {20.0} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+28 29 28 {4.408} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+29 30 29 {0.05} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+30 31 30 {} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+31 32 31 {SiliconGermanium} {initial stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+32 33 32 {0.5} {initial stage_1 default objective_evaluation jacobian_evaluation} 0
+33 34 33 {0.5} {initial stage_1 default objective_evaluation jacobian_evaluation} 0
+34 35 34 {0.5} {initial stage_1 default objective_evaluation jacobian_evaluation} 0
+35 36 35 {4.408} {initial stage_1 default objective_evaluation} 0
+36 37 36 {} {initial stage_1 default objective_evaluation} 0
+37 38 37 {0.5} {initial stage_1 default objective_evaluation} 0
+35 54 35 {4.4090000000000007} {jacobian_evaluation} 0
+36 55 54 {} {jacobian_evaluation} 0
+37 56 55 {0.5} {jacobian_evaluation} 0
+34 50 34 {0.50115261903894981} {jacobian_evaluation} 0
+35 51 50 {4.408} {jacobian_evaluation} 0
+36 52 51 {} {jacobian_evaluation} 0
+37 53 52 {0.5} {jacobian_evaluation} 0
+33 39 33 {0.50115261903894981} {jacobian_evaluation} 0
+34 40 39 {0.5} {jacobian_evaluation} 0
+35 41 40 {4.408} {jacobian_evaluation} 0
+36 42 41 {} {jacobian_evaluation} 0
+37 43 42 {0.5} {jacobian_evaluation} 0
+32 44 32 {0.50115261903894981} {jacobian_evaluation} 0
+33 45 44 {0.5} {jacobian_evaluation} 0
+34 46 45 {0.5} {jacobian_evaluation} 0
+35 47 46 {4.408} {jacobian_evaluation} 0
+36 48 47 {} {jacobian_evaluation} 0
+37 49 48 {0.5} {jacobian_evaluation} 0
+32 57 32 {0.23688765916921811} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 58 57 {0.18550939272743583} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 59 58 {0.33566135837549738} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 60 59 {4.4580000000000002} {stage_1 objective_evaluation} 0
+36 61 60 {} {stage_1 objective_evaluation} 0
+37 62 61 {0.5} {stage_1 objective_evaluation} 0
+35 78 59 {4.4569999999999999} {jacobian_evaluation} 0
+36 79 78 {} {jacobian_evaluation} 0
+37 80 79 {0.5} {jacobian_evaluation} 0
+34 74 58 {0.33643513772010408} {jacobian_evaluation} 0
+35 75 74 {4.4580000000000002} {jacobian_evaluation} 0
+36 76 75 {} {jacobian_evaluation} 0
+37 77 76 {0.5} {jacobian_evaluation} 0
+33 63 57 {0.18593703604335918} {jacobian_evaluation} 0
+34 64 63 {0.33566135837549738} {jacobian_evaluation} 0
+35 65 64 {4.4580000000000002} {jacobian_evaluation} 0
+36 66 65 {} {jacobian_evaluation} 0
+37 67 66 {0.5} {jacobian_evaluation} 0
+32 68 32 {0.23743374162131953} {jacobian_evaluation} 0
+33 69 68 {0.18550939272743583} {jacobian_evaluation} 0
+34 70 69 {0.33566135837549738} {jacobian_evaluation} 0
+35 71 70 {4.4580000000000002} {jacobian_evaluation} 0
+36 72 71 {} {jacobian_evaluation} 0
+37 73 72 {0.5} {jacobian_evaluation} 0
+32 81 32 {0.27845007816973943} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 82 81 {0.23034748038992525} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 83 82 {0.36580754391560577} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 84 83 {4.4351760231454262} {stage_1 objective_evaluation} 0
+36 85 84 {} {stage_1 objective_evaluation} 0
+37 86 85 {0.5} {stage_1 objective_evaluation} 0
+35 102 83 {4.4361760231454266} {jacobian_evaluation} 0
+36 103 102 {} {jacobian_evaluation} 0
+37 104 103 {0.5} {jacobian_evaluation} 0
+34 98 82 {0.36665081739502298} {jacobian_evaluation} 0
+35 99 98 {4.4351760231454262} {jacobian_evaluation} 0
+36 100 99 {} {jacobian_evaluation} 0
+37 101 100 {0.5} {jacobian_evaluation} 0
+33 87 81 {0.23087848617286835} {jacobian_evaluation} 0
+34 88 87 {0.36580754391560577} {jacobian_evaluation} 0
+35 89 88 {4.4351760231454262} {jacobian_evaluation} 0
+36 90 89 {} {jacobian_evaluation} 0
+37 91 90 {0.5} {jacobian_evaluation} 0
+32 92 32 {0.27909197189273044} {jacobian_evaluation} 0
+33 93 92 {0.23034748038992525} {jacobian_evaluation} 0
+34 94 93 {0.36580754391560577} {jacobian_evaluation} 0
+35 95 94 {4.4351760231454262} {jacobian_evaluation} 0
+36 96 95 {} {jacobian_evaluation} 0
+37 97 96 {0.5} {jacobian_evaluation} 0
+32 105 32 {0.24206445124852763} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 106 105 {0.19218443848403086} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 107 106 {0.33893074819300634} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 108 107 {4.4200287668122566} {stage_1 objective_evaluation} 0
+36 109 108 {} {stage_1 objective_evaluation} 0
+37 110 109 {0.5} {stage_1 objective_evaluation} 0
+35 126 107 {4.421028766812257} {jacobian_evaluation} 0
+36 127 126 {} {jacobian_evaluation} 0
+37 128 127 {0.5} {jacobian_evaluation} 0
+34 122 106 {0.33971206425951189} {jacobian_evaluation} 0
+35 123 122 {4.4200287668122566} {jacobian_evaluation} 0
+36 124 123 {} {jacobian_evaluation} 0
+37 125 124 {0.5} {jacobian_evaluation} 0
+33 111 105 {0.19262746936960401} {jacobian_evaluation} 0
+34 112 111 {0.33893074819300634} {jacobian_evaluation} 0
+35 113 112 {4.4200287668122566} {jacobian_evaluation} 0
+36 114 113 {} {jacobian_evaluation} 0
+37 115 114 {0.5} {jacobian_evaluation} 0
+32 116 32 {0.2426224674388516} {jacobian_evaluation} 0
+33 117 116 {0.19218443848403086} {jacobian_evaluation} 0
+34 118 117 {0.33893074819300634} {jacobian_evaluation} 0
+35 119 118 {4.4200287668122566} {jacobian_evaluation} 0
+36 120 119 {} {jacobian_evaluation} 0
+37 121 120 {0.5} {jacobian_evaluation} 0
+32 129 32 {0.1582050459202379} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 130 129 {0.11047608175224614} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 131 130 {0.26901703627305912} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 132 131 {4.4034497898262774} {stage_1 objective_evaluation} 0
+36 133 132 {} {stage_1 objective_evaluation} 0
+37 134 133 {0.5} {stage_1 objective_evaluation} 0
+35 150 131 {4.4044497898262778} {jacobian_evaluation} 0
+36 151 150 {} {jacobian_evaluation} 0
+37 152 151 {0.5} {jacobian_evaluation} 0
+34 146 130 {0.26963718458867952} {jacobian_evaluation} 0
+35 147 146 {4.4034497898262774} {jacobian_evaluation} 0
+36 148 147 {} {jacobian_evaluation} 0
+37 149 148 {0.5} {jacobian_evaluation} 0
+33 135 129 {0.11073075542259858} {jacobian_evaluation} 0
+34 136 135 {0.26901703627305912} {jacobian_evaluation} 0
+35 137 136 {4.4034497898262774} {jacobian_evaluation} 0
+36 138 137 {} {jacobian_evaluation} 0
+37 139 138 {0.5} {jacobian_evaluation} 0
+32 140 32 {0.15856974621620909} {jacobian_evaluation} 0
+33 141 140 {0.11047608175224614} {jacobian_evaluation} 0
+34 142 141 {0.26901703627305912} {jacobian_evaluation} 0
+35 143 142 {4.4034497898262774} {jacobian_evaluation} 0
+36 144 143 {} {jacobian_evaluation} 0
+37 145 144 {0.5} {jacobian_evaluation} 0
+32 153 32 {0.1289785149553451} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 154 153 {0.089661836505713952} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 155 154 {0.23018894485847921} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 156 155 {4.4014505833013464} {stage_1 objective_evaluation} 0
+36 157 156 {} {stage_1 objective_evaluation} 0
+37 158 157 {0.5} {stage_1 objective_evaluation} 0
+35 174 155 {4.4024505833013468} {jacobian_evaluation} 0
+36 175 174 {} {jacobian_evaluation} 0
+37 176 175 {0.5} {jacobian_evaluation} 0
+34 170 154 {0.23071958517927851} {jacobian_evaluation} 0
+35 171 170 {4.4014505833013464} {jacobian_evaluation} 0
+36 172 171 {} {jacobian_evaluation} 0
+37 173 172 {0.5} {jacobian_evaluation} 0
+33 159 153 {0.089868528385361315} {jacobian_evaluation} 0
+34 160 159 {0.23018894485847921} {jacobian_evaluation} 0
+35 161 160 {4.4014505833013464} {jacobian_evaluation} 0
+36 162 161 {} {jacobian_evaluation} 0
+37 163 162 {0.5} {jacobian_evaluation} 0
+32 164 32 {0.12927584113925111} {jacobian_evaluation} 0
+33 165 164 {0.089661836505713952} {jacobian_evaluation} 0
+34 166 165 {0.23018894485847921} {jacobian_evaluation} 0
+35 167 166 {4.4014505833013464} {jacobian_evaluation} 0
+36 168 167 {} {jacobian_evaluation} 0
+37 169 168 {0.5} {jacobian_evaluation} 0
+32 177 32 {0.12550746838842236} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 178 177 {0.089770384278989993} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 179 178 {0.22050188676405644} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 180 179 {4.4003841689662515} {stage_1 objective_evaluation} 0
+36 181 180 {} {stage_1 objective_evaluation} 0
+37 182 181 {0.5} {stage_1 objective_evaluation} 0
+35 198 179 {4.4013841689662518} {jacobian_evaluation} 0
+36 199 198 {} {jacobian_evaluation} 0
+37 200 199 {0.5} {jacobian_evaluation} 0
+34 194 178 {0.22101019610967365} {jacobian_evaluation} 0
+35 195 194 {4.4003841689662515} {jacobian_evaluation} 0
+36 196 195 {} {jacobian_evaluation} 0
+37 197 196 {0.5} {jacobian_evaluation} 0
+33 183 177 {0.089977326387097586} {jacobian_evaluation} 0
+34 184 183 {0.22050188676405644} {jacobian_evaluation} 0
+35 185 184 {4.4003841689662515} {jacobian_evaluation} 0
+36 186 185 {} {jacobian_evaluation} 0
+37 187 186 {0.5} {jacobian_evaluation} 0
+32 188 32 {0.12579679298361215} {jacobian_evaluation} 0
+33 189 188 {0.089770384278989993} {jacobian_evaluation} 0
+34 190 189 {0.22050188676405644} {jacobian_evaluation} 0
+35 191 190 {4.4003841689662515} {jacobian_evaluation} 0
+36 192 191 {} {jacobian_evaluation} 0
+37 193 192 {0.5} {jacobian_evaluation} 0
+32 201 32 {0.11253260145051294} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 202 201 {0.090205891081501038} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 203 202 {0.18566228916428107} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 204 203 {4.3961185116258719} {stage_1 objective_evaluation} 0
+36 205 204 {} {stage_1 objective_evaluation} 0
+37 206 205 {0.5} {stage_1 objective_evaluation} 0
+35 222 203 {4.3971185116258722} {jacobian_evaluation} 0
+36 223 222 {} {jacobian_evaluation} 0
+37 224 223 {0.5} {jacobian_evaluation} 0
+34 218 202 {0.18609028494289259} {jacobian_evaluation} 0
+35 219 218 {4.3961185116258719} {jacobian_evaluation} 0
+36 220 219 {} {jacobian_evaluation} 0
+37 221 220 {0.5} {jacobian_evaluation} 0
+33 207 201 {0.090413837136472969} {jacobian_evaluation} 0
+34 208 207 {0.18566228916428107} {jacobian_evaluation} 0
+35 209 208 {4.3961185116258719} {jacobian_evaluation} 0
+36 210 209 {} {jacobian_evaluation} 0
+37 211 210 {0.5} {jacobian_evaluation} 0
+32 212 32 {0.11279201588838177} {jacobian_evaluation} 0
+33 213 212 {0.090205891081501038} {jacobian_evaluation} 0
+34 214 213 {0.18566228916428107} {jacobian_evaluation} 0
+35 215 214 {4.3961185116258719} {jacobian_evaluation} 0
+36 216 215 {} {jacobian_evaluation} 0
+37 217 216 {0.5} {jacobian_evaluation} 0
+32 225 32 {0.10445679937423999} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 226 225 {0.13008083462772907} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 227 226 {0.12365980882314008} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 228 227 {4.396183031454755} {stage_1 objective_evaluation} 0
+36 229 228 {} {stage_1 objective_evaluation} 0
+37 230 229 {0.5} {stage_1 objective_evaluation} 0
+35 246 227 {4.3971830314547553} {jacobian_evaluation} 0
+36 247 246 {} {jacobian_evaluation} 0
+37 248 247 {0.5} {jacobian_evaluation} 0
+34 242 226 {0.12394487412314498} {jacobian_evaluation} 0
+35 243 242 {4.396183031454755} {jacobian_evaluation} 0
+36 244 243 {} {jacobian_evaluation} 0
+37 245 244 {0.5} {jacobian_evaluation} 0
+33 231 225 {0.13038070192091789} {jacobian_evaluation} 0
+34 232 231 {0.12365980882314008} {jacobian_evaluation} 0
+35 233 232 {4.396183031454755} {jacobian_evaluation} 0
+36 234 233 {} {jacobian_evaluation} 0
+37 235 234 {0.5} {jacobian_evaluation} 0
+32 236 32 {0.10469759716565301} {jacobian_evaluation} 0
+33 237 236 {0.13008083462772907} {jacobian_evaluation} 0
+34 238 237 {0.12365980882314008} {jacobian_evaluation} 0
+35 239 238 {4.396183031454755} {jacobian_evaluation} 0
+36 240 239 {} {jacobian_evaluation} 0
+37 241 240 {0.5} {jacobian_evaluation} 0
+32 249 32 {0.12108857792833867} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 250 249 {0.15439318135617461} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 251 250 {0.13488556110380595} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 252 251 {4.4053224139917742} {stage_1 objective_evaluation} 0
+36 253 252 {} {stage_1 objective_evaluation} 0
+37 254 253 {0.5} {stage_1 objective_evaluation} 0
+35 270 251 {4.4063224139917745} {jacobian_evaluation} 0
+36 271 270 {} {jacobian_evaluation} 0
+37 272 271 {0.5} {jacobian_evaluation} 0
+34 266 250 {0.13519650443542131} {jacobian_evaluation} 0
+35 267 266 {4.4053224139917742} {jacobian_evaluation} 0
+36 268 267 {} {jacobian_evaluation} 0
+37 269 268 {0.5} {jacobian_evaluation} 0
+33 255 249 {0.15474909439680493} {jacobian_evaluation} 0
+34 256 255 {0.13488556110380595} {jacobian_evaluation} 0
+35 257 256 {4.4053224139917742} {jacobian_evaluation} 0
+36 258 257 {} {jacobian_evaluation} 0
+37 259 258 {0.5} {jacobian_evaluation} 0
+32 260 32 {0.1213677159289778} {jacobian_evaluation} 0
+33 261 260 {0.15439318135617461} {jacobian_evaluation} 0
+34 262 261 {0.13488556110380595} {jacobian_evaluation} 0
+35 263 262 {4.4053224139917742} {jacobian_evaluation} 0
+36 264 263 {} {jacobian_evaluation} 0
+37 265 264 {0.5} {jacobian_evaluation} 0
+32 273 32 {0.12052829659536586} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 274 273 {0.15502007183776953} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 275 274 {0.13304550476055432} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 276 275 {4.4054117679566165} {stage_1 objective_evaluation} 0
+36 277 276 {} {stage_1 objective_evaluation} 0
+37 278 277 {0.5} {stage_1 objective_evaluation} 0
+35 294 275 {4.4064117679566168} {jacobian_evaluation} 0
+36 295 294 {} {jacobian_evaluation} 0
+37 296 295 {0.5} {jacobian_evaluation} 0
+34 290 274 {0.13335220632422176} {jacobian_evaluation} 0
+35 291 290 {4.4054117679566165} {jacobian_evaluation} 0
+36 292 291 {} {jacobian_evaluation} 0
+37 293 292 {0.5} {jacobian_evaluation} 0
+33 279 273 {0.15537743001020868} {jacobian_evaluation} 0
+34 280 279 {0.13304550476055432} {jacobian_evaluation} 0
+35 281 280 {4.4054117679566165} {jacobian_evaluation} 0
+36 282 281 {} {jacobian_evaluation} 0
+37 283 282 {0.5} {jacobian_evaluation} 0
+32 284 32 {0.12080614301414189} {jacobian_evaluation} 0
+33 285 284 {0.15502007183776953} {jacobian_evaluation} 0
+34 286 285 {0.13304550476055432} {jacobian_evaluation} 0
+35 287 286 {4.4054117679566165} {jacobian_evaluation} 0
+36 288 287 {} {jacobian_evaluation} 0
+37 289 288 {0.5} {jacobian_evaluation} 0
+32 297 32 {0.12072330750200036} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 298 297 {0.15798625623449558} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 299 298 {0.1287013627184056} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 300 299 {4.4056647293324911} {stage_1 objective_evaluation} 0
+36 301 300 {} {stage_1 objective_evaluation} 0
+37 302 301 {0.5} {stage_1 objective_evaluation} 0
+35 318 299 {4.4066647293324914} {jacobian_evaluation} 0
+36 319 318 {} {jacobian_evaluation} 0
+37 320 319 {0.5} {jacobian_evaluation} 0
+34 314 298 {0.12899805000042164} {jacobian_evaluation} 0
+35 315 314 {4.4056647293324911} {jacobian_evaluation} 0
+36 316 315 {} {jacobian_evaluation} 0
+37 317 316 {0.5} {jacobian_evaluation} 0
+33 303 297 {0.15835045216815216} {jacobian_evaluation} 0
+34 304 303 {0.1287013627184056} {jacobian_evaluation} 0
+35 305 304 {4.4056647293324911} {jacobian_evaluation} 0
+36 306 305 {} {jacobian_evaluation} 0
+37 307 306 {0.5} {jacobian_evaluation} 0
+32 308 32 {0.12100160346734397} {jacobian_evaluation} 0
+33 309 308 {0.15798625623449558} {jacobian_evaluation} 0
+34 310 309 {0.1287013627184056} {jacobian_evaluation} 0
+35 311 310 {4.4056647293324911} {jacobian_evaluation} 0
+36 312 311 {} {jacobian_evaluation} 0
+37 313 312 {0.5} {jacobian_evaluation} 0
+32 321 32 {0.12451912916051193} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 322 321 {0.16220141419327511} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 323 322 {0.10682048818768632} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 324 323 {4.4056330265991326} {stage_1 objective_evaluation} 0
+36 325 324 {} {stage_1 objective_evaluation} 0
+37 326 325 {0.5} {stage_1 objective_evaluation} 0
+35 342 323 {4.4066330265991329} {jacobian_evaluation} 0
+36 343 342 {} {jacobian_evaluation} 0
+37 344 343 {0.5} {jacobian_evaluation} 0
+34 338 322 {0.10706673484455641} {jacobian_evaluation} 0
+35 339 338 {4.4056330265991326} {jacobian_evaluation} 0
+36 340 339 {} {jacobian_evaluation} 0
+37 341 340 {0.5} {jacobian_evaluation} 0
+33 327 321 {0.16257532706956263} {jacobian_evaluation} 0
+34 328 327 {0.10682048818768632} {jacobian_evaluation} 0
+35 329 328 {4.4056330265991326} {jacobian_evaluation} 0
+36 330 329 {} {jacobian_evaluation} 0
+37 331 330 {0.5} {jacobian_evaluation} 0
+32 332 32 {0.12480617539847964} {jacobian_evaluation} 0
+33 333 332 {0.16220141419327511} {jacobian_evaluation} 0
+34 334 333 {0.10682048818768632} {jacobian_evaluation} 0
+35 335 334 {4.4056330265991326} {jacobian_evaluation} 0
+36 336 335 {} {jacobian_evaluation} 0
+37 337 336 {0.5} {jacobian_evaluation} 0
+32 345 32 {0.16039035591568432} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 346 345 {0.16101614785637414} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 347 346 {0.044696415358333234} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 348 347 {4.4039654296054005} {stage_1 objective_evaluation} 0
+36 349 348 {} {stage_1 objective_evaluation} 0
+37 350 349 {0.5} {stage_1 objective_evaluation} 0
+35 366 347 {4.4049654296054008} {jacobian_evaluation} 0
+36 367 366 {} {jacobian_evaluation} 0
+37 368 367 {0.5} {jacobian_evaluation} 0
+34 362 346 {0.04479945123696287} {jacobian_evaluation} 0
+35 363 362 {4.4039654296054005} {jacobian_evaluation} 0
+36 364 363 {} {jacobian_evaluation} 0
+37 365 364 {0.5} {jacobian_evaluation} 0
+33 351 345 {0.16138732841156939} {jacobian_evaluation} 0
+34 352 351 {0.044696415358333234} {jacobian_evaluation} 0
+35 353 352 {4.4039654296054005} {jacobian_evaluation} 0
+36 354 353 {} {jacobian_evaluation} 0
+37 355 354 {0.5} {jacobian_evaluation} 0
+32 356 32 {0.16076009387146906} {jacobian_evaluation} 0
+33 357 356 {0.16101614785637414} {jacobian_evaluation} 0
+34 358 357 {0.044696415358333234} {jacobian_evaluation} 0
+35 359 358 {4.4039654296054005} {jacobian_evaluation} 0
+36 360 359 {} {jacobian_evaluation} 0
+37 361 360 {0.5} {jacobian_evaluation} 0
+32 369 32 {0.30828076201963278} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 370 369 {0.12664989222581424} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 371 370 {0.0059904492464238242} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 372 371 {4.3994055930311715} {stage_1 objective_evaluation} 0
+36 373 372 {} {stage_1 objective_evaluation} 0
+37 374 373 {0.5} {stage_1 objective_evaluation} 0
+35 390 371 {4.4004055930311718} {jacobian_evaluation} 0
+36 391 390 {} {jacobian_evaluation} 0
+37 392 391 {0.5} {jacobian_evaluation} 0
+34 386 370 {0.0060042586581304045} {jacobian_evaluation} 0
+35 387 386 {4.3994055930311715} {jacobian_evaluation} 0
+36 388 387 {} {jacobian_evaluation} 0
+37 389 388 {0.5} {jacobian_evaluation} 0
+33 375 369 {0.12694185037993508} {jacobian_evaluation} 0
+34 376 375 {0.0059904492464238242} {jacobian_evaluation} 0
+35 377 376 {4.3994055930311715} {jacobian_evaluation} 0
+36 378 377 {} {jacobian_evaluation} 0
+37 379 378 {0.5} {jacobian_evaluation} 0
+32 380 32 {0.30899142257092438} {jacobian_evaluation} 0
+33 381 380 {0.12664989222581424} {jacobian_evaluation} 0
+34 382 381 {0.0059904492464238242} {jacobian_evaluation} 0
+35 383 382 {4.3994055930311715} {jacobian_evaluation} 0
+36 384 383 {} {jacobian_evaluation} 0
+37 385 384 {0.5} {jacobian_evaluation} 0
+32 393 32 {0.20949132457069025} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 394 393 {0.14596615690106032} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 395 394 {0.019657024996127658} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 396 395 {4.4021016357581075} {stage_1 objective_evaluation} 0
+36 397 396 {} {stage_1 objective_evaluation} 0
+37 398 397 {0.5} {stage_1 objective_evaluation} 0
+35 414 395 {4.4031016357581079} {jacobian_evaluation} 0
+36 415 414 {} {jacobian_evaluation} 0
+37 416 415 {0.5} {jacobian_evaluation} 0
+34 410 394 {0.019702339118646953} {jacobian_evaluation} 0
+35 411 410 {4.4021016357581075} {jacobian_evaluation} 0
+36 412 411 {} {jacobian_evaluation} 0
+37 413 412 {0.5} {jacobian_evaluation} 0
+33 399 393 {0.14630264364403334} {jacobian_evaluation} 0
+34 400 399 {0.019657024996127658} {jacobian_evaluation} 0
+35 401 400 {4.4021016357581075} {jacobian_evaluation} 0
+36 402 401 {} {jacobian_evaluation} 0
+37 403 402 {0.5} {jacobian_evaluation} 0
+32 404 32 {0.20997425194908023} {jacobian_evaluation} 0
+33 405 404 {0.14596615690106032} {jacobian_evaluation} 0
+34 406 405 {0.019657024996127658} {jacobian_evaluation} 0
+35 407 406 {4.4021016357581075} {jacobian_evaluation} 0
+36 408 407 {} {jacobian_evaluation} 0
+37 409 408 {0.5} {jacobian_evaluation} 0
+32 417 32 {0.20350483504495603} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 418 417 {0.11457619733067938} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 419 418 {0.017167439178207018} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 420 419 {4.3961409413546333} {stage_1 objective_evaluation} 0
+36 421 420 {} {stage_1 objective_evaluation} 0
+37 422 421 {0.5} {stage_1 objective_evaluation} 0
+35 438 419 {4.3971409413546336} {jacobian_evaluation} 0
+36 439 438 {} {jacobian_evaluation} 0
+37 440 439 {0.5} {jacobian_evaluation} 0
+34 434 418 {0.017207014212700645} {jacobian_evaluation} 0
+35 435 434 {4.3961409413546333} {jacobian_evaluation} 0
+36 436 435 {} {jacobian_evaluation} 0
+37 437 436 {0.5} {jacobian_evaluation} 0
+33 423 417 {0.11484032274358701} {jacobian_evaluation} 0
+34 424 423 {0.017167439178207018} {jacobian_evaluation} 0
+35 425 424 {4.3961409413546333} {jacobian_evaluation} 0
+36 426 425 {} {jacobian_evaluation} 0
+37 427 426 {0.5} {jacobian_evaluation} 0
+32 428 32 {0.20397396213973834} {jacobian_evaluation} 0
+33 429 428 {0.11457619733067938} {jacobian_evaluation} 0
+34 430 429 {0.017167439178207018} {jacobian_evaluation} 0
+35 431 430 {4.3961409413546333} {jacobian_evaluation} 0
+36 432 431 {} {jacobian_evaluation} 0
+37 433 432 {0.5} {jacobian_evaluation} 0
+32 441 32 {0.20738318165753669} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 442 441 {0.1341428805367347} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 443 442 {0.018749987581153441} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 444 443 {4.4000222328959762} {stage_1 objective_evaluation} 0
+36 445 444 {} {stage_1 objective_evaluation} 0
+37 446 445 {0.5} {stage_1 objective_evaluation} 0
+35 462 443 {4.4010222328959765} {jacobian_evaluation} 0
+36 463 462 {} {jacobian_evaluation} 0
+37 464 463 {0.5} {jacobian_evaluation} 0
+34 458 442 {0.018793210766485657} {jacobian_evaluation} 0
+35 459 458 {4.4000222328959762} {jacobian_evaluation} 0
+36 460 459 {} {jacobian_evaluation} 0
+37 461 460 {0.5} {jacobian_evaluation} 0
+33 447 441 {0.13445211181282715} {jacobian_evaluation} 0
+34 448 447 {0.018749987581153441} {jacobian_evaluation} 0
+35 449 448 {4.4000222328959762} {jacobian_evaluation} 0
+36 450 449 {} {jacobian_evaluation} 0
+37 451 450 {0.5} {jacobian_evaluation} 0
+32 452 32 {0.20786124926460961} {jacobian_evaluation} 0
+33 453 452 {0.1341428805367347} {jacobian_evaluation} 0
+34 454 453 {0.018749987581153441} {jacobian_evaluation} 0
+35 455 454 {4.4000222328959762} {jacobian_evaluation} 0
+36 456 455 {} {jacobian_evaluation} 0
+37 457 456 {0.5} {jacobian_evaluation} 0
+32 465 32 {0.20611517442023239} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 466 465 {0.10614400482557917} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 467 466 {0.018800480646431268} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 468 467 {4.391144912080021} {stage_1 objective_evaluation} 0
+36 469 468 {} {stage_1 objective_evaluation} 0
+37 470 469 {0.5} {stage_1 objective_evaluation} 0
+35 486 467 {4.3921449120800213} {jacobian_evaluation} 0
+36 487 486 {} {jacobian_evaluation} 0
+37 488 487 {0.5} {jacobian_evaluation} 0
+34 482 466 {0.018843820230300234} {jacobian_evaluation} 0
+35 483 482 {4.391144912080021} {jacobian_evaluation} 0
+36 484 483 {} {jacobian_evaluation} 0
+37 485 484 {0.5} {jacobian_evaluation} 0
+33 471 465 {0.10638869202724387} {jacobian_evaluation} 0
+34 472 471 {0.018800480646431268} {jacobian_evaluation} 0
+35 473 472 {4.391144912080021} {jacobian_evaluation} 0
+36 474 473 {} {jacobian_evaluation} 0
+37 475 474 {0.5} {jacobian_evaluation} 0
+32 476 32 {0.20659031896873883} {jacobian_evaluation} 0
+33 477 476 {0.10614400482557917} {jacobian_evaluation} 0
+34 478 477 {0.018800480646431268} {jacobian_evaluation} 0
+35 479 478 {4.391144912080021} {jacobian_evaluation} 0
+36 480 479 {} {jacobian_evaluation} 0
+37 481 480 {0.5} {jacobian_evaluation} 0
+32 489 32 {0.20514405097721841} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 490 489 {0.097730109356766334} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 491 490 {0.027499998998764007} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 492 491 {4.3898755076359439} {stage_1 objective_evaluation} 0
+36 493 492 {} {stage_1 objective_evaluation} 0
+37 494 493 {0.5} {stage_1 objective_evaluation} 0
+35 510 491 {4.3908755076359443} {jacobian_evaluation} 0
+36 511 510 {} {jacobian_evaluation} 0
+37 512 511 {0.5} {jacobian_evaluation} 0
+34 506 490 {0.027563393043598155} {jacobian_evaluation} 0
+35 507 506 {4.3898755076359439} {jacobian_evaluation} 0
+36 508 507 {} {jacobian_evaluation} 0
+37 509 508 {0.5} {jacobian_evaluation} 0
+33 495 489 {0.097955400526212821} {jacobian_evaluation} 0
+34 496 495 {0.027499998998764007} {jacobian_evaluation} 0
+35 497 496 {4.3898755076359439} {jacobian_evaluation} 0
+36 498 497 {} {jacobian_evaluation} 0
+37 499 498 {0.5} {jacobian_evaluation} 0
+32 500 32 {0.20561695685498568} {jacobian_evaluation} 0
+33 501 500 {0.097730109356766334} {jacobian_evaluation} 0
+34 502 501 {0.027499998998764007} {jacobian_evaluation} 0
+35 503 502 {4.3898755076359439} {jacobian_evaluation} 0
+36 504 503 {} {jacobian_evaluation} 0
+37 505 504 {0.5} {jacobian_evaluation} 0
+32 513 32 {0.20130509717198281} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 514 513 {0.070236044500551292} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 515 514 {0.12588894105642723} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 516 515 {4.3847978898596356} {stage_1 objective_evaluation} 0
+36 517 516 {} {stage_1 objective_evaluation} 0
+37 518 517 {0.5} {stage_1 objective_evaluation} 0
+35 534 515 {4.3857978898596359} {jacobian_evaluation} 0
+36 535 534 {} {jacobian_evaluation} 0
+37 536 535 {0.5} {jacobian_evaluation} 0
+34 530 514 {0.12617914503693697} {jacobian_evaluation} 0
+35 531 530 {4.3847978898596356} {jacobian_evaluation} 0
+36 532 531 {} {jacobian_evaluation} 0
+37 533 532 {0.5} {jacobian_evaluation} 0
+33 519 513 {0.070397955304775009} {jacobian_evaluation} 0
+34 520 519 {0.12588894105642723} {jacobian_evaluation} 0
+35 521 520 {4.3847978898596356} {jacobian_evaluation} 0
+36 522 521 {} {jacobian_evaluation} 0
+37 523 522 {0.5} {jacobian_evaluation} 0
+32 524 32 {0.20176915334725895} {jacobian_evaluation} 0
+33 525 524 {0.070236044500551292} {jacobian_evaluation} 0
+34 526 525 {0.12588894105642723} {jacobian_evaluation} 0
+35 527 526 {4.3847978898596356} {jacobian_evaluation} 0
+36 528 527 {} {jacobian_evaluation} 0
+37 529 528 {0.5} {jacobian_evaluation} 0
+32 537 32 {0.20463121263304096} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 538 537 {0.093544627716716039} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 539 538 {0.033641035478480831} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 540 539 {4.3892027240304916} {stage_1 objective_evaluation} 0
+36 541 540 {} {stage_1 objective_evaluation} 0
+37 542 541 {0.5} {stage_1 objective_evaluation} 0
+35 558 539 {4.3902027240304919} {jacobian_evaluation} 0
+36 559 558 {} {jacobian_evaluation} 0
+37 560 559 {0.5} {jacobian_evaluation} 0
+34 554 538 {0.033718586074445785} {jacobian_evaluation} 0
+35 555 554 {4.3892027240304916} {jacobian_evaluation} 0
+36 556 555 {} {jacobian_evaluation} 0
+37 557 556 {0.5} {jacobian_evaluation} 0
+33 543 537 {0.093760270354511538} {jacobian_evaluation} 0
+34 544 543 {0.033641035478480831} {jacobian_evaluation} 0
+35 545 544 {4.3892027240304916} {jacobian_evaluation} 0
+36 546 545 {} {jacobian_evaluation} 0
+37 547 546 {0.5} {jacobian_evaluation} 0
+32 548 32 {0.20510293629632942} {jacobian_evaluation} 0
+33 549 548 {0.093544627716716039} {jacobian_evaluation} 0
+34 550 549 {0.033641035478480831} {jacobian_evaluation} 0
+35 551 550 {4.3892027240304916} {jacobian_evaluation} 0
+36 552 551 {} {jacobian_evaluation} 0
+37 553 552 {0.5} {jacobian_evaluation} 0
+32 561 32 {0.23994080035192625} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 562 561 {0.069151210231513022} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 563 562 {0.055399591184301676} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 564 563 {4.3808099706524484} {stage_1 objective_evaluation} 0
+36 565 564 {} {stage_1 objective_evaluation} 0
+37 566 565 {0.5} {stage_1 objective_evaluation} 0
+35 582 563 {4.3818099706524487} {jacobian_evaluation} 0
+36 583 582 {} {jacobian_evaluation} 0
+37 584 583 {0.5} {jacobian_evaluation} 0
+34 578 562 {0.055527300431399786} {jacobian_evaluation} 0
+35 579 578 {4.3808099706524484} {jacobian_evaluation} 0
+36 580 579 {} {jacobian_evaluation} 0
+37 581 580 {0.5} {jacobian_evaluation} 0
+33 567 561 {0.069310620234471529} {jacobian_evaluation} 0
+34 568 567 {0.055399591184301676} {jacobian_evaluation} 0
+35 569 568 {4.3808099706524484} {jacobian_evaluation} 0
+36 570 569 {} {jacobian_evaluation} 0
+37 571 570 {0.5} {jacobian_evaluation} 0
+32 572 32 {0.24049392102133924} {jacobian_evaluation} 0
+33 573 572 {0.069151210231513022} {jacobian_evaluation} 0
+34 574 573 {0.055399591184301676} {jacobian_evaluation} 0
+35 575 574 {4.3808099706524484} {jacobian_evaluation} 0
+36 576 575 {} {jacobian_evaluation} 0
+37 577 576 {0.5} {jacobian_evaluation} 0
+32 585 32 {0.20926641628311157} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 586 585 {0.08965094984396943} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 587 586 {0.036087149255085188} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 588 587 {4.3880217719652492} {stage_1 objective_evaluation} 0
+36 589 588 {} {stage_1 objective_evaluation} 0
+37 590 589 {0.5} {stage_1 objective_evaluation} 0
+35 606 587 {4.3890217719652496} {jacobian_evaluation} 0
+36 607 606 {} {jacobian_evaluation} 0
+37 608 607 {0.5} {jacobian_evaluation} 0
+34 602 586 {0.036170338725670846} {jacobian_evaluation} 0
+35 603 602 {4.3880217719652492} {jacobian_evaluation} 0
+36 604 603 {} {jacobian_evaluation} 0
+37 605 604 {0.5} {jacobian_evaluation} 0
+33 591 585 {0.089857616627269599} {jacobian_evaluation} 0
+34 592 591 {0.036087149255085188} {jacobian_evaluation} 0
+35 593 592 {4.3880217719652492} {jacobian_evaluation} 0
+36 594 593 {} {jacobian_evaluation} 0
+37 595 594 {0.5} {jacobian_evaluation} 0
+32 596 32 {0.20974882519435301} {jacobian_evaluation} 0
+33 597 596 {0.08965094984396943} {jacobian_evaluation} 0
+34 598 597 {0.036087149255085188} {jacobian_evaluation} 0
+35 599 598 {4.3880217719652492} {jacobian_evaluation} 0
+36 600 599 {} {jacobian_evaluation} 0
+37 601 600 {0.5} {jacobian_evaluation} 0
+32 609 32 {0.25024501707913083} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 610 609 {0.089690515337194077} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 611 610 {0.02753125482516032} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 612 611 {4.3878323468363876} {stage_1 objective_evaluation} 0
+36 613 612 {} {stage_1 objective_evaluation} 0
+37 614 613 {0.5} {stage_1 objective_evaluation} 0
+35 630 611 {4.3888323468363879} {jacobian_evaluation} 0
+36 631 630 {} {jacobian_evaluation} 0
+37 632 631 {0.5} {jacobian_evaluation} 0
+34 626 610 {0.027594720922115634} {jacobian_evaluation} 0
+35 627 626 {4.3878323468363876} {jacobian_evaluation} 0
+36 628 627 {} {jacobian_evaluation} 0
+37 629 628 {0.5} {jacobian_evaluation} 0
+33 615 609 {0.089897273328375799} {jacobian_evaluation} 0
+34 616 615 {0.02753125482516032} {jacobian_evaluation} 0
+35 617 616 {4.3878323468363876} {jacobian_evaluation} 0
+36 618 617 {} {jacobian_evaluation} 0
+37 619 618 {0.5} {jacobian_evaluation} 0
+32 620 32 {0.25082189142130629} {jacobian_evaluation} 0
+33 621 620 {0.089690515337194077} {jacobian_evaluation} 0
+34 622 621 {0.02753125482516032} {jacobian_evaluation} 0
+35 623 622 {4.3878323468363876} {jacobian_evaluation} 0
+36 624 623 {} {jacobian_evaluation} 0
+37 625 624 {0.5} {jacobian_evaluation} 0
+32 633 32 {0.22481829068156892} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 634 633 {0.089666807436957013} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 635 634 {0.032377436641175539} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 636 635 {4.3879458415660482} {stage_1 objective_evaluation} 0
+36 637 636 {} {stage_1 objective_evaluation} 0
+37 638 637 {0.5} {stage_1 objective_evaluation} 0
+35 654 635 {4.3889458415660485} {jacobian_evaluation} 0
+36 655 654 {} {jacobian_evaluation} 0
+37 656 655 {0.5} {jacobian_evaluation} 0
+34 650 634 {0.032452074340985557} {jacobian_evaluation} 0
+35 651 650 {4.3879458415660482} {jacobian_evaluation} 0
+36 652 651 {} {jacobian_evaluation} 0
+37 653 652 {0.5} {jacobian_evaluation} 0
+33 639 633 {0.089873510775784357} {jacobian_evaluation} 0
+34 640 639 {0.032377436641175539} {jacobian_evaluation} 0
+35 641 640 {4.3879458415660482} {jacobian_evaluation} 0
+36 642 641 {} {jacobian_evaluation} 0
+37 643 642 {0.5} {jacobian_evaluation} 0
+32 644 32 {0.22533655036585637} {jacobian_evaluation} 0
+33 645 644 {0.089666807436957013} {jacobian_evaluation} 0
+34 646 645 {0.032377436641175539} {jacobian_evaluation} 0
+35 647 646 {4.3879458415660482} {jacobian_evaluation} 0
+36 648 647 {} {jacobian_evaluation} 0
+37 649 648 {0.5} {jacobian_evaluation} 0
+32 657 32 {0.22268441695711877} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 658 657 {0.093742503787877407} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 659 658 {0.032592835049935369} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 660 659 {4.38829599800148} {stage_1 objective_evaluation} 0
+36 661 660 {} {stage_1 objective_evaluation} 0
+37 662 661 {0.5} {stage_1 objective_evaluation} 0
+35 678 659 {4.3892959980014803} {jacobian_evaluation} 0
+36 679 678 {} {jacobian_evaluation} 0
+37 680 679 {0.5} {jacobian_evaluation} 0
+34 674 658 {0.032667969294359174} {jacobian_evaluation} 0
+35 675 674 {4.38829599800148} {jacobian_evaluation} 0
+36 676 675 {} {jacobian_evaluation} 0
+37 677 676 {0.5} {jacobian_evaluation} 0
+33 663 657 {0.093958602577126848} {jacobian_evaluation} 0
+34 664 663 {0.032592835049935369} {jacobian_evaluation} 0
+35 665 664 {4.38829599800148} {jacobian_evaluation} 0
+36 666 665 {} {jacobian_evaluation} 0
+37 667 666 {0.5} {jacobian_evaluation} 0
+32 668 32 {0.22319775755444318} {jacobian_evaluation} 0
+33 669 668 {0.093742503787877407} {jacobian_evaluation} 0
+34 670 669 {0.032592835049935369} {jacobian_evaluation} 0
+35 671 670 {4.38829599800148} {jacobian_evaluation} 0
+36 672 671 {} {jacobian_evaluation} 0
+37 673 672 {0.5} {jacobian_evaluation} 0
+32 681 32 {0.22443508274186005} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 682 681 {0.090382634892727715} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 683 682 {0.032415862745780011} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 684 683 {4.3880084782892244} {stage_1 objective_evaluation} 0
+36 685 684 {} {stage_1 objective_evaluation} 0
+37 686 685 {0.5} {stage_1 objective_evaluation} 0
+35 702 683 {4.3890084782892247} {jacobian_evaluation} 0
+36 703 702 {} {jacobian_evaluation} 0
+37 704 703 {0.5} {jacobian_evaluation} 0
+34 698 682 {0.032490589026909537} {jacobian_evaluation} 0
+35 699 698 {4.3880084782892244} {jacobian_evaluation} 0
+36 700 699 {} {jacobian_evaluation} 0
+37 701 700 {0.5} {jacobian_evaluation} 0
+33 687 681 {0.090590988384263313} {jacobian_evaluation} 0
+34 688 687 {0.032415862745780011} {jacobian_evaluation} 0
+35 689 688 {4.3880084782892244} {jacobian_evaluation} 0
+36 690 689 {} {jacobian_evaluation} 0
+37 691 690 {0.5} {jacobian_evaluation} 0
+32 692 32 {0.22495245904061315} {jacobian_evaluation} 0
+33 693 692 {0.090382634892727715} {jacobian_evaluation} 0
+34 694 693 {0.032415862745780011} {jacobian_evaluation} 0
+35 695 694 {4.3880084782892244} {jacobian_evaluation} 0
+36 696 695 {} {jacobian_evaluation} 0
+37 697 696 {0.5} {jacobian_evaluation} 0
+32 705 32 {0.22198327946951743} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 706 705 {0.089058636350438508} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 707 706 {0.031786865061853922} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 708 707 {4.3868582380514507} {stage_1 objective_evaluation} 0
+36 709 708 {} {stage_1 objective_evaluation} 0
+37 710 709 {0.5} {stage_1 objective_evaluation} 0
+35 726 707 {4.387858238051451} {jacobian_evaluation} 0
+36 727 726 {} {jacobian_evaluation} 0
+37 728 727 {0.5} {jacobian_evaluation} 0
+34 722 706 {0.031860141353571562} {jacobian_evaluation} 0
+35 723 722 {4.3868582380514507} {jacobian_evaluation} 0
+36 724 723 {} {jacobian_evaluation} 0
+37 725 724 {0.5} {jacobian_evaluation} 0
+33 711 705 {0.08926393771011934} {jacobian_evaluation} 0
+34 712 711 {0.031786865061853922} {jacobian_evaluation} 0
+35 713 712 {4.3868582380514507} {jacobian_evaluation} 0
+36 714 713 {} {jacobian_evaluation} 0
+37 715 714 {0.5} {jacobian_evaluation} 0
+32 716 32 {0.2224950037780076} {jacobian_evaluation} 0
+33 717 716 {0.089058636350438508} {jacobian_evaluation} 0
+34 718 717 {0.031786865061853922} {jacobian_evaluation} 0
+35 719 718 {4.3868582380514507} {jacobian_evaluation} 0
+36 720 719 {} {jacobian_evaluation} 0
+37 721 720 {0.5} {jacobian_evaluation} 0
+32 729 32 {0.22423276231852921} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 730 729 {0.090273190922156743} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 731 730 {0.032363753521269065} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 732 731 {4.38791403840903} {stage_1 objective_evaluation} 0
+36 733 732 {} {stage_1 objective_evaluation} 0
+37 734 733 {0.5} {stage_1 objective_evaluation} 0
+35 750 731 {4.3889140384090304} {jacobian_evaluation} 0
+36 751 750 {} {jacobian_evaluation} 0
+37 752 751 {0.5} {jacobian_evaluation} 0
+34 746 730 {0.032438359678230048} {jacobian_evaluation} 0
+35 747 746 {4.38791403840903} {jacobian_evaluation} 0
+36 748 747 {} {jacobian_evaluation} 0
+37 749 748 {0.5} {jacobian_evaluation} 0
+33 735 729 {0.090481292119283976} {jacobian_evaluation} 0
+34 736 735 {0.032363753521269065} {jacobian_evaluation} 0
+35 737 736 {4.38791403840903} {jacobian_evaluation} 0
+36 738 737 {} {jacobian_evaluation} 0
+37 739 738 {0.5} {jacobian_evaluation} 0
+32 740 32 {0.22474967222053852} {jacobian_evaluation} 0
+33 741 740 {0.090273190922156743} {jacobian_evaluation} 0
+34 742 741 {0.032363753521269065} {jacobian_evaluation} 0
+35 743 742 {4.38791403840903} {jacobian_evaluation} 0
+36 744 743 {} {jacobian_evaluation} 0
+37 745 744 {0.5} {jacobian_evaluation} 0
+32 753 32 {0.22440597348372432} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 754 753 {0.090366886333410307} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 755 754 {0.032408363157465848} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 756 755 {4.3879948958058819} {stage_1 objective_evaluation} 0
+36 757 756 {} {stage_1 objective_evaluation} 0
+37 758 757 {0.5} {stage_1 objective_evaluation} 0
+35 774 755 {4.3889948958058822} {jacobian_evaluation} 0
+36 775 774 {} {jacobian_evaluation} 0
+37 776 775 {0.5} {jacobian_evaluation} 0
+34 770 754 {0.032483072150258835} {jacobian_evaluation} 0
+35 771 770 {4.3879948958058819} {jacobian_evaluation} 0
+36 772 771 {} {jacobian_evaluation} 0
+37 773 772 {0.5} {jacobian_evaluation} 0
+33 759 753 {0.090575203520767297} {jacobian_evaluation} 0
+34 760 759 {0.032408363157465848} {jacobian_evaluation} 0
+35 761 760 {4.3879948958058819} {jacobian_evaluation} 0
+36 762 761 {} {jacobian_evaluation} 0
+37 763 762 {0.5} {jacobian_evaluation} 0
+32 764 32 {0.22492328267870715} {jacobian_evaluation} 0
+33 765 764 {0.090366886333410307} {jacobian_evaluation} 0
+34 766 765 {0.032408363157465848} {jacobian_evaluation} 0
+35 767 766 {4.3879948958058819} {jacobian_evaluation} 0
+36 768 767 {} {jacobian_evaluation} 0
+37 769 768 {0.5} {jacobian_evaluation} 0
+32 777 32 {0.22443036926844523} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 778 777 {0.090380084783032541} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 779 778 {0.032414648334336514} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 780 779 {4.3880062790853067} {stage_1 objective_evaluation} 0
+36 781 780 {} {stage_1 objective_evaluation} 0
+37 782 781 {0.5} {stage_1 objective_evaluation} 0
+35 798 779 {4.389006279085307} {jacobian_evaluation} 0
+36 799 798 {} {jacobian_evaluation} 0
+37 800 799 {0.5} {jacobian_evaluation} 0
+34 794 778 {0.03248937181595854} {jacobian_evaluation} 0
+35 795 794 {4.3880062790853067} {jacobian_evaluation} 0
+36 796 795 {} {jacobian_evaluation} 0
+37 797 796 {0.5} {jacobian_evaluation} 0
+33 783 777 {0.090588432395958166} {jacobian_evaluation} 0
+34 784 783 {0.032414648334336514} {jacobian_evaluation} 0
+35 785 784 {4.3880062790853067} {jacobian_evaluation} 0
+36 786 785 {} {jacobian_evaluation} 0
+37 787 786 {0.5} {jacobian_evaluation} 0
+32 788 32 {0.22494773470151994} {jacobian_evaluation} 0
+33 789 788 {0.090380084783032541} {jacobian_evaluation} 0
+34 790 789 {0.032414648334336514} {jacobian_evaluation} 0
+35 791 790 {4.3880062790853067} {jacobian_evaluation} 0
+36 792 791 {} {jacobian_evaluation} 0
+37 793 792 {0.5} {jacobian_evaluation} 0
+32 801 32 {0.22443427303308788} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 802 801 {0.090382196818259847} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 803 802 {0.03241565412546632} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 804 803 {4.3880081005000529} {stage_1 objective_evaluation} 0
+36 805 804 {} {stage_1 objective_evaluation} 0
+37 806 805 {0.5} {stage_1 objective_evaluation} 0
+35 822 803 {4.3890081005000532} {jacobian_evaluation} 0
+36 823 822 {} {jacobian_evaluation} 0
+37 824 823 {0.5} {jacobian_evaluation} 0
+34 818 802 {0.032490379925676362} {jacobian_evaluation} 0
+35 819 818 {4.3880081005000529} {jacobian_evaluation} 0
+36 820 819 {} {jacobian_evaluation} 0
+37 821 820 {0.5} {jacobian_evaluation} 0
+33 807 801 {0.090590549299929504} {jacobian_evaluation} 0
+34 808 807 {0.03241565412546632} {jacobian_evaluation} 0
+35 809 808 {4.3880081005000529} {jacobian_evaluation} 0
+36 810 809 {} {jacobian_evaluation} 0
+37 811 810 {0.5} {jacobian_evaluation} 0
+32 812 32 {0.22495164746526947} {jacobian_evaluation} 0
+33 813 812 {0.090382196818259847} {jacobian_evaluation} 0
+34 814 813 {0.03241565412546632} {jacobian_evaluation} 0
+35 815 814 {4.3880081005000529} {jacobian_evaluation} 0
+36 816 815 {} {jacobian_evaluation} 0
+37 817 816 {0.5} {jacobian_evaluation} 0
+32 825 32 {0.22443492794533706} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 826 825 {0.090382551143556741} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 827 826 {0.032415822862630388} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 828 827 {4.3880084060652758} {stage_1 objective_evaluation} 0
+36 829 828 {} {stage_1 objective_evaluation} 0
+37 830 829 {0.5} {stage_1 objective_evaluation} 0
+35 846 827 {4.3890084060652761} {jacobian_evaluation} 0
+36 847 846 {} {jacobian_evaluation} 0
+37 848 847 {0.5} {jacobian_evaluation} 0
+34 842 826 {0.032490549051819764} {jacobian_evaluation} 0
+35 843 842 {4.3880084060652758} {jacobian_evaluation} 0
+36 844 843 {} {jacobian_evaluation} 0
+37 845 844 {0.5} {jacobian_evaluation} 0
+33 831 825 {0.090590904442030565} {jacobian_evaluation} 0
+34 832 831 {0.032415822862630388} {jacobian_evaluation} 0
+35 833 832 {4.3880084060652758} {jacobian_evaluation} 0
+36 834 833 {} {jacobian_evaluation} 0
+37 835 834 {0.5} {jacobian_evaluation} 0
+32 836 32 {0.22495230388724732} {jacobian_evaluation} 0
+33 837 836 {0.090382551143556741} {jacobian_evaluation} 0
+34 838 837 {0.032415822862630388} {jacobian_evaluation} 0
+35 839 838 {4.3880084060652758} {jacobian_evaluation} 0
+36 840 839 {} {jacobian_evaluation} 0
+37 841 840 {0.5} {jacobian_evaluation} 0
+32 849 32 {0.22443505541923212} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 850 849 {0.090382620110434048} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 851 850 {0.032415855706134152} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 852 851 {4.3880084655412146} {stage_1 objective_evaluation} 0
+36 853 852 {} {stage_1 objective_evaluation} 0
+37 854 853 {0.5} {stage_1 objective_evaluation} 0
+35 870 851 {4.3890084655412149} {jacobian_evaluation} 0
+36 871 870 {} {jacobian_evaluation} 0
+37 872 871 {0.5} {jacobian_evaluation} 0
+34 866 850 {0.032490581971035624} {jacobian_evaluation} 0
+35 867 866 {4.3880084655412146} {jacobian_evaluation} 0
+36 868 867 {} {jacobian_evaluation} 0
+37 869 868 {0.5} {jacobian_evaluation} 0
+33 855 849 {0.090590973567892946} {jacobian_evaluation} 0
+34 856 855 {0.032415855706134152} {jacobian_evaluation} 0
+35 857 856 {4.3880084655412146} {jacobian_evaluation} 0
+36 858 857 {} {jacobian_evaluation} 0
+37 859 858 {0.5} {jacobian_evaluation} 0
+32 860 32 {0.22495243165500003} {jacobian_evaluation} 0
+33 861 860 {0.090382620110434048} {jacobian_evaluation} 0
+34 862 861 {0.032415855706134152} {jacobian_evaluation} 0
+35 863 862 {4.3880084655412146} {jacobian_evaluation} 0
+36 864 863 {} {jacobian_evaluation} 0
+37 865 864 {0.5} {jacobian_evaluation} 0
+32 873 32 {0.2244350783159568} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 874 873 {0.090382632498192186} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 875 874 {0.032415861605450721} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 876 875 {4.3880084762242157} {stage_1 objective_evaluation} 0
+36 877 876 {} {stage_1 objective_evaluation} 0
+37 878 877 {0.5} {stage_1 objective_evaluation} 0
+35 894 875 {4.3890084762242161} {jacobian_evaluation} 0
+36 895 894 {} {jacobian_evaluation} 0
+37 896 895 {0.5} {jacobian_evaluation} 0
+34 890 874 {0.032490587883951524} {jacobian_evaluation} 0
+35 891 890 {4.3880084762242157} {jacobian_evaluation} 0
+36 892 891 {} {jacobian_evaluation} 0
+37 893 892 {0.5} {jacobian_evaluation} 0
+33 879 873 {0.090590985984207811} {jacobian_evaluation} 0
+34 880 879 {0.032415861605450721} {jacobian_evaluation} 0
+35 881 880 {4.3880084762242157} {jacobian_evaluation} 0
+36 882 881 {} {jacobian_evaluation} 0
+37 883 882 {0.5} {jacobian_evaluation} 0
+32 884 32 {0.22495245460450713} {jacobian_evaluation} 0
+33 885 884 {0.090382632498192186} {jacobian_evaluation} 0
+34 886 885 {0.032415861605450721} {jacobian_evaluation} 0
+35 887 886 {4.3880084762242157} {jacobian_evaluation} 0
+36 888 887 {} {jacobian_evaluation} 0
+37 889 888 {0.5} {jacobian_evaluation} 0
+32 897 32 {0.2244350756631214} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 898 897 {0.090382631062935218} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 899 898 {0.032415860921950493} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 900 899 {4.3880084749864743} {stage_1 objective_evaluation} 0
+36 901 900 {} {stage_1 objective_evaluation} 0
+37 902 901 {0.5} {stage_1 objective_evaluation} 0
+35 918 899 {4.3890084749864746} {jacobian_evaluation} 0
+36 919 918 {} {jacobian_evaluation} 0
+37 920 919 {0.5} {jacobian_evaluation} 0
+34 914 898 {0.032490587198875667} {jacobian_evaluation} 0
+35 915 914 {4.3880084749864743} {jacobian_evaluation} 0
+36 916 915 {} {jacobian_evaluation} 0
+37 917 916 {0.5} {jacobian_evaluation} 0
+33 903 897 {0.090590984545642225} {jacobian_evaluation} 0
+34 904 903 {0.032415860921950493} {jacobian_evaluation} 0
+35 905 904 {4.3880084749864743} {jacobian_evaluation} 0
+36 906 905 {} {jacobian_evaluation} 0
+37 907 906 {0.5} {jacobian_evaluation} 0
+32 908 32 {0.22495245194555633} {jacobian_evaluation} 0
+33 909 908 {0.090382631062935218} {jacobian_evaluation} 0
+34 910 909 {0.032415860921950493} {jacobian_evaluation} 0
+35 911 910 {4.3880084749864743} {jacobian_evaluation} 0
+36 912 911 {} {jacobian_evaluation} 0
+37 913 912 {0.5} {jacobian_evaluation} 0
+32 921 32 {0.22443506554117654} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 922 921 {0.090382625586684445} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 923 922 {0.032415858314042215} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 924 923 {4.3880084702638449} {stage_1 objective_evaluation} 0
+36 925 924 {} {stage_1 objective_evaluation} 0
+37 926 925 {0.5} {stage_1 objective_evaluation} 0
+35 942 923 {4.3890084702638452} {jacobian_evaluation} 0
+36 943 942 {} {jacobian_evaluation} 0
+37 944 943 {0.5} {jacobian_evaluation} 0
+34 938 922 {0.032490584584955538} {jacobian_evaluation} 0
+35 939 938 {4.3880084702638449} {jacobian_evaluation} 0
+36 940 939 {} {jacobian_evaluation} 0
+37 941 940 {0.5} {jacobian_evaluation} 0
+33 927 921 {0.090590979056767398} {jacobian_evaluation} 0
+34 928 927 {0.032415858314042215} {jacobian_evaluation} 0
+35 929 928 {4.3880084702638449} {jacobian_evaluation} 0
+36 930 929 {} {jacobian_evaluation} 0
+37 931 930 {0.5} {jacobian_evaluation} 0
+32 932 32 {0.22495244180027796} {jacobian_evaluation} 0
+33 933 932 {0.090382625586684445} {jacobian_evaluation} 0
+34 934 933 {0.032415858314042215} {jacobian_evaluation} 0
+35 935 934 {4.3880084702638449} {jacobian_evaluation} 0
+36 936 935 {} {jacobian_evaluation} 0
+37 937 936 {0.5} {jacobian_evaluation} 0
+32 945 32 {0.22443507494694456} {stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+33 946 945 {0.090382630675463857} {stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+34 947 946 {0.032415860737428297} {stage_1 default optimal_1 restart_1 objective_evaluation jacobian_evaluation} 0
+35 948 947 {4.3880084746523247} {stage_1 default optimal_1 restart_1 objective_evaluation} 0
+36 949 948 {} {stage_1 default optimal_1 restart_1 objective_evaluation} 0
+37 950 949 {0.5} {stage_1 default optimal_1 restart_1 objective_evaluation} 0
+35 966 947 {4.389008474652325} {jacobian_evaluation} 0
+36 967 966 {} {jacobian_evaluation} 0
+37 968 967 {0.5} {jacobian_evaluation} 0
+34 962 946 {0.032490587013928096} {jacobian_evaluation} 0
+35 963 962 {4.3880084746523247} {jacobian_evaluation} 0
+36 964 963 {} {jacobian_evaluation} 0
+37 965 964 {0.5} {jacobian_evaluation} 0
+33 951 945 {0.090590984157277649} {jacobian_evaluation} 0
+34 952 951 {0.032415860737428297} {jacobian_evaluation} 0
+35 953 952 {4.3880084746523247} {jacobian_evaluation} 0
+36 954 953 {} {jacobian_evaluation} 0
+37 955 954 {0.5} {jacobian_evaluation} 0
+32 956 32 {0.22495245122772853} {jacobian_evaluation} 0
+33 957 956 {0.090382630675463857} {jacobian_evaluation} 0
+34 958 957 {0.032415860737428297} {jacobian_evaluation} 0
+35 959 958 {4.3880084746523247} {jacobian_evaluation} 0
+36 960 959 {} {jacobian_evaluation} 0
+37 961 960 {0.5} {jacobian_evaluation} 0
+32 969 32 {0.22443507432154694} {stage_1 objective_evaluation jacobian_evaluation} 0
+33 970 969 {0.090382630337106515} {stage_1 objective_evaluation jacobian_evaluation} 0
+34 971 970 {0.032415860576295273} {stage_1 objective_evaluation jacobian_evaluation} 0
+35 972 971 {4.3880084743605314} {stage_1 objective_evaluation} 0
+36 973 972 {} {stage_1 objective_evaluation} 0
+37 974 973 {0.5} {stage_1 objective_evaluation} 0
+35 990 971 {4.3890084743605318} {jacobian_evaluation} 0
+36 991 990 {} {jacobian_evaluation} 0
+37 992 991 {0.5} {jacobian_evaluation} 0
+34 986 970 {0.032490586852423634} {jacobian_evaluation} 0
+35 987 986 {4.3880084743605314} {jacobian_evaluation} 0
+36 988 987 {} {jacobian_evaluation} 0
+37 989 988 {0.5} {jacobian_evaluation} 0
+33 975 969 {0.090590983818140319} {jacobian_evaluation} 0
+34 976 975 {0.032415860576295273} {jacobian_evaluation} 0
+35 977 976 {4.3880084743605314} {jacobian_evaluation} 0
+36 978 977 {} {jacobian_evaluation} 0
+37 979 978 {0.5} {jacobian_evaluation} 0
+32 980 32 {0.22495245060088923} {jacobian_evaluation} 0
+33 981 980 {0.090382630337106515} {jacobian_evaluation} 0
+34 982 981 {0.032415860576295273} {jacobian_evaluation} 0
+35 983 982 {4.3880084743605314} {jacobian_evaluation} 0
+36 984 983 {} {jacobian_evaluation} 0
+37 985 984 {0.5} {jacobian_evaluation} 0

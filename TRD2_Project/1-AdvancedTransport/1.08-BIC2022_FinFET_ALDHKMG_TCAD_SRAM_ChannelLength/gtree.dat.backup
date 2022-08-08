@@ -1,0 +1,909 @@
+# Copyright (C) 1994-2019 Synopsys Inc.
+# swbtree vR-2020.09-SP1
+
+# --- simulation flow
+sprocess sprocess "" {}
+sprocess SplitID "ChannelLength" {ChannelLength}
+sprocess Threads "4" {4}
+sprocess VDD "0.65" {0.65}
+sprocess TechType "BulkFinFET" {BulkFinFET}
+sprocess Channel_UCS "z" {z}
+sprocess SelectiveGate "0" {0}
+sprocess Type "pMOS" {pMOS nMOS}
+sprocess Xucs_Crystal "0:0:1" {0:0:1}
+sprocess Zucs_Crystal "1:1:0" {1:1:0}
+sprocess Sl_GPa "-1.0" {0 -0.9}
+sprocess Sw_GPa "0" {0}
+sprocess Sh_GPa "0" {0}
+sprocess GeMoleCh "0.00" {0.00 0.30}
+sprocess GeMoleSD "0.00" {0.00 0.30}
+sprocess Nstop "3e18" {3e18}
+sprocess Nsde "3.0e20" {3.0e20}
+sprocess Nch "0" {0}
+sprocess Tiox "0.9" {0.9}
+sprocess Thfo2 "1.5" {1.5}
+sprocess Tspacer "7.0" {7.5}
+sprocess W "10.0" {5.0}
+sprocess H "5.0" {50.0}
+sprocess Lg "18.0" {15.5 20.5}
+AddContacts sprocess "" {}
+rect_mesh snmesh "" {}
+xslice snmesh "" {}
+xNinvVg sband "" {}
+xNinvVg Temperature "27" {27}
+xNinvVg SiOCN_perm "4.5" {4.5}
+xNinvVg iOxide_perm "5.8" {5.8}
+xNinvVg HfO2_perm "20.0" {20.0}
+xNinvVg WF_init "4.730" {4.338 4.778}
+xNinvVg deltaVGATE "-0.05" {0.05 -0.05}
+SB_profiles svisual "" {}
+Garand_xNinvVg garandmc "" {}
+Garand_xNinvVg semi_name "SiliconGermanium" {SiliconGermanium}
+Garand_xNinvVg vert_semi "0.13483964176858912" {0.5 0.1671}
+Garand_xNinvVg horiz_semi "1.0011897049051883" {0.5 0.3624}
+Garand_xNinvVg ox "0.16121244395846154" {0.5 0.1654}
+Garand_xNinvVg WF "4.7059220993238249" {4.338 4.778}
+DG_profiles svisual "" {}
+DG_profiles dg_coeff "0.5" {0.5}
+DG_calib genopt "" {}
+DOEdisplay svisual "" {}
+Garand_xNinvVg_Check garandmc "" {}
+DG_profiles_Check svisual "" {}
+mn_Extraction sdevice "" {}
+SDparam svisual "" {}
+CV sdevice "" {}
+Garand_DD garandmc "" {}
+Garand_DD Vd "-0.05" {-0.05 0.05 -0.9 0.9 -0.1 -0.2 -0.3 -0.4 -0.5 -0.6 -0.7 -0.8 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8}
+Garand_DD Vg "0.0" {0.0 -0.1 0.1 -0.2 0.2 -0.3 0.3 -0.4 0.4 -0.5 0.5 -0.6 0.6 -0.7 0.7 -0.8 -0.9 0.8 0.9}
+Garand_MC garandmc "" {}
+generatePLT svisual "" {}
+DB_Push enigma "" {}
+# --- variables
+# --- scenarios and parameter specs
+scenario default SplitID ""
+scenario default Threads ""
+scenario default VDD ""
+scenario default TechType ""
+scenario default Channel_UCS ""
+scenario default SelectiveGate ""
+scenario default Type ""
+scenario default Xucs_Crystal ""
+scenario default Zucs_Crystal ""
+scenario default Sl_GPa ""
+scenario default Sw_GPa ""
+scenario default Sh_GPa ""
+scenario default GeMoleCh ""
+scenario default GeMoleSD ""
+scenario default Nstop ""
+scenario default Nsde ""
+scenario default Nch ""
+scenario default Tiox ""
+scenario default Thfo2 ""
+scenario default Tspacer ""
+scenario default W ""
+scenario default H ""
+scenario default Lg ""
+scenario default Temperature ""
+scenario default SiOCN_perm ""
+scenario default iOxide_perm ""
+scenario default HfO2_perm ""
+scenario default WF_init ""
+scenario default deltaVGATE ""
+scenario default semi_name ""
+scenario default vert_semi ""
+scenario default horiz_semi ""
+scenario default ox ""
+scenario default WF ""
+scenario default dg_coeff ""
+scenario default Vd ""
+scenario default Vg ""
+scenario nMOS SplitID ""
+scenario nMOS Threads ""
+scenario nMOS VDD ""
+scenario nMOS TechType ""
+scenario nMOS Channel_UCS ""
+scenario nMOS SelectiveGate ""
+scenario nMOS Type ""
+scenario nMOS Xucs_Crystal ""
+scenario nMOS Zucs_Crystal ""
+scenario nMOS Sl_GPa ""
+scenario nMOS Sw_GPa ""
+scenario nMOS Sh_GPa ""
+scenario nMOS GeMoleCh ""
+scenario nMOS GeMoleSD ""
+scenario nMOS Nstop ""
+scenario nMOS Nsde ""
+scenario nMOS Nch ""
+scenario nMOS Tiox ""
+scenario nMOS Thfo2 ""
+scenario nMOS Tspacer ""
+scenario nMOS W ""
+scenario nMOS H ""
+scenario nMOS Lg ""
+scenario nMOS Temperature ""
+scenario nMOS SiOCN_perm ""
+scenario nMOS iOxide_perm ""
+scenario nMOS HfO2_perm ""
+scenario nMOS WF_init ""
+scenario nMOS deltaVGATE ""
+scenario nMOS semi_name ""
+scenario nMOS vert_semi ""
+scenario nMOS horiz_semi ""
+scenario nMOS ox ""
+scenario nMOS WF ""
+scenario nMOS dg_coeff ""
+scenario nMOS Vd ""
+scenario nMOS Vg ""
+scenario pMOS SplitID ""
+scenario pMOS Threads ""
+scenario pMOS VDD ""
+scenario pMOS TechType ""
+scenario pMOS Channel_UCS ""
+scenario pMOS SelectiveGate ""
+scenario pMOS Type ""
+scenario pMOS Xucs_Crystal ""
+scenario pMOS Zucs_Crystal ""
+scenario pMOS Sl_GPa ""
+scenario pMOS Sw_GPa ""
+scenario pMOS Sh_GPa ""
+scenario pMOS GeMoleCh ""
+scenario pMOS GeMoleSD ""
+scenario pMOS Nstop ""
+scenario pMOS Nsde ""
+scenario pMOS Nch ""
+scenario pMOS Tiox ""
+scenario pMOS Thfo2 ""
+scenario pMOS Tspacer ""
+scenario pMOS W ""
+scenario pMOS H ""
+scenario pMOS Lg ""
+scenario pMOS Temperature ""
+scenario pMOS SiOCN_perm ""
+scenario pMOS iOxide_perm ""
+scenario pMOS HfO2_perm ""
+scenario pMOS WF_init ""
+scenario pMOS deltaVGATE ""
+scenario pMOS semi_name ""
+scenario pMOS vert_semi ""
+scenario pMOS horiz_semi ""
+scenario pMOS ox ""
+scenario pMOS WF ""
+scenario pMOS dg_coeff ""
+scenario pMOS Vd ""
+scenario pMOS Vg ""
+# --- simulation tree
+0 1 0 {} {default} 0
+1 2 1 {ChannelLength} {default} 0
+2 3 2 {4} {default} 0
+3 4 3 {0.65} {default} 0
+4 5 4 {BulkFinFET} {default} 0
+5 6 5 {z} {default} 0
+6 7 6 {0} {default} 0
+7 8 7 {pMOS} {default} 0
+8 10 8 {0:0:1} {default} 0
+9 12 10 {1:1:0} {default} 0
+10 14 12 {-0.9} {default} 0
+11 16 14 {0} {default} 0
+12 18 16 {0} {default} 0
+13 20 18 {0.30} {default} 0
+14 22 20 {0.30} {default} 0
+15 24 22 {3e18} {default} 0
+16 26 24 {3.0e20} {default} 0
+17 28 26 {0} {default} 0
+18 30 28 {0.9} {default} 0
+19 32 30 {1.5} {default} 0
+20 34 32 {7.5} {default} 0
+21 36 34 {5.0} {default} 0
+22 38 36 {50.0} {default} 0
+23 40 38 {15.5} {default} 0
+24 44 40 {} {default} 0
+25 48 44 {} {default} 0
+26 52 48 {} {default} 0
+27 56 52 {} {default} 0
+28 60 56 {27} {default} 0
+29 64 60 {4.5} {default} 0
+30 68 64 {5.8} {default} 0
+31 72 68 {20.0} {default} 0
+32 76 72 {4.778} {default} 0
+33 80 76 {-0.05} {default} 0
+34 84 80 {} {default} 0
+35 88 84 {} {default} 1
+36 92 88 {SiliconGermanium} {default} 1
+37 96 92 {0.1671} {default} 1
+38 100 96 {0.3624} {default} 1
+39 104 100 {0.1654} {default} 1
+40 108 104 {4.778} {default} 1
+41 112 108 {} {default} 1
+42 116 112 {0.5} {default} 1
+43 120 116 {} {default} 1
+44 124 120 {} {default} 0
+45 128 124 {} {default} 0
+46 132 128 {} {default} 0
+47 136 132 {} {default} 0
+48 140 136 {} {default} 0
+49 144 140 {} {default} 0
+50 148 144 {} {default} 0
+51 152 148 {-0.05} {default} 0
+52 192 152 {0.0} {default} 0
+53 304 192 {} {default} 1
+54 416 304 {} {default} 0
+55 528 416 {} {default} 0
+52 193 152 {-0.1} {default} 0
+53 305 193 {} {default} 1
+54 417 305 {} {default} 1
+55 529 417 {} {default} 0
+52 194 152 {-0.2} {default} 0
+53 306 194 {} {default} 0
+54 418 306 {} {default} 1
+55 530 418 {} {default} 0
+52 195 152 {-0.3} {default} 0
+53 307 195 {} {default} 0
+54 419 307 {} {default} 1
+55 531 419 {} {default} 0
+52 196 152 {-0.4} {default} 0
+53 308 196 {} {default} 0
+54 420 308 {} {default} 1
+55 532 420 {} {default} 0
+52 197 152 {-0.5} {default} 0
+53 309 197 {} {default} 0
+54 421 309 {} {default} 1
+55 533 421 {} {default} 0
+52 198 152 {-0.6} {default} 0
+53 310 198 {} {default} 0
+54 422 310 {} {default} 1
+55 534 422 {} {default} 0
+52 199 152 {-0.7} {default} 0
+53 311 199 {} {default} 0
+54 423 311 {} {default} 1
+55 535 423 {} {default} 0
+52 200 152 {-0.8} {default} 0
+53 312 200 {} {default} 0
+54 424 312 {} {default} 1
+55 536 424 {} {default} 0
+52 201 152 {-0.9} {default} 0
+53 313 201 {} {default} 0
+54 425 313 {} {default} 1
+55 537 425 {} {default} 0
+52 640 152 {0.1} {default} 0
+53 641 640 {} {default} 1
+54 642 641 {} {default} 0
+55 643 642 {} {default} 0
+52 644 152 {0.2} {default} 0
+53 645 644 {} {default} 1
+54 646 645 {} {default} 0
+55 647 646 {} {default} 0
+52 648 152 {0.3} {default} 0
+53 649 648 {} {default} 1
+54 650 649 {} {default} 0
+55 651 650 {} {default} 0
+51 153 148 {-0.9} {default} 0
+52 202 153 {0.0} {default} 0
+53 314 202 {} {default} 0
+54 426 314 {} {default} 0
+55 538 426 {} {default} 0
+52 203 153 {-0.1} {default} 0
+53 315 203 {} {default} 0
+54 427 315 {} {default} 1
+55 539 427 {} {default} 0
+52 204 153 {-0.2} {default} 0
+53 316 204 {} {default} 0
+54 428 316 {} {default} 1
+55 540 428 {} {default} 0
+52 205 153 {-0.3} {default} 0
+53 317 205 {} {default} 0
+54 429 317 {} {default} 1
+55 541 429 {} {default} 0
+52 206 153 {-0.4} {default} 0
+53 318 206 {} {default} 0
+54 430 318 {} {default} 1
+55 542 430 {} {default} 0
+52 207 153 {-0.5} {default} 0
+53 319 207 {} {default} 0
+54 431 319 {} {default} 1
+55 543 431 {} {default} 0
+52 208 153 {-0.6} {default} 0
+53 320 208 {} {default} 0
+54 432 320 {} {default} 1
+55 544 432 {} {default} 0
+52 209 153 {-0.7} {default} 0
+53 321 209 {} {default} 0
+54 433 321 {} {default} 1
+55 545 433 {} {default} 0
+52 210 153 {-0.8} {default} 0
+53 322 210 {} {default} 0
+54 434 322 {} {default} 1
+55 546 434 {} {default} 0
+52 211 153 {-0.9} {default} 0
+53 323 211 {} {default} 0
+54 435 323 {} {default} 1
+55 547 435 {} {default} 0
+52 652 153 {0.1} {default} 0
+53 653 652 {} {default} 1
+54 654 653 {} {default} 0
+55 655 654 {} {default} 0
+52 656 153 {0.2} {default} 0
+53 657 656 {} {default} 1
+54 658 657 {} {default} 0
+55 659 658 {} {default} 0
+52 660 153 {0.3} {default} 0
+53 661 660 {} {default} 1
+54 662 661 {} {default} 0
+55 663 662 {} {default} 0
+51 154 148 {-0.1} {default} 0
+52 212 154 {-0.9} {default} 0
+53 324 212 {} {default} 0
+54 436 324 {} {default} 0
+55 548 436 {} {default} 0
+51 155 148 {-0.2} {default} 0
+52 213 155 {-0.9} {default} 0
+53 325 213 {} {default} 0
+54 437 325 {} {default} 1
+55 549 437 {} {default} 0
+51 156 148 {-0.3} {default} 0
+52 214 156 {-0.9} {default} 0
+53 326 214 {} {default} 0
+54 438 326 {} {default} 1
+55 550 438 {} {default} 0
+51 157 148 {-0.4} {default} 0
+52 215 157 {-0.9} {default} 0
+53 327 215 {} {default} 0
+54 439 327 {} {default} 1
+55 551 439 {} {default} 0
+51 158 148 {-0.5} {default} 0
+52 216 158 {-0.9} {default} 0
+53 328 216 {} {default} 0
+54 440 328 {} {default} 1
+55 552 440 {} {default} 0
+51 159 148 {-0.6} {default} 0
+52 217 159 {-0.9} {default} 0
+53 329 217 {} {default} 0
+54 441 329 {} {default} 1
+55 553 441 {} {default} 0
+51 160 148 {-0.7} {default} 0
+52 218 160 {-0.9} {default} 0
+53 330 218 {} {default} 0
+54 442 330 {} {default} 1
+55 554 442 {} {default} 0
+51 161 148 {-0.8} {default} 0
+52 219 161 {-0.9} {default} 0
+53 331 219 {} {default} 0
+54 443 331 {} {default} 1
+55 555 443 {} {default} 0
+23 41 38 {20.5} {default} 0
+24 45 41 {} {default} 0
+25 49 45 {} {default} 0
+26 53 49 {} {default} 0
+27 57 53 {} {default} 0
+28 61 57 {27} {default} 0
+29 65 61 {4.5} {default} 0
+30 69 65 {5.8} {default} 0
+31 73 69 {20.0} {default} 0
+32 77 73 {4.778} {default} 0
+33 81 77 {-0.05} {default} 0
+34 85 81 {} {default} 0
+35 89 85 {} {default} 1
+36 93 89 {SiliconGermanium} {default} 1
+37 97 93 {0.1671} {default} 1
+38 101 97 {0.3624} {default} 1
+39 105 101 {0.1654} {default} 1
+40 109 105 {4.778} {default} 1
+41 113 109 {} {default} 1
+42 117 113 {0.5} {default} 1
+43 121 117 {} {default} 1
+44 125 121 {} {default} 0
+45 129 125 {} {default} 0
+46 133 129 {} {default} 0
+47 137 133 {} {default} 0
+48 141 137 {} {default} 0
+49 145 141 {} {default} 0
+50 149 145 {} {default} 0
+51 162 149 {-0.05} {default} 0
+52 220 162 {0.0} {default} 0
+53 332 220 {} {default} 1
+54 444 332 {} {default} 0
+55 556 444 {} {default} 0
+52 221 162 {-0.1} {default} 0
+53 333 221 {} {default} 1
+54 445 333 {} {default} 1
+55 557 445 {} {default} 0
+52 222 162 {-0.2} {default} 0
+53 334 222 {} {default} 0
+54 446 334 {} {default} 1
+55 558 446 {} {default} 0
+52 223 162 {-0.3} {default} 0
+53 335 223 {} {default} 0
+54 447 335 {} {default} 1
+55 559 447 {} {default} 0
+52 224 162 {-0.4} {default} 0
+53 336 224 {} {default} 0
+54 448 336 {} {default} 1
+55 560 448 {} {default} 0
+52 225 162 {-0.5} {default} 0
+53 337 225 {} {default} 0
+54 449 337 {} {default} 1
+55 561 449 {} {default} 0
+52 226 162 {-0.6} {default} 0
+53 338 226 {} {default} 0
+54 450 338 {} {default} 1
+55 562 450 {} {default} 0
+52 227 162 {-0.7} {default} 0
+53 339 227 {} {default} 0
+54 451 339 {} {default} 1
+55 563 451 {} {default} 0
+52 228 162 {-0.8} {default} 0
+53 340 228 {} {default} 0
+54 452 340 {} {default} 1
+55 564 452 {} {default} 0
+52 229 162 {-0.9} {default} 0
+53 341 229 {} {default} 0
+54 453 341 {} {default} 1
+55 565 453 {} {default} 0
+52 664 162 {0.1} {default} 0
+53 665 664 {} {default} 1
+54 666 665 {} {default} 0
+55 667 666 {} {default} 0
+52 668 162 {0.2} {default} 0
+53 669 668 {} {default} 1
+54 670 669 {} {default} 0
+55 671 670 {} {default} 0
+52 672 162 {0.3} {default} 0
+53 673 672 {} {default} 1
+54 674 673 {} {default} 0
+55 675 674 {} {default} 0
+51 163 149 {-0.9} {default} 0
+52 230 163 {0.0} {default} 0
+53 342 230 {} {default} 0
+54 454 342 {} {default} 0
+55 566 454 {} {default} 0
+52 231 163 {-0.1} {default} 0
+53 343 231 {} {default} 0
+54 455 343 {} {default} 1
+55 567 455 {} {default} 0
+52 232 163 {-0.2} {default} 0
+53 344 232 {} {default} 0
+54 456 344 {} {default} 1
+55 568 456 {} {default} 0
+52 233 163 {-0.3} {default} 0
+53 345 233 {} {default} 0
+54 457 345 {} {default} 1
+55 569 457 {} {default} 0
+52 234 163 {-0.4} {default} 0
+53 346 234 {} {default} 0
+54 458 346 {} {default} 1
+55 570 458 {} {default} 0
+52 235 163 {-0.5} {default} 0
+53 347 235 {} {default} 0
+54 459 347 {} {default} 1
+55 571 459 {} {default} 0
+52 236 163 {-0.6} {default} 0
+53 348 236 {} {default} 0
+54 460 348 {} {default} 1
+55 572 460 {} {default} 0
+52 237 163 {-0.7} {default} 0
+53 349 237 {} {default} 0
+54 461 349 {} {default} 1
+55 573 461 {} {default} 0
+52 238 163 {-0.8} {default} 0
+53 350 238 {} {default} 0
+54 462 350 {} {default} 1
+55 574 462 {} {default} 0
+52 239 163 {-0.9} {default} 0
+53 351 239 {} {default} 0
+54 463 351 {} {default} 1
+55 575 463 {} {default} 0
+52 676 163 {0.1} {default} 0
+53 677 676 {} {default} 1
+54 678 677 {} {default} 0
+55 679 678 {} {default} 0
+52 680 163 {0.2} {default} 0
+53 681 680 {} {default} 1
+54 682 681 {} {default} 0
+55 683 682 {} {default} 0
+52 684 163 {0.3} {default} 0
+53 685 684 {} {default} 1
+54 686 685 {} {default} 0
+55 687 686 {} {default} 0
+51 164 149 {-0.1} {default} 0
+52 240 164 {-0.9} {default} 0
+53 352 240 {} {default} 0
+54 464 352 {} {default} 0
+55 576 464 {} {default} 0
+51 165 149 {-0.2} {default} 0
+52 241 165 {-0.9} {default} 0
+53 353 241 {} {default} 0
+54 465 353 {} {default} 1
+55 577 465 {} {default} 0
+51 166 149 {-0.3} {default} 0
+52 242 166 {-0.9} {default} 0
+53 354 242 {} {default} 0
+54 466 354 {} {default} 1
+55 578 466 {} {default} 0
+51 167 149 {-0.4} {default} 0
+52 243 167 {-0.9} {default} 0
+53 355 243 {} {default} 0
+54 467 355 {} {default} 1
+55 579 467 {} {default} 0
+51 168 149 {-0.5} {default} 0
+52 244 168 {-0.9} {default} 0
+53 356 244 {} {default} 0
+54 468 356 {} {default} 1
+55 580 468 {} {default} 0
+51 169 149 {-0.6} {default} 0
+52 245 169 {-0.9} {default} 0
+53 357 245 {} {default} 0
+54 469 357 {} {default} 1
+55 581 469 {} {default} 0
+51 170 149 {-0.7} {default} 0
+52 246 170 {-0.9} {default} 0
+53 358 246 {} {default} 0
+54 470 358 {} {default} 1
+55 582 470 {} {default} 0
+51 171 149 {-0.8} {default} 0
+52 247 171 {-0.9} {default} 0
+53 359 247 {} {default} 0
+54 471 359 {} {default} 1
+55 583 471 {} {default} 0
+7 9 7 {nMOS} {default} 0
+8 11 9 {0:0:1} {default} 0
+9 13 11 {1:1:0} {default} 0
+10 15 13 {0} {default} 0
+11 17 15 {0} {default} 0
+12 19 17 {0} {default} 0
+13 21 19 {0.00} {default} 0
+14 23 21 {0.00} {default} 0
+15 25 23 {3e18} {default} 0
+16 27 25 {3.0e20} {default} 0
+17 29 27 {0} {default} 0
+18 31 29 {0.9} {default} 0
+19 33 31 {1.5} {default} 0
+20 35 33 {7.5} {default} 0
+21 37 35 {5.0} {default} 0
+22 39 37 {50.0} {default} 0
+23 42 39 {15.5} {default} 0
+24 46 42 {} {default} 0
+25 50 46 {} {default} 0
+26 54 50 {} {default} 0
+27 58 54 {} {default} 0
+28 62 58 {27} {default} 0
+29 66 62 {4.5} {default} 0
+30 70 66 {5.8} {default} 0
+31 74 70 {20.0} {default} 0
+32 78 74 {4.338} {default} 0
+33 82 78 {0.05} {default} 0
+34 86 82 {} {default} 0
+35 90 86 {} {default} 1
+36 94 90 {SiliconGermanium} {default} 1
+37 98 94 {0.5} {default} 1
+38 102 98 {0.5} {default} 1
+39 106 102 {0.5} {default} 1
+40 110 106 {4.338} {default} 1
+41 114 110 {} {default} 1
+42 118 114 {0.5} {default} 1
+43 122 118 {} {default} 1
+44 126 122 {} {default} 0
+45 130 126 {} {default} 0
+46 134 130 {} {default} 0
+47 138 134 {} {default} 0
+48 142 138 {} {default} 0
+49 146 142 {} {default} 0
+50 150 146 {} {default} 0
+51 172 150 {0.05} {default} 0
+52 248 172 {0.0} {default} 0
+53 360 248 {} {default} 1
+54 472 360 {} {default} 0
+55 584 472 {} {default} 0
+52 249 172 {0.1} {default} 0
+53 361 249 {} {default} 1
+54 473 361 {} {default} 1
+55 585 473 {} {default} 0
+52 250 172 {0.2} {default} 0
+53 362 250 {} {default} 0
+54 474 362 {} {default} 1
+55 586 474 {} {default} 0
+52 251 172 {0.3} {default} 0
+53 363 251 {} {default} 0
+54 475 363 {} {default} 1
+55 587 475 {} {default} 0
+52 252 172 {0.4} {default} 0
+53 364 252 {} {default} 0
+54 476 364 {} {default} 1
+55 588 476 {} {default} 0
+52 253 172 {0.5} {default} 0
+53 365 253 {} {default} 0
+54 477 365 {} {default} 1
+55 589 477 {} {default} 0
+52 254 172 {0.6} {default} 0
+53 366 254 {} {default} 0
+54 478 366 {} {default} 1
+55 590 478 {} {default} 0
+52 255 172 {0.7} {default} 0
+53 367 255 {} {default} 0
+54 479 367 {} {default} 1
+55 591 479 {} {default} 0
+52 256 172 {0.8} {default} 0
+53 368 256 {} {default} 0
+54 480 368 {} {default} 1
+55 592 480 {} {default} 0
+52 257 172 {0.9} {default} 0
+53 369 257 {} {default} 0
+54 481 369 {} {default} 1
+55 593 481 {} {default} 0
+52 688 172 {-0.1} {default} 0
+53 689 688 {} {default} 1
+54 690 689 {} {default} 0
+55 691 690 {} {default} 0
+52 692 172 {-0.2} {default} 0
+53 693 692 {} {default} 1
+54 694 693 {} {default} 0
+55 695 694 {} {default} 0
+52 696 172 {-0.3} {default} 0
+53 697 696 {} {default} 1
+54 698 697 {} {default} 0
+55 699 698 {} {default} 0
+51 173 150 {0.9} {default} 0
+52 258 173 {0.0} {default} 0
+53 370 258 {} {default} 0
+54 482 370 {} {default} 0
+55 594 482 {} {default} 0
+52 259 173 {0.1} {default} 0
+53 371 259 {} {default} 0
+54 483 371 {} {default} 1
+55 595 483 {} {default} 0
+52 260 173 {0.2} {default} 0
+53 372 260 {} {default} 0
+54 484 372 {} {default} 1
+55 596 484 {} {default} 0
+52 261 173 {0.3} {default} 0
+53 373 261 {} {default} 0
+54 485 373 {} {default} 1
+55 597 485 {} {default} 0
+52 262 173 {0.4} {default} 0
+53 374 262 {} {default} 0
+54 486 374 {} {default} 1
+55 598 486 {} {default} 0
+52 263 173 {0.5} {default} 0
+53 375 263 {} {default} 0
+54 487 375 {} {default} 1
+55 599 487 {} {default} 0
+52 264 173 {0.6} {default} 0
+53 376 264 {} {default} 0
+54 488 376 {} {default} 1
+55 600 488 {} {default} 0
+52 265 173 {0.7} {default} 0
+53 377 265 {} {default} 0
+54 489 377 {} {default} 1
+55 601 489 {} {default} 0
+52 266 173 {0.8} {default} 0
+53 378 266 {} {default} 0
+54 490 378 {} {default} 1
+55 602 490 {} {default} 0
+52 267 173 {0.9} {default} 0
+53 379 267 {} {default} 0
+54 491 379 {} {default} 1
+55 603 491 {} {default} 0
+52 700 173 {-0.1} {default} 0
+53 701 700 {} {default} 1
+54 702 701 {} {default} 0
+55 703 702 {} {default} 0
+52 704 173 {-0.2} {default} 0
+53 705 704 {} {default} 1
+54 706 705 {} {default} 0
+55 707 706 {} {default} 0
+52 708 173 {-0.3} {default} 0
+53 709 708 {} {default} 1
+54 710 709 {} {default} 0
+55 711 710 {} {default} 0
+51 174 150 {0.1} {default} 0
+52 268 174 {0.9} {default} 0
+53 380 268 {} {default} 0
+54 492 380 {} {default} 0
+55 604 492 {} {default} 0
+51 175 150 {0.2} {default} 0
+52 269 175 {0.9} {default} 0
+53 381 269 {} {default} 0
+54 493 381 {} {default} 1
+55 605 493 {} {default} 0
+51 176 150 {0.3} {default} 0
+52 270 176 {0.9} {default} 0
+53 382 270 {} {default} 0
+54 494 382 {} {default} 1
+55 606 494 {} {default} 0
+51 177 150 {0.4} {default} 0
+52 271 177 {0.9} {default} 0
+53 383 271 {} {default} 0
+54 495 383 {} {default} 1
+55 607 495 {} {default} 0
+51 178 150 {0.5} {default} 0
+52 272 178 {0.9} {default} 0
+53 384 272 {} {default} 0
+54 496 384 {} {default} 1
+55 608 496 {} {default} 0
+51 179 150 {0.6} {default} 0
+52 273 179 {0.9} {default} 0
+53 385 273 {} {default} 0
+54 497 385 {} {default} 1
+55 609 497 {} {default} 0
+51 180 150 {0.7} {default} 0
+52 274 180 {0.9} {default} 0
+53 386 274 {} {default} 0
+54 498 386 {} {default} 1
+55 610 498 {} {default} 0
+51 181 150 {0.8} {default} 0
+52 275 181 {0.9} {default} 0
+53 387 275 {} {default} 0
+54 499 387 {} {default} 1
+55 611 499 {} {default} 0
+23 43 39 {20.5} {default} 0
+24 47 43 {} {default} 0
+25 51 47 {} {default} 0
+26 55 51 {} {default} 0
+27 59 55 {} {default} 0
+28 63 59 {27} {default} 0
+29 67 63 {4.5} {default} 0
+30 71 67 {5.8} {default} 0
+31 75 71 {20.0} {default} 0
+32 79 75 {4.338} {default} 0
+33 83 79 {0.05} {default} 0
+34 87 83 {} {default} 0
+35 91 87 {} {default} 1
+36 95 91 {SiliconGermanium} {default} 1
+37 99 95 {0.5} {default} 1
+38 103 99 {0.5} {default} 1
+39 107 103 {0.5} {default} 1
+40 111 107 {4.338} {default} 1
+41 115 111 {} {default} 1
+42 119 115 {0.5} {default} 1
+43 123 119 {} {default} 1
+44 127 123 {} {default} 0
+45 131 127 {} {default} 0
+46 135 131 {} {default} 0
+47 139 135 {} {default} 0
+48 143 139 {} {default} 0
+49 147 143 {} {default} 0
+50 151 147 {} {default} 0
+51 182 151 {0.05} {default} 0
+52 276 182 {0.0} {default} 0
+53 388 276 {} {default} 1
+54 500 388 {} {default} 0
+55 612 500 {} {default} 0
+52 277 182 {0.1} {default} 0
+53 389 277 {} {default} 1
+54 501 389 {} {default} 1
+55 613 501 {} {default} 0
+52 278 182 {0.2} {default} 0
+53 390 278 {} {default} 0
+54 502 390 {} {default} 1
+55 614 502 {} {default} 0
+52 279 182 {0.3} {default} 0
+53 391 279 {} {default} 0
+54 503 391 {} {default} 1
+55 615 503 {} {default} 0
+52 280 182 {0.4} {default} 0
+53 392 280 {} {default} 0
+54 504 392 {} {default} 1
+55 616 504 {} {default} 0
+52 281 182 {0.5} {default} 0
+53 393 281 {} {default} 0
+54 505 393 {} {default} 1
+55 617 505 {} {default} 0
+52 282 182 {0.6} {default} 0
+53 394 282 {} {default} 0
+54 506 394 {} {default} 1
+55 618 506 {} {default} 0
+52 283 182 {0.7} {default} 0
+53 395 283 {} {default} 0
+54 507 395 {} {default} 1
+55 619 507 {} {default} 0
+52 284 182 {0.8} {default} 0
+53 396 284 {} {default} 0
+54 508 396 {} {default} 1
+55 620 508 {} {default} 0
+52 285 182 {0.9} {default} 0
+53 397 285 {} {default} 0
+54 509 397 {} {default} 1
+55 621 509 {} {default} 0
+52 712 182 {-0.1} {default} 0
+53 713 712 {} {default} 1
+54 714 713 {} {default} 0
+55 715 714 {} {default} 0
+52 716 182 {-0.2} {default} 0
+53 717 716 {} {default} 1
+54 718 717 {} {default} 0
+55 719 718 {} {default} 0
+52 720 182 {-0.3} {default} 0
+53 721 720 {} {default} 1
+54 722 721 {} {default} 0
+55 723 722 {} {default} 0
+51 183 151 {0.9} {default} 0
+52 286 183 {0.0} {default} 0
+53 398 286 {} {default} 0
+54 510 398 {} {default} 0
+55 622 510 {} {default} 0
+52 287 183 {0.1} {default} 0
+53 399 287 {} {default} 0
+54 511 399 {} {default} 1
+55 623 511 {} {default} 0
+52 288 183 {0.2} {default} 0
+53 400 288 {} {default} 0
+54 512 400 {} {default} 1
+55 624 512 {} {default} 0
+52 289 183 {0.3} {default} 0
+53 401 289 {} {default} 0
+54 513 401 {} {default} 1
+55 625 513 {} {default} 0
+52 290 183 {0.4} {default} 0
+53 402 290 {} {default} 0
+54 514 402 {} {default} 1
+55 626 514 {} {default} 0
+52 291 183 {0.5} {default} 0
+53 403 291 {} {default} 0
+54 515 403 {} {default} 1
+55 627 515 {} {default} 0
+52 292 183 {0.6} {default} 0
+53 404 292 {} {default} 0
+54 516 404 {} {default} 1
+55 628 516 {} {default} 0
+52 293 183 {0.7} {default} 0
+53 405 293 {} {default} 0
+54 517 405 {} {default} 1
+55 629 517 {} {default} 0
+52 294 183 {0.8} {default} 0
+53 406 294 {} {default} 0
+54 518 406 {} {default} 1
+55 630 518 {} {default} 0
+52 295 183 {0.9} {default} 0
+53 407 295 {} {default} 0
+54 519 407 {} {default} 1
+55 631 519 {} {default} 0
+52 724 183 {-0.1} {default} 0
+53 725 724 {} {default} 1
+54 726 725 {} {default} 0
+55 727 726 {} {default} 0
+52 728 183 {-0.2} {default} 0
+53 729 728 {} {default} 1
+54 730 729 {} {default} 0
+55 731 730 {} {default} 0
+52 732 183 {-0.3} {default} 0
+53 733 732 {} {default} 1
+54 734 733 {} {default} 0
+55 735 734 {} {default} 0
+51 184 151 {0.1} {default} 0
+52 296 184 {0.9} {default} 0
+53 408 296 {} {default} 0
+54 520 408 {} {default} 0
+55 632 520 {} {default} 0
+51 185 151 {0.2} {default} 0
+52 297 185 {0.9} {default} 0
+53 409 297 {} {default} 0
+54 521 409 {} {default} 1
+55 633 521 {} {default} 0
+51 186 151 {0.3} {default} 0
+52 298 186 {0.9} {default} 0
+53 410 298 {} {default} 0
+54 522 410 {} {default} 1
+55 634 522 {} {default} 0
+51 187 151 {0.4} {default} 0
+52 299 187 {0.9} {default} 0
+53 411 299 {} {default} 0
+54 523 411 {} {default} 1
+55 635 523 {} {default} 0
+51 188 151 {0.5} {default} 0
+52 300 188 {0.9} {default} 0
+53 412 300 {} {default} 0
+54 524 412 {} {default} 1
+55 636 524 {} {default} 0
+51 189 151 {0.6} {default} 0
+52 301 189 {0.9} {default} 0
+53 413 301 {} {default} 0
+54 525 413 {} {default} 1
+55 637 525 {} {default} 0
+51 190 151 {0.7} {default} 0
+52 302 190 {0.9} {default} 0
+53 414 302 {} {default} 0
+54 526 414 {} {default} 1
+55 638 526 {} {default} 0
+51 191 151 {0.8} {default} 0
+52 303 191 {0.9} {default} 0
+53 415 303 {} {default} 0
+54 527 415 {} {default} 1
+55 639 527 {} {default} 0

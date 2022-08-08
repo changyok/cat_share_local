@@ -1,0 +1,254 @@
+###########################################
+# Sentaurus Visual R-2020.09.
+# Tcl log file.
+#------------------------------------------
+# Date: Jan 25, 2021. 14:13:17.
+# Version: 31.2.6534263 (2.6534263)
+# Mode: Interactive (GUI).
+# Mesa: enabled.
+# Hostname: plxchh054.
+# Machine: Linux, x86_64, x86_64.
+# Kernel: 4.12.14-122.37-default.
+###########################################
+
+load_script_file /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/tmp/1.07-BIC2022_FinFET_ALDHKMG_TCAD_SRAM_Nominal_Temperature.vis.cmd
+cd /nfs/pdx/disks/icf_sandp_gwa001/changyok/swb/tmp
+# Dataset:	 Vg=0.00V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 2.804814e-2 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 2.804814e-2 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.05V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 3.372017e-1 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 3.372017e-1 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.10V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 4.010962e+0 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 4.010962e+0 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.15V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 4.267702e+1 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 4.267702e+1 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.20V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 2.615268e+2 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 2.615268e+2 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.25V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 7.530092e+2 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 7.530092e+2 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.30V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 1.424016e+3 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 1.424016e+3 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.35V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 2.198585e+3 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 2.198585e+3 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.40V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 3.038041e+3 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 3.038041e+3 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.45V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 3.921631e+3 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 3.921631e+3 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.50V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 4.837056e+3 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 4.837056e+3 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.55V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 5.776722e+3 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 5.776722e+3 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.60V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 6.735517e+3 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 6.735517e+3 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# Dataset:	 Vg=-0.65V
+# Field:	 hDensity
+# ==================================
+# Regions of Dimension  2
+# ----------------------------------
+# 1. Channel (SiliconGermanium)
+#     Integral:	 7.710300e+3 [um^-1]
+#     Domain:	 2.475000e-4 [um^2]
+# ----------------------------------
+# Total Integral:	 7.710300e+3 [um^-1]
+# Total Domain:	 2.475000e-4 [um^2]
+# ==================================
+# ext::ExtractExtremum> Extracting maxima
+# ext::ExtractExtremum> Extracting maxima
+#-> 0
+select_plots {Plot_cutY}
+#-> Plot_cutY
+select_plots {Plot_cutX}
+#-> Plot_cutX
+select_plots {Plot_d_NinvVg}
+#-> Plot_d_NinvVg
+select_plots {Plot_cutX}
+#-> Plot_cutX
+select_plots {Plot_d_NinvVg}
+#-> Plot_d_NinvVg
+select_plots {Plot_cutY_Vg=-0.65V}
+#-> Plot_cutY_Vg=-0.65V
+select_plots {Plot_cutX_Vg=-0.65V}
+#-> Plot_cutX_Vg=-0.65V
+set_legend_prop -plot Plot_cutX_Vg=-0.65V -position {0.0520095 0.916538}
+#-> 0
+select_plots {Plot_cutY_Vg=-0.60V}
+#-> Plot_cutY_Vg=-0.60V
+select_plots {Plot_cutX_Vg=-0.60V}
+#-> Plot_cutX_Vg=-0.60V
+select_plots {Plot_cutY_Vg=-0.55V}
+#-> Plot_cutY_Vg=-0.55V
+select_plots {Plot_cutX_Vg=-0.55V}
+#-> Plot_cutX_Vg=-0.55V
+select_plots {Plot_cutY_Vg=-0.50V}
+#-> Plot_cutY_Vg=-0.50V
+select_plots {Plot_cutX_Vg=-0.50V}
+#-> Plot_cutX_Vg=-0.50V
+select_plots {Plot_cutY_Vg=-0.45V}
+#-> Plot_cutY_Vg=-0.45V
+select_plots {Plot_cutX_Vg=-0.45V}
+#-> Plot_cutX_Vg=-0.45V
+select_plots {Plot_cutY_Vg=-0.40V}
+#-> Plot_cutY_Vg=-0.40V
+select_plots {Plot_cutX_Vg=-0.40V}
+#-> Plot_cutX_Vg=-0.40V
+select_plots {Plot_cutY_Vg=-0.35V}
+#-> Plot_cutY_Vg=-0.35V
+select_plots {Plot_cutX_Vg=-0.35V}
+#-> Plot_cutX_Vg=-0.35V
+select_plots {Plot_cutY_Vg=-0.30V}
+#-> Plot_cutY_Vg=-0.30V
+select_plots {Plot_cutX_Vg=-0.30V}
+#-> Plot_cutX_Vg=-0.30V
+select_plots {Plot_cutY_Vg=-0.25V}
+#-> Plot_cutY_Vg=-0.25V
+select_plots {Plot_cutX_Vg=-0.25V}
+#-> Plot_cutX_Vg=-0.25V
+select_plots {Plot_cutY_Vg=-0.20V}
+#-> Plot_cutY_Vg=-0.20V
+select_plots {Plot_cutX_Vg=-0.20V}
+#-> Plot_cutX_Vg=-0.20V
+select_plots {Plot_cutY_Vg=-0.15V}
+#-> Plot_cutY_Vg=-0.15V
+select_plots {Plot_cutX_Vg=-0.15V}
+#-> Plot_cutX_Vg=-0.15V
+select_plots {Plot_cutY_Vg=-0.10V}
+#-> Plot_cutY_Vg=-0.10V
+select_plots {Plot_cutX_Vg=-0.10V}
+#-> Plot_cutX_Vg=-0.10V
+select_plots {Plot_cutY_Vg=-0.05V}
+#-> Plot_cutY_Vg=-0.05V
+select_plots {Plot_cutX_Vg=-0.05V}
+#-> Plot_cutX_Vg=-0.05V
+select_plots {Plot_cutY_Vg=-0.05V}
+#-> Plot_cutY_Vg=-0.05V
+exit 0
+ 

@@ -1,0 +1,204 @@
+#setdep @node|BuildLibrary:all@
+
+# generic python imports
+from itertools import product
+from mako.template import Template
+# helper imports
+from plt3d_helpers import multiDimSurfaceMatrix
+
+pd.set_option("mode.chained_assignment",None)
+
+#########################################################################################################
+#########################################################################################################
+# Parameter setup: randomspice app and fom calculation settings						#
+#########################################################################################################
+#########################################################################################################
+
+# setting up the basics for the randomspice app
+randomspice.wait		= False
+randomspice.clear_data          = True
+
+# for net manupulation
+base_inputfile_name		= "@pwd@/@nodedir@/pp@node@_eng.rs2"
+base_netlist_name		= "@pwd@/@nodedir@/pp@node@_eng.sp"
+
+# simulation parameters
+sampling			= 7
+
+# fom calculation parameters
+cv_off	 			= 0
+Vdd_lin				= abs(@Vdd_lin@)
+Vdd_nom				= abs(@Vdd_nom@)
+cv_on  				= Vdd_nom
+vt_cc				= abs(@vti@)
+
+#########################################################################################################
+#########################################################################################################
+# DB interactions:											#
+#   - pulling out DoE midpoint nodes									#
+#   - pulling out remapped names from the "BuildLibrary stage						#
+#   - pull out all the DoE axes and calculate min/max ranges from the "UploadData" stage		#
+#########################################################################################################
+#########################################################################################################
+
+# setup metadata for simulations
+remap_names = dbi.get_project("@node|BuildLibrary@").metadata["remap_names"]
+
+axes_df=pd.DataFrame()
+axes_sweeps={}
+# setup a doe parameter sweep
+prj = dbi.get_project("@node|BuildLibrary@")
+axes_df = pd.DataFrame(dbi.get_project("@node|BuildLibrary@").metadata["axes_df"])
+print(axes_df)
+
+# setup the sampling points for each axis
+axes_list=axes_df.columns
+for k in axes_list:
+     axes_sweeps[k]=np.linspace(min(axes_df[k]),max(axes_df[k]), sampling)
+
+#########################################################################################################
+#########################################################################################################
+# Setup "dev_param_dict" - a dictionary of parameters that can be used to manipulate the randomspice 	#
+# input/netlist files. Each simulation creates a copy of the template/netlist for a RandomSpice run,	#
+# eventually we will move to having no explicit RandomSpice input files					#
+#########################################################################################################
+#########################################################################################################
+# simulation parameters
+dev_param_dict={}
+dev_param_dict["VDD_LIN"]		=Vdd_lin
+dev_param_dict["VDD_NOM"]		=Vdd_nom
+
+# device info
+dev_param_dict["P_DEV_NAME"]		=remap_names['pMOS']+":pMOS"
+dev_param_dict["N_DEV_NAME"]		=remap_names['nMOS']+":nMOS"
+
+#########################################################################################################
+#########################################################################################################
+# actual SPICE simulation launching step, 								#
+#   - pulling out DoE midpoint nodes									#
+#   - pulling out remapped names from the "BuildLibrary stage						#
+#   - pull out all the DoE axes and calculate min/max ranges from the "UploadData" stage		#
+#########################################################################################################
+#########################################################################################################
+for i,ax in enumerate(product(*axes_sweeps.values())):
+
+    # setup new intput file names
+    new_netlist_name=base_netlist_name+str(i)
+    new_inputfile_name=base_inputfile_name+str(i)
+
+    # adjust the doe point we're simulating
+    dev_param_dict["N_DOE_STR"]	=" ".join([f"{axes_list[ii]}={ax[ii]}" for ii in range(len(ax))])
+    dev_param_dict["P_DOE_STR"]	=dev_param_dict["N_DOE_STR"]
+    dev_param_dict["CTR"]	=i
+    dev_param_dict["SIM_NETLIST"]=new_netlist_name
+
+    # use mako to render these files
+    new_netlist=Template(open(base_netlist_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+    new_inputfile=Template(open(base_inputfile_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+  
+    # write these files back to disc
+    with open(new_netlist_name,'w') as outfile:
+        outfile.write(new_netlist)
+    with open(new_inputfile_name,'w') as outfile:
+        outfile.write(new_inputfile)
+
+    # add new inputfile and simulate
+    randomspice.inputfile=new_inputfile_name
+    print(f"Launching: {dev_param_dict['N_DOE_STR']}")
+    randomspice.simulate()
+    if i%100 == 0:
+        randomspice.Wait()
+    i+=1
+
+randomspice.Wait()
+
+#####################################################
+######           Plotting Section	#############
+#####################################################
+
+#########################################################################################################
+# setup the result dataframe										#
+foms=["VT_lin", "VT_sat", "DIBL", "Ion_lin", "Ion_sat", "Ioff_lin", "Ioff_sat", "Cgg_on", "Cgg_off"]	#
+labels=["RespSurf"]											#
+columns=["devtype"]											#
+columns.extend(axes_list)										#
+													#
+for ifom in foms:											#
+    for label in labels:										#
+        columns.append("{0}-{1}".format(ifom,label))							#
+													#
+													#
+length = sampling**len(axes_df.columns)									#
+# create the blank DF with NA in all columns								#
+df=pd.DataFrame(pd.np.empty((length, len(columns)))* pd.np.nan, index=None, columns=columns)		#
+print(df)												#
+#########################################################################################################
+
+ctr=0
+# pull out the results
+
+for i,ax in enumerate(product(*axes_sweeps.values())):
+    ds = dbi.get_dataset(f"@node@_dev_sweep_{i}", unpickle=False)
+    if len(ds.data) > 0:
+        for d_type in ["nMOS","pMOS"]:
+            ## setup the row of results
+            for ii in range(len(ax)):
+                df.loc[ctr, axes_list[ii]]=ax[ii]
+                df.loc[ctr, "devtype"]=d_type
+
+            # construct data frames
+            cgg     = Data.from_db(ds, ivar="vg", dvar="cgg", bias__drain=0.0,     Type=d_type)[0]
+            cgg._interpolate(log=True)
+            iv_ld   = Data.from_db(ds, ivar="vg", dvar="id",  bias__drain=Vdd_lin, Type=d_type)[0]
+            iv_ld._interpolate(log=True)
+            iv_hd   = Data.from_db(ds, ivar="vg", dvar="id",  bias__drain=Vdd_nom, Type=d_type)[0]
+            iv_hd._interpolate(log=True) 
+            if d_type=="nMOS":
+                fac=1
+            elif d_type=="pMOS":
+                fac=-1
+
+            try:
+                df.loc[ctr, "VT_lin-RespSurf"]		=fac*(iv_ld.Vt(ic=vt_cc))
+                df.loc[ctr, "VT_sat-RespSurf"]		=fac*(iv_hd.Vt(ic=vt_cc))
+                df.loc[ctr, "DIBL-RespSurf"]		=abs((df.loc[ctr, "VT_lin-RespSurf"] - df.loc[ctr, "VT_sat-RespSurf"])/(abs(@Vdd_nom@)-abs(@Vdd_lin@)))
+                df.loc[ctr, "Ion_lin-RespSurf"]		=abs(iv_ld.Ion(v=Vdd_nom*fac))
+                df.loc[ctr, "Ion_sat-RespSurf"]		=abs(iv_hd.Ion(v=Vdd_nom*fac))
+                df.loc[ctr, "Ioff_lin-RespSurf"]	=np.log10(abs(iv_ld.Ioff(v=0.0)))
+                df.loc[ctr, "Ioff_sat-RespSurf"]	=np.log10(abs(iv_hd.Ioff(v=0.0)))
+                df.loc[ctr, "Cgg_on-RespSurf"]		=abs(cgg.Ion(v=Vdd_nom*fac))
+                df.loc[ctr, "Cgg_off-RespSurf"]		=abs(cgg.Ioff(v=0.0))
+            except:
+                pass
+
+            ctr+=1
+        
+# plot some FoMs
+pd.set_option("max_columns",100000)
+pd.set_option("max_rows",100000)
+print(df)
+# multiDimSurfaceMatrix(df[(df["devtype"]=="nMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "VT_sat-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_nmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="nMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Ion_sat-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_nmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="nMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "VT_lin-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_nmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="nMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Ion_lin-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_nmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="nMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Ioff_sat-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_nmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="nMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Ioff_lin-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_nmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="nMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Cgg_off-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_nmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="nMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Cgg_on-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_nmos_@sim_temp@")
+
+# multiDimSurfaceMatrix(df[(df["devtype"]=="pMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "VT_sat-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_pmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="pMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Ion_sat-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_pmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="pMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "VT_lin-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_pmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="pMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Ion_lin-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_pmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="pMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Ioff_sat-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_pmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="pMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Ioff_lin-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_pmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="pMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Cgg_off-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_pmos_@sim_temp@")
+# multiDimSurfaceMatrix(df[(df["devtype"]=="pMOS") & (df["phigvar"]==0.0)], ['l','tfin'], "Cgg_on-RespSurf", sampling=21, outpath="@pwd@/@nodedir@/", prefix="n@node@_RespSurf_pmos_@sim_temp@")
+
+print(axes_list)
+# save the DF for future use
+node_prj=dbi.get_project(node_prj.name)
+ds = dbi.create_dataset(node_prj, "RespSurf", clean=True)
+dbi.create_data(ds, df)
+
+df.to_csv("n@node@_rsmdata.csv")

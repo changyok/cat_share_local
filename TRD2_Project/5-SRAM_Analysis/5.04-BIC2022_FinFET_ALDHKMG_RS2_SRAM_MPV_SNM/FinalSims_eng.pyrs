@@ -1,0 +1,157 @@
+#setdep @node|Sensitivity_Analysis@
+
+from netparse_helpers import RS2NetAdjust
+from rstool_helpers import parallelise_randomspice
+from mako.template import Template
+from SRAM_FoM import calcSNM
+from plt3d_helpers import prep_data
+import copy
+pd.set_option("mode.chained_assignment",None)
+
+#########################################################################
+# setup the extracted netlists						#
+#########################################################################
+
+cell_subckt="@pwd@/BITCELLS/mpv_@gds@.sp"
+
+
+# setting up the basics for the randomspice app
+randomspice.wait		= False
+randomspice._app.executable     = "export RS_PATCH_DIR=@pwd@/RS_PATCHES/;$STROOT/bin/RandomSpice2"
+randomspice.clear_data		= True
+
+# for net manupulation
+base_inputfile_name		= "@pwd@/@nodedir@/pp@node@_eng.rs2"
+base_netlist_name		= "@pwd@/@nodedir@/pp@node@_eng.sp"
+
+#########################################################################
+# Pick up the RandomSpice device names					#
+#########################################################################
+
+# access some variables saved to the DB
+buildLibrary_db_node = dbi.get_project("@node|BuildLibrary@")
+midpoints            = buildLibrary_db_node.metadata["midpoint_metadata"]
+remap_names          = buildLibrary_db_node.metadata["remap_names"]
+
+ndevname = remap_names['nMOS']+":nMOS"
+pdevname = remap_names['pMOS']+":pMOS"
+
+# Load in extracted corners
+RS2_Corner_Project = "@RS2_Corner_Project@"
+
+dburl = open(f"{RS2_Corner_Project}/enigma/mongodb.conf").read()
+dbi.connect(dburl) 
+corners_project=dbi.get_project(swb__tool_label="ExtractCorners", swb__sim_temp=@sim_temp@, swb__gv="True", swb__lv="False").name
+corner_df = pd.DataFrame.from_dict(dbi.get_data(project=corners_project, 
+                                                dataset=f"{corners_project}-Corners").data, orient='index')
+
+print(f"DOE: RS2_Corner_Project {RS2_Corner_Project}")
+
+axes_list = list(corner_df.columns)
+
+dburl = open(f"@pwd@/enigma/mongodb.conf").read()
+dbi.connect(dburl) 
+
+corner_df.index.name=["type","corner"]
+corners = corner_df.to_dict("index")
+circuits={"@SNM@":{}}
+
+for corner_data in corners.items():
+    dtype=corner_data[0][0]
+    corner=corner_data[0][1]
+    geom=corner_data[1]
+    try:
+        circuits[corner][dtype]=geom
+    except KeyError: 
+        pass
+
+# load in VT mode info
+vt_modes = dbi.get_project("@node|SetupSplits@").metadata["vt_modes"]["@vt_mode@"]
+
+# load in the MPV vector DF
+mpv_df = pd.DataFrame(dbi.get_project("@node|Sensitivity_Analysis@").metadata["mpv_df"])
+mpv_df["fin_deltas"] = mpv_df["sigmaVT"]*mpv_df["mpv_factor"]*@targetSigma@
+mpv_params="** MPV params START\n"
+for index, row in mpv_df.iterrows():
+    mpv_params += f".param {row['index']}='{row['fin_deltas']}'\n"
+mpv_params+="** MPV params END"
+print(mpv_params)
+
+
+# Get the VT deltas Dict
+PEX_db_node = dbi.get_project("@node|GetPEXPath@")
+mpv_deltas = PEX_db_node.metadata["mpv_deltas"]
+nmos_sigma = @nmos_sigma@
+pmos_sigma = @pmos_sigma@
+
+# device info
+dev_param_dict={}
+ndevname				=remap_names['nMOS']+":nMOS"
+pdevname				=remap_names['pMOS']+":pMOS"
+dev_param_dict["P_DEV_NAME"]		=pdevname
+dev_param_dict["N_DEV_NAME"]		=ndevname
+dev_param_dict["MPV_params"]		=mpv_params
+
+final_df = pd.DataFrame()
+
+# apply a (+/0/-)*1sigma offset for each device
+x=0
+for corner,geoms in circuits.items():
+    for vddc in np.linspace(0.4,1.0,11):
+        for vddp in np.linspace(0.4,1.0,11):
+
+            # handle the RC extract
+            selected_cell=RS2NetAdjust(cell_subckt)
+            selected_cell.model_call_mapping={"nmos1":ndevname, "pmos1":pdevname}
+            selected_cell.convert_Minst_to_Xmacro()
+            for k,v in geoms['n'].items():
+                selected_cell.add_instance_param(ndevname, k,float(f"{v:.12f}"))
+                selected_cell.add_instance_param(ndevname, "vtmode_adjust",float(f"{vt_modes['nmos']:.15f}"))
+            for k,v in geoms['p'].items():
+                selected_cell.add_instance_param(pdevname, k,float(f"{v:.12f}"))
+                selected_cell.add_instance_param(pdevname, "vtmode_adjust",float(f"{vt_modes['pmos']:.15f}"))  
+            selected_cell.convert_models(add_subckt_rand=False)
+            dev_param_dict["INC_FILE"]	=selected_cell.net_str()
+            dev_param_dict["vddc"]=vddc
+            dev_param_dict["vddp"]=vddp
+    
+            # setup new intput file names
+            new_netlist_name=base_netlist_name+str(corner)
+            new_inputfile_name=base_inputfile_name+str(corner)
+            dev_param_dict["CORNER"]=corner
+            dev_param_dict["SIM_NETLIST"]=new_netlist_name
+    
+            # use mako to render these files
+            new_netlist=Template(open(base_netlist_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+            new_inputfile=Template(open(base_inputfile_name,'r').read(), strict_undefined=True).render(**dev_param_dict)
+    
+            # write these files back to disk
+            with open(new_netlist_name,'w') as outfile: 
+                outfile.write(new_netlist)
+            with open(new_inputfile_name,'w') as outfile: 
+                outfile.write(new_inputfile)
+    
+            # parallelise runs for speedup
+            randomspice.inputfile = new_inputfile_name
+            dbi, randomspice, numProc = parallelise_randomspice(randomspice, dbi, num=1, per_job=1, dataset_name=f"@node@_vddc{vddc}_vddp{vddp}")
+            randomspice.Wait()
+
+            # pull SNM curves from DB
+            sweep0     = Data.from_db(project=node_prj.name, dataset=f"@node@_vddc{vddc}_vddp{vddp}-1", Type="iv0")[0]
+            sweep1     = Data.from_db(project=node_prj.name, dataset=f"@node@_vddc{vddc}_vddp{vddp}-1", Type="iv1")[0]
+            sweep0.to_csv(f"n@node@_sweep0_vddc{vddc}_vddp{vddp}.csv")
+            sweep1.to_csv(f"n@node@_sweep1_vddc{vddc}_vddp{vddp}.csv")
+            print(f"running: Vddc={vddc}, Vddp={vddp}")
+            # calculate SNM
+            snm = calcSNM(sweep0, sweep1)[2]
+            final_df.loc[x, "vddc"]=vddc
+            final_df.loc[x, "vddp"]=vddp
+            final_df.loc[x, "snm"]=snm
+            print(f"Vddc={vddc}, Vddp={vddp}, SNM={snm}")
+            x+=1
+
+print(final_df)
+
+node_prj.metadata["snm_df"] = final_df
+node_prj.save()
+

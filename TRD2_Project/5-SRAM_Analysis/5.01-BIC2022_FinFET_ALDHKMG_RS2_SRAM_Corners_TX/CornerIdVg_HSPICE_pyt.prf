@@ -1,0 +1,5 @@
+set WB_tool(enigma_hspice,exec_dependency) strict
+set WB_tool(enigma_hspice,parallel,activate) 1
+set WB_tool(enigma_hspice,parallel,max_mode) "tool"
+set WB_tool(enigma_hspice,parallel,mode) "tool"
+set WB_tool(enigma_hspice,parallel,memory) "0"

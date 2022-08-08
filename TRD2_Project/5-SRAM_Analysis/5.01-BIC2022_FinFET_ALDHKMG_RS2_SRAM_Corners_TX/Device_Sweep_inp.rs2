@@ -1,0 +1,29 @@
+[Circuit]
+netlist     = ${SIM_NETLIST}
+number      = 1
+seed        = 12345678
+startnum    = 1
+
+[Simulation]
+spice       = hspice
+
+[Variability]
+statistical = False
+process_resp_only = True
+
+[Output]
+dir         = @pwd@/@nodedir@/dev_sweep
+prefix      = dev_sweep
+savenets    = False
+processor   = @pwd@/@nodedir@/pp@node@_eng.py
+
+[Models]
+library     = @pwd@/@nodedir|BuildLibrary@/n@node|BuildLibrary@_library.rsl
+rsm_method  = quad_rsm
+extrapolate = False
+
+[Database]
+enabled     = True
+project     = @node@
+dataset     = @node@_dev_sweep_${CTR}
+config      = @pwd@/enigma/mongodb.conf

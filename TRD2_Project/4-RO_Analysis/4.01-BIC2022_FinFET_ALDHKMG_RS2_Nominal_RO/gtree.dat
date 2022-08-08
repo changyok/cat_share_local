@@ -1,0 +1,541 @@
+# Copyright (C) 1994-2019 Synopsys Inc.
+# swbtree vR-2020.09-SP1
+
+# --- simulation flow
+SetupSplits enigma "" {}
+BuildLibrary enigma "" {}
+BuildLibrary axis1 "lgate" {l}
+BuildLibrary axis1_midpoint "26e-9" {tbc 1.3e-08}
+BuildLibrary axis2 "hfin" {tfin}
+BuildLibrary axis2_midpoint "40e-9" {tbc 5e-09}
+BuildLibrary axis3 "phigvar" {phigvar}
+BuildLibrary axis3_midpoint "0.0" {0.0}
+BuildLibrary lg_sigma "0.0" {0.64e-9}
+BuildLibrary tfin_sigma "0.0" {0.64e-9}
+BuildLibrary phigvar_sigma "0.01" {0.01}
+BuildLibrary gv_ratio_lg "0.3" {0.3}
+BuildLibrary gv_ratio_tfin "0.3" {0.3}
+BuildLibrary gv_ratio_phig "0.3" {0.3}
+GetCorners enigma "" {}
+GetCorners Corners_TX "True" {False}
+GetCorners Corners_PEX "True" {False}
+GetCorners sim_temp "-40" {tbc -40 27.0 125}
+RO_Corner_Sim enigma_randomspice "" {}
+RO_Corner_Sim selectivehighK "0" {0}
+RO_Corner_Sim nstage "11" {11}
+RO_Corner_Sim FO "2" {2}
+RO_Corner_Sim Rinter "500" {500}
+RO_Corner_Sim Cinter "1e-16" {1e-16}
+RO_Corner_Sim vt_mode "tba" {tbc svt lvt ulvt}
+RO_Corner_Sim logic "inv" {inv nand2}
+RO_Corner_Sim strength "1" {1 2}
+RO_Corner_Sim height "d" {d s t}
+GetCircuitSimData enigma "" {}
+Plot_Cell_Behaviour svisual "" {}
+CollateData enigma "" {}
+# --- variables
+# --- scenarios and parameter specs
+scenario default axis1 ""
+scenario default axis1_midpoint ""
+scenario default axis2 ""
+scenario default axis2_midpoint ""
+scenario default axis3 ""
+scenario default axis3_midpoint ""
+scenario default lg_sigma ""
+scenario default tfin_sigma ""
+scenario default phigvar_sigma ""
+scenario default gv_ratio_lg ""
+scenario default gv_ratio_tfin ""
+scenario default gv_ratio_phig ""
+scenario default Corners_TX ""
+scenario default Corners_PEX ""
+scenario default sim_temp ""
+scenario default selectivehighK ""
+scenario default nstage ""
+scenario default FO ""
+scenario default Rinter ""
+scenario default Cinter ""
+scenario default vt_mode ""
+scenario default logic ""
+scenario default strength ""
+scenario default height ""
+# --- simulation tree
+0 1 0 {} {default} 0
+1 2 1 {} {default} 0
+2 3 2 {l} {default} 0
+3 4 3 {tbc} {default} 0
+4 5 4 {tfin} {default} 0
+5 6 5 {tbc} {default} 0
+6 7 6 {phigvar} {default} 0
+7 8 7 {0.0} {default} 0
+8 9 8 {0.64e-9} {default} 0
+9 10 9 {0.64e-9} {default} 0
+10 11 10 {0.01} {default} 0
+11 12 11 {0.3} {default} 0
+12 13 12 {0.3} {default} 0
+13 14 13 {0.3} {*default} 0
+14 15 14 {} {*default} 0
+15 16 15 {False} {*default} 0
+16 17 16 {False} {*default} 0
+17 18 17 {tbc} {*default} 0
+18 19 18 {} {*default} 0
+19 20 19 {0} {*default} 0
+20 21 20 {11} {*default} 0
+21 22 21 {2} {*default} 0
+22 23 22 {500} {*default} 0
+23 24 23 {1e-16} {*default} 0
+24 25 24 {tbc} {*default} 0
+25 26 25 {inv} {*default} 0
+26 28 26 {1} {*default} 0
+27 31 28 {d} {*default} 0
+28 40 31 {} {*default} 0
+29 49 40 {} {*default} 0
+30 58 49 {} {*default} 0
+27 32 28 {s} {*default} 0
+28 41 32 {} {*default} 0
+29 50 41 {} {*default} 0
+30 59 50 {} {*default} 0
+27 33 28 {t} {*default} 0
+28 42 33 {} {*default} 0
+29 51 42 {} {*default} 0
+30 60 51 {} {*default} 0
+26 29 26 {2} {*default} 0
+27 34 29 {d} {*default} 0
+28 43 34 {} {*default} 0
+29 52 43 {} {*default} 0
+30 61 52 {} {*default} 0
+27 35 29 {s} {*default} 0
+28 44 35 {} {*default} 0
+29 53 44 {} {*default} 0
+30 62 53 {} {*default} 0
+27 36 29 {t} {*default} 0
+28 45 36 {} {*default} 0
+29 54 45 {} {*default} 0
+30 63 54 {} {*default} 0
+25 27 25 {nand2} {*default} 0
+26 30 27 {1} {*default} 0
+27 37 30 {d} {*default} 0
+28 46 37 {} {*default} 0
+29 55 46 {} {*default} 0
+30 64 55 {} {*default} 0
+27 38 30 {s} {*default} 0
+28 47 38 {} {*default} 0
+29 56 47 {} {*default} 0
+30 65 56 {} {*default} 0
+27 39 30 {t} {*default} 0
+28 48 39 {} {*default} 0
+29 57 48 {} {*default} 0
+30 66 57 {} {*default} 0
+3 67 3 {1.3e-08} {default} 0
+4 68 67 {tfin} {default} 0
+5 69 68 {5e-09} {default} 0
+6 70 69 {phigvar} {default} 0
+7 71 70 {0.0} {default} 0
+8 72 71 {0.64e-9} {default} 0
+9 73 72 {0.64e-9} {default} 0
+10 74 73 {0.01} {default} 0
+11 75 74 {0.3} {default} 0
+12 76 75 {0.3} {default} 0
+13 77 76 {0.3} {default} 0
+14 78 77 {} {default} 0
+15 79 78 {False} {default} 0
+16 80 79 {False} {default} 0
+17 81 80 {-40} {default} 0
+18 82 81 {} {default} 0
+19 83 82 {0} {default} 0
+20 84 83 {11} {default} 0
+21 85 84 {2} {default} 0
+22 86 85 {500} {default} 0
+23 87 86 {1e-16} {default} 0
+24 88 87 {svt} {default} 0
+25 89 88 {inv} {default} 0
+26 90 89 {1} {default} 0
+27 91 90 {d} {default} 0
+28 92 91 {} {default} 0
+29 93 92 {} {default} 0
+30 94 93 {} {default} 0
+27 95 90 {s} {default} 0
+28 96 95 {} {default} 0
+29 97 96 {} {default} 0
+30 98 97 {} {default} 0
+27 99 90 {t} {default} 0
+28 100 99 {} {default} 0
+29 101 100 {} {default} 0
+30 102 101 {} {default} 0
+26 103 89 {2} {default} 0
+27 104 103 {d} {default} 0
+28 105 104 {} {default} 0
+29 106 105 {} {default} 0
+30 107 106 {} {default} 0
+27 108 103 {s} {default} 0
+28 109 108 {} {default} 0
+29 110 109 {} {default} 0
+30 111 110 {} {default} 0
+27 112 103 {t} {default} 0
+28 113 112 {} {default} 0
+29 114 113 {} {default} 0
+30 115 114 {} {default} 0
+25 116 88 {nand2} {default} 0
+26 117 116 {1} {default} 0
+27 118 117 {d} {default} 0
+28 119 118 {} {default} 0
+29 120 119 {} {default} 0
+30 121 120 {} {default} 0
+27 122 117 {s} {default} 0
+28 123 122 {} {default} 0
+29 124 123 {} {default} 0
+30 125 124 {} {default} 0
+27 126 117 {t} {default} 0
+28 127 126 {} {default} 0
+29 128 127 {} {default} 0
+30 129 128 {} {default} 0
+24 228 87 {lvt} {default} 0
+25 229 228 {inv} {default} 0
+26 230 229 {1} {default} 0
+27 231 230 {d} {default} 0
+28 232 231 {} {default} 0
+29 233 232 {} {default} 0
+30 234 233 {} {default} 0
+27 235 230 {s} {default} 0
+28 236 235 {} {default} 0
+29 237 236 {} {default} 0
+30 238 237 {} {default} 0
+27 239 230 {t} {default} 0
+28 240 239 {} {default} 0
+29 241 240 {} {default} 0
+30 242 241 {} {default} 0
+26 243 229 {2} {default} 0
+27 244 243 {d} {default} 0
+28 245 244 {} {default} 0
+29 246 245 {} {default} 0
+30 247 246 {} {default} 0
+27 248 243 {s} {default} 0
+28 249 248 {} {default} 0
+29 250 249 {} {default} 0
+30 251 250 {} {default} 0
+27 252 243 {t} {default} 0
+28 253 252 {} {default} 0
+29 254 253 {} {default} 0
+30 255 254 {} {default} 0
+25 256 228 {nand2} {default} 0
+26 257 256 {1} {default} 0
+27 258 257 {d} {default} 0
+28 259 258 {} {default} 0
+29 260 259 {} {default} 0
+30 261 260 {} {default} 0
+27 262 257 {s} {default} 0
+28 263 262 {} {default} 0
+29 264 263 {} {default} 0
+30 265 264 {} {default} 0
+27 266 257 {t} {default} 0
+28 267 266 {} {default} 0
+29 268 267 {} {default} 0
+30 269 268 {} {default} 0
+24 354 87 {ulvt} {default} 0
+25 355 354 {inv} {default} 0
+26 356 355 {1} {default} 0
+27 357 356 {d} {default} 0
+28 358 357 {} {default} 0
+29 359 358 {} {default} 0
+30 360 359 {} {default} 0
+27 361 356 {s} {default} 0
+28 362 361 {} {default} 0
+29 363 362 {} {default} 0
+30 364 363 {} {default} 0
+27 365 356 {t} {default} 0
+28 366 365 {} {default} 0
+29 367 366 {} {default} 0
+30 368 367 {} {default} 0
+26 369 355 {2} {default} 0
+27 370 369 {d} {default} 0
+28 371 370 {} {default} 0
+29 372 371 {} {default} 0
+30 373 372 {} {default} 0
+27 374 369 {s} {default} 0
+28 375 374 {} {default} 0
+29 376 375 {} {default} 0
+30 377 376 {} {default} 0
+27 378 369 {t} {default} 0
+28 379 378 {} {default} 0
+29 380 379 {} {default} 0
+30 381 380 {} {default} 0
+25 382 354 {nand2} {default} 0
+26 383 382 {1} {default} 0
+27 384 383 {d} {default} 0
+28 385 384 {} {default} 0
+29 386 385 {} {default} 0
+30 387 386 {} {default} 0
+27 388 383 {s} {default} 0
+28 389 388 {} {default} 0
+29 390 389 {} {default} 0
+30 391 390 {} {default} 0
+27 392 383 {t} {default} 0
+28 393 392 {} {default} 0
+29 394 393 {} {default} 0
+30 395 394 {} {default} 0
+17 130 80 {27.0} {default} 0
+18 131 130 {} {default} 0
+19 132 131 {0} {default} 0
+20 133 132 {11} {default} 0
+21 134 133 {2} {default} 0
+22 135 134 {500} {default} 0
+23 136 135 {1e-16} {default} 0
+24 137 136 {svt} {default} 0
+25 138 137 {inv} {default} 0
+26 139 138 {1} {default} 0
+27 140 139 {d} {default} 0
+28 141 140 {} {default} 0
+29 142 141 {} {default} 0
+30 143 142 {} {default} 0
+27 144 139 {s} {default} 0
+28 145 144 {} {default} 0
+29 146 145 {} {default} 0
+30 147 146 {} {default} 0
+27 148 139 {t} {default} 0
+28 149 148 {} {default} 0
+29 150 149 {} {default} 0
+30 151 150 {} {default} 0
+26 152 138 {2} {default} 0
+27 153 152 {d} {default} 0
+28 154 153 {} {default} 0
+29 155 154 {} {default} 0
+30 156 155 {} {default} 0
+27 157 152 {s} {default} 0
+28 158 157 {} {default} 0
+29 159 158 {} {default} 0
+30 160 159 {} {default} 0
+27 161 152 {t} {default} 0
+28 162 161 {} {default} 0
+29 163 162 {} {default} 0
+30 164 163 {} {default} 0
+25 165 137 {nand2} {default} 0
+26 166 165 {1} {default} 0
+27 167 166 {d} {default} 0
+28 168 167 {} {default} 0
+29 169 168 {} {default} 0
+30 170 169 {} {default} 0
+27 171 166 {s} {default} 0
+28 172 171 {} {default} 0
+29 173 172 {} {default} 0
+30 174 173 {} {default} 0
+27 175 166 {t} {default} 0
+28 176 175 {} {default} 0
+29 177 176 {} {default} 0
+30 178 177 {} {default} 0
+24 270 136 {lvt} {default} 0
+25 271 270 {inv} {default} 0
+26 272 271 {1} {default} 0
+27 273 272 {d} {default} 0
+28 274 273 {} {default} 0
+29 275 274 {} {default} 0
+30 276 275 {} {default} 0
+27 277 272 {s} {default} 0
+28 278 277 {} {default} 0
+29 279 278 {} {default} 0
+30 280 279 {} {default} 0
+27 281 272 {t} {default} 0
+28 282 281 {} {default} 0
+29 283 282 {} {default} 0
+30 284 283 {} {default} 0
+26 285 271 {2} {default} 0
+27 286 285 {d} {default} 0
+28 287 286 {} {default} 0
+29 288 287 {} {default} 0
+30 289 288 {} {default} 0
+27 290 285 {s} {default} 0
+28 291 290 {} {default} 0
+29 292 291 {} {default} 0
+30 293 292 {} {default} 0
+27 294 285 {t} {default} 0
+28 295 294 {} {default} 0
+29 296 295 {} {default} 0
+30 297 296 {} {default} 0
+25 298 270 {nand2} {default} 0
+26 299 298 {1} {default} 0
+27 300 299 {d} {default} 0
+28 301 300 {} {default} 0
+29 302 301 {} {default} 0
+30 303 302 {} {default} 0
+27 304 299 {s} {default} 0
+28 305 304 {} {default} 0
+29 306 305 {} {default} 0
+30 307 306 {} {default} 0
+27 308 299 {t} {default} 0
+28 309 308 {} {default} 0
+29 310 309 {} {default} 0
+30 311 310 {} {default} 0
+24 396 136 {ulvt} {default} 0
+25 397 396 {inv} {default} 0
+26 398 397 {1} {default} 0
+27 399 398 {d} {default} 0
+28 400 399 {} {default} 0
+29 401 400 {} {default} 0
+30 402 401 {} {default} 0
+27 403 398 {s} {default} 0
+28 404 403 {} {default} 0
+29 405 404 {} {default} 0
+30 406 405 {} {default} 0
+27 407 398 {t} {default} 0
+28 408 407 {} {default} 0
+29 409 408 {} {default} 0
+30 410 409 {} {default} 0
+26 411 397 {2} {default} 0
+27 412 411 {d} {default} 0
+28 413 412 {} {default} 0
+29 414 413 {} {default} 0
+30 415 414 {} {default} 0
+27 416 411 {s} {default} 0
+28 417 416 {} {default} 0
+29 418 417 {} {default} 0
+30 419 418 {} {default} 0
+27 420 411 {t} {default} 0
+28 421 420 {} {default} 0
+29 422 421 {} {default} 0
+30 423 422 {} {default} 0
+25 424 396 {nand2} {default} 0
+26 425 424 {1} {default} 0
+27 426 425 {d} {default} 0
+28 427 426 {} {default} 0
+29 428 427 {} {default} 0
+30 429 428 {} {default} 0
+27 430 425 {s} {default} 0
+28 431 430 {} {default} 0
+29 432 431 {} {default} 0
+30 433 432 {} {default} 0
+27 434 425 {t} {default} 0
+28 435 434 {} {default} 0
+29 436 435 {} {default} 0
+30 437 436 {} {default} 0
+17 179 80 {125} {default} 0
+18 180 179 {} {default} 0
+19 181 180 {0} {default} 0
+20 182 181 {11} {default} 0
+21 183 182 {2} {default} 0
+22 184 183 {500} {default} 0
+23 185 184 {1e-16} {default} 0
+24 186 185 {svt} {default} 0
+25 187 186 {inv} {default} 0
+26 188 187 {1} {default} 0
+27 189 188 {d} {default} 0
+28 190 189 {} {default} 0
+29 191 190 {} {default} 0
+30 192 191 {} {default} 0
+27 193 188 {s} {default} 0
+28 194 193 {} {default} 0
+29 195 194 {} {default} 0
+30 196 195 {} {default} 0
+27 197 188 {t} {default} 0
+28 198 197 {} {default} 0
+29 199 198 {} {default} 0
+30 200 199 {} {default} 0
+26 201 187 {2} {default} 0
+27 202 201 {d} {default} 0
+28 203 202 {} {default} 0
+29 204 203 {} {default} 0
+30 205 204 {} {default} 0
+27 206 201 {s} {default} 0
+28 207 206 {} {default} 0
+29 208 207 {} {default} 0
+30 209 208 {} {default} 0
+27 210 201 {t} {default} 0
+28 211 210 {} {default} 0
+29 212 211 {} {default} 0
+30 213 212 {} {default} 0
+25 214 186 {nand2} {default} 0
+26 215 214 {1} {default} 0
+27 216 215 {d} {default} 0
+28 217 216 {} {default} 0
+29 218 217 {} {default} 0
+30 219 218 {} {default} 0
+27 220 215 {s} {default} 0
+28 221 220 {} {default} 0
+29 222 221 {} {default} 0
+30 223 222 {} {default} 0
+27 224 215 {t} {default} 0
+28 225 224 {} {default} 0
+29 226 225 {} {default} 0
+30 227 226 {} {default} 0
+24 312 185 {lvt} {default} 0
+25 313 312 {inv} {default} 0
+26 314 313 {1} {default} 0
+27 315 314 {d} {default} 0
+28 316 315 {} {default} 0
+29 317 316 {} {default} 0
+30 318 317 {} {default} 0
+27 319 314 {s} {default} 0
+28 320 319 {} {default} 0
+29 321 320 {} {default} 0
+30 322 321 {} {default} 0
+27 323 314 {t} {default} 0
+28 324 323 {} {default} 0
+29 325 324 {} {default} 0
+30 326 325 {} {default} 0
+26 327 313 {2} {default} 0
+27 328 327 {d} {default} 0
+28 329 328 {} {default} 0
+29 330 329 {} {default} 0
+30 331 330 {} {default} 0
+27 332 327 {s} {default} 0
+28 333 332 {} {default} 0
+29 334 333 {} {default} 0
+30 335 334 {} {default} 0
+27 336 327 {t} {default} 0
+28 337 336 {} {default} 0
+29 338 337 {} {default} 0
+30 339 338 {} {default} 0
+25 340 312 {nand2} {default} 0
+26 341 340 {1} {default} 0
+27 342 341 {d} {default} 0
+28 343 342 {} {default} 0
+29 344 343 {} {default} 0
+30 345 344 {} {default} 0
+27 346 341 {s} {default} 0
+28 347 346 {} {default} 0
+29 348 347 {} {default} 0
+30 349 348 {} {default} 0
+27 350 341 {t} {default} 0
+28 351 350 {} {default} 0
+29 352 351 {} {default} 0
+30 353 352 {} {default} 0
+24 438 185 {ulvt} {default} 0
+25 439 438 {inv} {default} 0
+26 440 439 {1} {default} 0
+27 441 440 {d} {default} 0
+28 442 441 {} {default} 0
+29 443 442 {} {default} 0
+30 444 443 {} {default} 0
+27 445 440 {s} {default} 0
+28 446 445 {} {default} 0
+29 447 446 {} {default} 0
+30 448 447 {} {default} 0
+27 449 440 {t} {default} 0
+28 450 449 {} {default} 0
+29 451 450 {} {default} 0
+30 452 451 {} {default} 0
+26 453 439 {2} {default} 0
+27 454 453 {d} {default} 0
+28 455 454 {} {default} 0
+29 456 455 {} {default} 0
+30 457 456 {} {default} 0
+27 458 453 {s} {default} 0
+28 459 458 {} {default} 0
+29 460 459 {} {default} 0
+30 461 460 {} {default} 0
+27 462 453 {t} {default} 0
+28 463 462 {} {default} 0
+29 464 463 {} {default} 0
+30 465 464 {} {default} 0
+25 466 438 {nand2} {default} 0
+26 467 466 {1} {default} 0
+27 468 467 {d} {default} 0
+28 469 468 {} {default} 0
+29 470 469 {} {default} 0
+30 471 470 {} {default} 0
+27 472 467 {s} {default} 0
+28 473 472 {} {default} 0
+29 474 473 {} {default} 0
+30 475 474 {} {default} 0
+27 476 467 {t} {default} 0
+28 477 476 {} {default} 0
+29 478 477 {} {default} 0
+30 479 478 {} {default} 0

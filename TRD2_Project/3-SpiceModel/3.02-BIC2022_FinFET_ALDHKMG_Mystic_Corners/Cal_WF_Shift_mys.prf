@@ -1,0 +1,2 @@
+set WB_tool(enigma_mystic,input,model,common) 1
+set WB_tool(enigma_mystic,parallel,activate) 1
